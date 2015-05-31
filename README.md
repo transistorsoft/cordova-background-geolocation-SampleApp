@@ -2,6 +2,9 @@
 
 Fully-featured, [Ionic](http://ionicframework.com/)-based sample-application for [Cordova Background Geolocation  (Premium Version)](http://christocracy.github.io/cordova-background-geolocation/)
 
+![Android Battery Performance](/resources/sampleapp-ionic-home.png "SampleApp Home")
+![Android Battery Performance](/resources/sampleapp-ionic-settings.png "SampleApp Settings")
+
 ## Installation
 
 (1) Start by cloning this repo
@@ -16,7 +19,7 @@ $ cordova plugin add cordova-plugin-device cordova-plugin-console cordova-plugin
 
 (3)  Add your desired platform(s) and build.  That's it.
 ```
-$ cordova platforom add ios
+$ cordova platform add ios
 $ cordova build ios
 
 $ cordova platform add android
