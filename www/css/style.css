@@ -1,0 +1,36 @@
+/* Empty. Add your own CSS if you like */
+
+map {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.scroll {
+  height: 100%;
+}
+
+/**
+* Blue colored ion-radio
+*/
+.item-radio.radio-positive .radio-icon    {
+  color: #387EF5;
+  font-size: 20px;
+}
+
+.settings .item-divider {
+	padding-top: 1em;
+}
+/**
+* Hide chevron in ion-item when field is a checkbox
+*/
+.settings .item.setting-type-checkbox[ng-click] .item-content:after {
+	display: none;
+}
+
+
+.settings-values .item-radio input:checked ~ .item-content {
+	background-color: #fff;
+}
+
+
+
