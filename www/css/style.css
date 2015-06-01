@@ -20,6 +20,16 @@ map {
 .settings .item-divider {
 	padding-top: 1em;
 }
+.settings .item .current-value {
+	position: absolute;
+	right: 35px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.settings .item .current-value.setting-url {
+	width: 75%;
+}
 /**
 * Hide chevron in ion-item when field is a checkbox
 */

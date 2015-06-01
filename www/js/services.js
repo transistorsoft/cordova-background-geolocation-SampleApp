@@ -4,16 +4,27 @@
 * @author Chris Scott <chris@transistorsoft.com>
 */
 var BackgroundGeolocation = (function() {
+	/**
+	* @private {Array} List of subscribers to the plugin's "location" event.  The plugin itself doesn't allow multiple listeners so I've simply added the ability here in Javascript.
+	*/
 	var locationListeners = [];
-
+	/**
+	* @private {object} BackgroundGeolocation configuration
+	*/
+	var config = {};
+	/**
+	* @private BackgroundGeolocation plugin reference
+	*/
 	var plugin;
+
+	// Handy shortcut for localStorage.
 	var ls = window.localStorage;
 
+	/**
+	* @private List of all available common and platform-specific settings
+	*/
 	var settings = {
 		common: [
-			{name: 'distanceFilter', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 10, 20, 50, 100, 500], defaultValue: 20 },
-	  	{name: 'desiredAccuracy', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [-1, 0, 10, 100, 1000], defaultValue: 0 },
-	    {name: 'stationaryRadius', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 20, 50, 100, 500], defaultValue: 20 },
 	    {name: 'url', group: 'http', inputType: 'text', dataType: 'string', defaultValue: 'http://posttestserver.com/post.php?dir=ionic-cordova-background-geolocation'},
 	    {name: 'autoSync', group: 'http', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: true},
 	    {name: 'batchSync', group: 'http', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: false},
@@ -21,10 +32,15 @@ var BackgroundGeolocation = (function() {
 	    {name: 'debug', group: 'application', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: true}
 	 	],
 	  iOS: [
+	  	{name: 'desiredAccuracy', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [-1, 0, 10, 100, 1000], defaultValue: 0 },
+	  	{name: 'distanceFilter', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 10, 20, 50, 100, 500], defaultValue: 20 },
+	  	{name: 'stationaryRadius', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 20, 50, 100, 500], defaultValue: 20 },
 	  	{name: 'activityType', group: 'geolocation', dataType: 'string', inputType: 'select', values: ['Other', 'AutomotiveNavigation', 'Fitness', 'OtherNavigation'], defaultValue: 'Other'},
 	    {name: 'disableElasticity', group: 'geolocation', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: false}
 	  ],
 	  Android: [
+	  	{name: 'desiredAccuracy', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 10, 100, 1000], defaultValue: 0 },
+	  	{name: 'distanceFilter', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 10, 20, 50, 100, 500], defaultValue: 20 },
 	  	{name: 'locationUpdateInterval', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 1000, 5000, 10000, 30000, 60000], defaultValue: 5000},
 	    {name: 'fastestLocationUpdateInterval', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 1000, 5000, 10000, 30000, 60000], defaultValue: 1000},
 	    {name: 'activityRecognitionInterval', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 1000, 10000, 30000, 60000], defaultValue: 10000},
@@ -34,14 +50,10 @@ var BackgroundGeolocation = (function() {
 	  ]
 	};
 
-	// Build a config {}.
-	var config = {};
-
+	// Iterate list-of-settings and build our @private config {} from localStorage || defaultValue
 	var setting;
 	var value;
 	var rs = [].concat(settings.common).concat(settings.iOS).concat(settings.Android);
-
-	// Iterate list-of-settings and build a config {} from localStorage || defaultValue
 	for (var n=0,len=rs.length;n<len;n++) {
 		setting = rs[n];
 		value = ls.getItem('settings:' + setting.name) || setting.defaultValue;
@@ -56,14 +68,29 @@ var BackgroundGeolocation = (function() {
 	var getPlatformSettings = function() {
 		if (platformSettings === undefined) {
 			var platform = ionic.Platform.device().platform || 'iOS';
-    	platformSettings = [].concat(settings.common).concat(settings[platform]);
+    	platformSettings = [].concat(settings[platform]).concat(settings.common);
     }
     return platformSettings;
+	};
+
+	/**
+	* This is the BackgroundGeolocation callback.  I've set up the ability to add multiple listeners here so this
+	* callback simply calls upon all the added listeners here
+	*/
+	var fireLocationListeners = function(location, taskId) {
+		console.log('[js] BackgroundGeolocation location received: ' + JSON.stringify(location));
+		var listener;
+		for (var n=0,len=locationListeners.length;n<len;n++) {
+			listener = locationListeners[n];
+			listener.fn.call(listener.scope, location);
+		}
+		plugin.finish(taskId);
 	};
 
 	return {
 		/**
 		* Set the plugin state to track in background
+		* @param {Boolean} willEnable
 		*/
 		setEnabled: function(willEnable) {
 			window.localStorage.setItem('bgGeo:enabled', willEnable);
@@ -77,12 +104,14 @@ var BackgroundGeolocation = (function() {
 		},
 		/**
 		* Is the plugin enabled to run in background?
+		* @return {Boolean}
 		*/
 		getEnabled: function() {
 			return window.localStorage.getItem('bgGeo:enabled') === 'true';
 		},
 		/**
 		* Toggle stationary/aggressive mode
+		* @param {Boolean} willStart
 		*/
 		setPace: function(willStart) {
 			window.localStorage.setItem('bgGeo:started', willStart);
@@ -98,7 +127,7 @@ var BackgroundGeolocation = (function() {
 			return window.localStorage.getItem('bgGeo:started') === 'true';
 		},
 		/**
-		* Sync plugin's persisted locations to server
+		* Manually sync plugin's persisted locations to server
 		*/
 		sync: function() {
 			if (plugin) {
@@ -109,9 +138,10 @@ var BackgroundGeolocation = (function() {
 				});
 			}
 		},
-
 		/**
 		* Add an event-listener for location-received from plugin
+		* @param {Function} callback
+		* @param {Object} [scope]
 		*/
 		onLocation: function(callback, scope) {
 			locationListeners.push({
@@ -121,6 +151,8 @@ var BackgroundGeolocation = (function() {
 		},
 		/**
 		* Add a stationary-listener
+		* @param {Function} stationary event-listener
+		* @param {Object} [scope]
 		*/
 		onStationary: function(callback, scope) {
 			var me = this;
@@ -132,7 +164,7 @@ var BackgroundGeolocation = (function() {
 			}
 		},
 		/**
-		* Return the current config-state as stored in localStorage
+		* Return the current BackgroundGeolocation config-state as stored in localStorage
 		* @return {Object}
 		*/
 		getConfig: function() {
@@ -156,6 +188,8 @@ var BackgroundGeolocation = (function() {
 		},
 		/**
 		* Get a single config value by key
+		* @param {String} key A BackgroundGeolocation setting key to return a value for
+		* @return {Mixed}
 		*/
 		get: function(key) {
 			return config[key];
@@ -179,6 +213,7 @@ var BackgroundGeolocation = (function() {
 		},
 		/**
 		* Configure the BackgroundGeolocation Cordova plugin
+		* @param {BackgroundGeolocation} bgGeoPlugin
 		*/
 		configurePlugin: function(bgGeoPlugin) {
 			var me = this;
@@ -187,7 +222,7 @@ var BackgroundGeolocation = (function() {
 			console.log('- BackgroundGeolocation setPlugin: ', bgGeoPlugin);
 
 			// Configure BackgroundGeolocation Plugin
-			plugin.configure(this.fireLocationListeners, function(error) { 
+			plugin.configure(fireLocationListeners, function(error) { 
 				console.warn('BackgroundGeolocation Error: ' + error);
 			}, this.getConfig());
 
@@ -197,22 +232,10 @@ var BackgroundGeolocation = (function() {
 		},
 		/**
 		* Return a reference to Cordova BackgroundGeolocation plugin
+		* @return {BackgroundGeolocation}
 		*/
 		getPlugin: function() {
 			return plugin;
-		},
-		/**
-		* This is the BackgroundGeolocation callback.  I've set up the ability to add multiple listeners here so this
-		* callback simply calls upon all the added listeners here
-		*/
-		fireLocationListeners: function(location, taskId) {
-			console.log('[js] BackgroundGeolocation location received: ' + JSON.stringify(location));
-			var listener;
-			for (var n=0,len=locationListeners.length;n<len;n++) {
-				listener = locationListeners[n];
-				listener.fn.call(listener.scope, location);
-			}
-			plugin.finish(taskId);
 		}
 	};
 })();

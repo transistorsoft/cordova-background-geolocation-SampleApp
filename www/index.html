@@ -39,7 +39,7 @@
     <!-- Map screen -->
     <script id="templates/home.html" type="text/ng-template">
 
-      <ion-view title="BG Geolocation">
+      <ion-view view-title="BG Geolocation">
         <ion-nav-buttons side="left">
           <a class="button button-clear button-positive" ng-click="onClickSettings()">Settings</a>
         </ion-nav-buttons>
@@ -59,7 +59,7 @@
 
         <ion-footer-bar class="bar-stable">
           <a ng-click="centerOnMe()" class="button button-icon icon ion-navigate"></a>
-          <h1 class="title"></h1>
+          <h1 class="title">{{odometer}}km</h1>
           <div class="buttons align-right">
             <button style="display:none" class="button icon ion-upload" ng-click="onClickSync()">Sync</button>
             <button class="button icon {{startButtonIcon}}" ng-disabled="!bgGeo.enabled" ng-click="onClickStart()" style="width:75px"></button>
@@ -80,27 +80,30 @@
             <div class="item item-divider">
               Geoloction Settings
             </div>
-
-            <ion-item ng-repeat="setting in getSettings('geolocation')" ng-click="onSelectSetting()" class="">
+            <ion-item ng-repeat="setting in getSettings('geolocation')" ng-click="onSelectSetting()" class="item-icon-right">
               {{ setting.name }}
-              <i style="float:right">{{ getValue(setting.name) }}</i>
+              <i class="current-value setting-{{setting.name}}">{{ getValue(setting.name) }}</i>
+              <i class="icon ion-chevron-right icon-accessory"></i>
+              
             </ion-item>
 
             <div class="item item-divider">
               Application Settings
             </div>
-            <ion-item ng-repeat="setting in getSettings('application')" ng-click="onSelectSetting()" item="setting" class="">
+            <ion-item ng-repeat="setting in getSettings('application')" ng-click="onSelectSetting()" item="setting" class="item-icon-right">
               {{ setting.name }}
-              <i style="float:right">{{ getValue(setting.name) }}</i>
+              <i class="current-value setting-{{setting.name}}">{{ getValue(setting.name) }}</i>
+              <i class="icon ion-chevron-right icon-accessory"></i>
             </ion-item>
           </ion-list>
 
             <div class="item item-divider">
               HTTP Settings
             </div>
-            <ion-item ng-repeat="setting in getSettings('http')" ng-click="onSelectSetting()" item="setting" class="">
+            <ion-item ng-repeat="setting in getSettings('http')" ng-click="onSelectSetting()" item="setting" class="item-icon-right">
               {{ setting.name }}
-              <i style="float:right">{{ getValue(setting.name) }}</i>
+              <i class="current-value setting-{{setting.name}}">{{ getValue(setting.name) }}</i>
+              <i class="icon ion-chevron-right icon-accessory"></i>
             </ion-item>
           </ion-list>
         </div>
@@ -123,10 +126,15 @@
 
     <!-- #url Setting template -->
     <script id="templates/settings/url.html" type="text/ng-template">
-      <ion-view title="HTTP URL">
+      <ion-view title="HTTP URL" class="settings-values">
+        <ion-nav-buttons side="right"> 
+          <button class="button button-positive button-clear" ng-click="onClickDone()">Done</button>
+        </ion-nav-buttons>
+
         <ion-content class="">
-          <label>URL</label>
-          <input type="text" name="url" value="" />
+          <label class="item item-input">
+            <input type="text" placeholder="URL" ng-model="getConfig()[this.getSelectedSetting().name]">
+          </label>
         </ion-content>
       </ion-view>
     </script>

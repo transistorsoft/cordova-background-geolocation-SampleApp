@@ -22,6 +22,8 @@ angular.module('starter.controllers', [])
   $scope.locationAccuracyMarker = undefined;
   $scope.stationaryRadius       = undefined;
 
+  $scope.odometer = 0;
+
   $scope.mapCreated = function(map) {
     $scope.map = map;
   };
@@ -30,6 +32,15 @@ angular.module('starter.controllers', [])
   * Draw google map marker for current location
   */
   $scope.setCurrentLocationMarker = function(location) {
+    var plugin = BackgroundGeolocation.getPlugin();
+    if (plugin) {
+      plugin.getOdometer(function(value) {
+        $scope.$apply(function() {
+          $scope.odometer = (value/1000).toFixed(1);
+        });
+      });
+      
+    }
     // Set currentLocation @property
     $scope.currentLocation = location;
     
@@ -235,7 +246,17 @@ angular.module('starter.controllers', [])
     $state.autoSyncDisabled = !BackgroundGeolocation.getConfig().autoSync;
     $state.go('settings');
   };
-  
+
+  $scope.onClickDone = function() {
+    //BackgroundGeolocation.set($state.selectedSetting.name, this.value);
+    var config  = this.getConfig();
+    var name    = $state.selectedSetting.name;
+    var value   = config[name];
+
+    BackgroundGeolocation.set(name, value);
+    $state.go('settings');
+  };
+
   /**
   * List of available settings
   */

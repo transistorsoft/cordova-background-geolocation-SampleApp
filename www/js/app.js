@@ -95,6 +95,11 @@ app.config(function($stateProvider, $urlRouterProvider) {
 	    templateUrl: 'templates/settings/radio-list.html',
 	    controller: 'Settings'
 	  })
+    .state('settings/debug', {
+      url: '/settings/debug',
+      templateUrl: 'templates/settings/radio-list.html',
+      controller: 'Settings'
+    })
 });
 
 app.run(function($ionicPlatform) {
