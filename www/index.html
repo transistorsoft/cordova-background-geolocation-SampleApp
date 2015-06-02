@@ -7,13 +7,14 @@
 
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
-
+    <link href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
     -->
 
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
+    <script src="lib/LongPress.js"></script>
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB16sGmIekuGIvYOfNoW9T44377IU2d2Es&sensor=true"></script>
 
@@ -53,7 +54,7 @@
           </label>
         </ion-nav-buttons>
 
-        <ion-content scroll="false">
+        <ion-content scroll="false" data-tap-disabled="true">
           <map on-create="mapCreated(map)"></map>
         </ion-content>
 
@@ -61,7 +62,6 @@
           <a ng-click="centerOnMe()" class="button button-icon icon ion-navigate"></a>
           <h1 class="title">{{odometer}}km</h1>
           <div class="buttons align-right">
-            <button style="display:none" class="button icon ion-upload" ng-click="onClickSync()">Sync</button>
             <button class="button icon {{startButtonIcon}}" ng-disabled="!bgGeo.enabled" ng-click="onClickStart()" style="width:75px"></button>
           </div>
         </ion-footer-bar>
@@ -72,7 +72,8 @@
     <script id="templates/settings.html" type="text/ng-template">
       <ion-view title="Settings" class="settings">
         <ion-nav-buttons side="right"> 
-          <button class="button button-assertive icon ion-upload" ng-disabled="isAutoSyncDisabled()" ng-click="onClickSync()">Sync</button>
+          <ion-spinner icon="ios-small" class="" ng-show="isSyncing"></ion-spinner>
+          <button class="button button-assertive icon ion-ios-cloud-upload" ng-disabled="isAutoSyncDisabled()" ng-click="onClickSync()">Sync</button>
         </ion-nav-buttons>
 
         <ion-content scroll="true" class="">
@@ -139,6 +140,61 @@
       </ion-view>
     </script>
 
+    <script id="my-modal.html" type="text/ng-template">
+      <ion-modal-view>
+        <ion-header-bar>
+          <button class="button button-positive button-clear" ng-click="onCancelGeofence()">Cancel</button>
+          <h1 class="title">{{ newGeofence.action == 'new' ? "Add Geofence" : "Edit Geofence" }}</h1>
+          <button class="button button-positive button-clear" ng-click="onEditGeofence()">{{newGeofence.action == 'new' ? 'Done' : 'Delete'}}</button>
+        </ion-header-bar>
+        <ion-content>
+          <ul class="list">
+            <li>
+              <label class="item item-input">
+                <div class="input-label">Identifier</div>
+                <input type="text" ng-model="newGeofence.identifier" placeholder="(eg: Home, Office)" ng-required="true">
+              </label>
+            </li>
+            <li>
+              <label class="item item-input item-select">
+                <div class="input-label">Radius</div>
+                <select ng-model="newGeofence.radius" placeholder="foo">
+                  <option value="100">100</option>
+                  <option value="150" selected>150</option>
+                  <option value="200">200</option>
+                  <option value="250">250</option>
+                  <option value="300">300</option>
+                  <option value="400">400</option>
+                  <option value="500">500</option>
+                </select>
+              </label>
+            </li>
+
+            <li class="item item-checkbox">
+              <label class="checkbox">
+                <input type="checkbox" ng-model="newGeofence.notifyOnEntry">
+              </label>
+              Notify on ENTRY
+            </li>
+
+            <li class="item item-checkbox">
+              <label class="checkbox">
+                <input type="checkbox" ng-model="newGeofence.notifyOnExit">
+              </label>
+              Notify on EXIT
+            </li>
+
+            <li class="item item-checkbox">
+              <label class="checkbox">
+                <input type="checkbox" ng-model="newGeofence.single">
+              </label>
+              Single (remove geofence after first crossing)
+            </li>
+          </ul>
+
+        </ion-content>
+      </ion-modal-view>
+    </script>
 
   </body>
 </html>

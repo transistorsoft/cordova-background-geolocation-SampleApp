@@ -5,25 +5,45 @@
 */
 var BackgroundGeolocation = (function() {
 	/**
+	* @private sound-id mapping for iOS & Android.  BackgroundGeolocation plugin has a simple system-sound API
+	*/
+	var $SOUNDS = {
+		"LONG_PRESS_ACTIVATE_IOS": 1113,
+		"LONG_PRESS_ACTIVATE_ANDROID": 27,
+		"LONG_PRESS_CANCEL_IOS": 1075,
+		"LONG_PRESS_CANCEL_ANDROID": 94,
+		"ADD_GEOFENCE_IOS": 1114,
+		"ADD_GEOFENCE_ANDROID": 28,
+		"BUTTON_CLICK_IOS": 1104,
+		"BUTTON_CLICK_ANDROID": 19,
+		"MESSAGE_SENT_IOS": 1303,
+		"MESSAGE_SENT_ANDROID": 90
+	};
+	
+	/**
 	* @private {Array} List of subscribers to the plugin's "location" event.  The plugin itself doesn't allow multiple listeners so I've simply added the ability here in Javascript.
 	*/
-	var locationListeners = [];
+	var $locationListeners = [];
 	/**
 	* @private {object} BackgroundGeolocation configuration
 	*/
-	var config = {};
+	var $config = {};
 	/**
 	* @private BackgroundGeolocation plugin reference
 	*/
-	var plugin;
+	var $plugin;
+	/**
+	* @private {String} platform
+	*/
+	var $platform;
 
 	// Handy shortcut for localStorage.
-	var ls = window.localStorage;
+	var $ls = window.localStorage;
 
 	/**
 	* @private List of all available common and platform-specific settings
 	*/
-	var settings = {
+	var $settings = {
 		common: [
 	    {name: 'url', group: 'http', inputType: 'text', dataType: 'string', defaultValue: 'http://posttestserver.com/post.php?dir=ionic-cordova-background-geolocation'},
 	    {name: 'autoSync', group: 'http', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: true},
@@ -53,22 +73,21 @@ var BackgroundGeolocation = (function() {
 	// Iterate list-of-settings and build our @private config {} from localStorage || defaultValue
 	var setting;
 	var value;
-	var rs = [].concat(settings.common).concat(settings.iOS).concat(settings.Android);
+	var rs = [].concat($settings.common).concat($settings.iOS).concat($settings.Android);
 	for (var n=0,len=rs.length;n<len;n++) {
 		setting = rs[n];
-		value = ls.getItem('settings:' + setting.name) || setting.defaultValue;
+		value = $ls.getItem('settings:' + setting.name) || setting.defaultValue;
 		if (setting.dataType === 'integer') {
 			value = parseInt(value, 10);
 		}
-		config[setting.name] = value;
+		$config[setting.name] = value;
 	}
 
 	// Build platform-specific list-of-settings
 	var platformSettings = undefined;
 	var getPlatformSettings = function() {
 		if (platformSettings === undefined) {
-			var platform = ionic.Platform.device().platform || 'iOS';
-    	platformSettings = [].concat(settings[platform]).concat(settings.common);
+    	platformSettings = [].concat($settings[$platform||'iOS']).concat($settings.common);
     }
     return platformSettings;
 	};
@@ -80,11 +99,11 @@ var BackgroundGeolocation = (function() {
 	var fireLocationListeners = function(location, taskId) {
 		console.log('[js] BackgroundGeolocation location received: ' + JSON.stringify(location));
 		var listener;
-		for (var n=0,len=locationListeners.length;n<len;n++) {
-			listener = locationListeners[n];
+		for (var n=0,len=$locationListeners.length;n<len;n++) {
+			listener = $locationListeners[n];
 			listener.fn.call(listener.scope, location);
 		}
-		plugin.finish(taskId);
+		$plugin.finish(taskId);
 	};
 
 	return {
@@ -94,11 +113,11 @@ var BackgroundGeolocation = (function() {
 		*/
 		setEnabled: function(willEnable) {
 			window.localStorage.setItem('bgGeo:enabled', willEnable);
-	    if (plugin) {
+	    if ($plugin) {
 	      if (willEnable) {
-	        plugin.start();
+	        $plugin.start();
 	      } else {
-	        plugin.stop();
+	        $plugin.stop();
 	      }
 	    }
 		},
@@ -115,8 +134,8 @@ var BackgroundGeolocation = (function() {
 		*/
 		setPace: function(willStart) {
 			window.localStorage.setItem('bgGeo:started', willStart);
-	    if (plugin) {
-	      plugin.changePace(willStart);
+	    if ($plugin) {
+	      $plugin.changePace(willStart);
 	    }
 		},
 		/**
@@ -129,22 +148,22 @@ var BackgroundGeolocation = (function() {
 		/**
 		* Manually sync plugin's persisted locations to server
 		*/
-		sync: function() {
-			if (plugin) {
-				plugin.sync(function(res) {
-					console.log('syncing');
-				}, function(error) {
-					console.log('sync failure');
-				});
+		sync: function(success, failure) {
+			if ($plugin) {
+				$plugin.sync(success, failure);
+			} else {
+				setTimeout(function() {
+					success.call(this);
+				}, 1000);
 			}
 		},
 		/**
-		* Add an event-listener for location-received from plugin
+		* Add an event-listener for location-received from $plugin
 		* @param {Function} callback
 		* @param {Object} [scope]
 		*/
 		onLocation: function(callback, scope) {
-			locationListeners.push({
+			$locationListeners.push({
 				fn: callback,
 				scope: scope || this
 			});
@@ -156,10 +175,10 @@ var BackgroundGeolocation = (function() {
 		*/
 		onStationary: function(callback, scope) {
 			var me = this;
-			if (plugin) {
-				plugin.onStationary(function(location, taskId) {
+			if ($plugin) {
+				$plugin.onStationary(function(location, taskId) {
 					callback.call(scope||me, location);
-					plugin.finish(taskId);
+					$plugin.finish(taskId);
 				});
 			}
 		},
@@ -168,7 +187,7 @@ var BackgroundGeolocation = (function() {
 		* @return {Object}
 		*/
 		getConfig: function() {
-			return config;
+			return $config;
 		},
 		/**
 		* Return a list of all available plugin settings, filtered optionally by "group"
@@ -192,7 +211,7 @@ var BackgroundGeolocation = (function() {
 		* @return {Mixed}
 		*/
 		get: function(key) {
-			return config[key];
+			return $config[key];
 		},
 		/**
 		* Set a single config value by key,value
@@ -200,34 +219,36 @@ var BackgroundGeolocation = (function() {
 		* @param {Mixed} value
 		*/
 		set: function(key, value) {
-			ls.setItem('settings:' + key, value);
-			config[key] = value;
+			$ls.setItem('settings:' + key, value);
+			$config[key] = value;
 
-	    if (plugin) {
-	      plugin.setConfig(function(response) {
+	    if ($plugin) {
+	      $plugin.setConfig(function(response) {
 	        console.log('- setConfig: ', response);
 	      }, function(error) {
 	        console.warn('- setConfig error: ', error);
-	      }, config);
+	      }, $config);
 	    }
 		},
 		/**
-		* Configure the BackgroundGeolocation Cordova plugin
+		* Configure the BackgroundGeolocation Cordova $plugin
 		* @param {BackgroundGeolocation} bgGeoPlugin
 		*/
 		configurePlugin: function(bgGeoPlugin) {
+			$platform = ionic.Platform.device().platform;
+
 			var me = this;
-			plugin = bgGeoPlugin;
+			$plugin = bgGeoPlugin;
 
 			console.log('- BackgroundGeolocation setPlugin: ', bgGeoPlugin);
 
 			// Configure BackgroundGeolocation Plugin
-			plugin.configure(fireLocationListeners, function(error) { 
+			$plugin.configure(fireLocationListeners, function(error) { 
 				console.warn('BackgroundGeolocation Error: ' + error);
 			}, this.getConfig());
 
 			if (this.getEnabled()) {
-				plugin.start();
+				$plugin.start();
 			}
 		},
 		/**
@@ -235,7 +256,36 @@ var BackgroundGeolocation = (function() {
 		* @return {BackgroundGeolocation}
 		*/
 		getPlugin: function() {
-			return plugin;
+			return $plugin;
+		},
+		addGeofence: function(data) {
+			if ($plugin) {
+				var me = this;
+				$plugin.addGeofence(data, function(res) {
+					me.playSound('ADD_GEOFENCE');
+				});
+			}
+		},
+		removeGeofence: function(identifier) {
+			if ($plugin) {
+				var me = this;
+				$plugin.removeGeofence(identifier, function(status) {
+					me.playSound('ADD_GEOFENCE');
+				}, function(error) {
+					console.log('- FAILED to remove geofence');
+				});
+			}
+		},
+		playSound: function(action) {
+			console.log("- playSound", action);
+			if ($plugin) {
+				var soundId = $SOUNDS[action + '_' + $platform.toUpperCase()];
+				if (soundId) {
+        	$plugin.playSound(soundId);
+        } else {
+        	console.warn('Failed to locate sound-id "' + action + '"');
+        }
+      }
 		}
 	};
 })();

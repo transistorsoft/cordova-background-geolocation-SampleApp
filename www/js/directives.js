@@ -22,7 +22,7 @@ angular.module('starter.directives', [])
 
         // Stop the side bar from dragging when mousedown/tapdown on the map
         google.maps.event.addDomListener($element[0], 'mousedown', function (e) {
-          e.preventDefault();
+          //e.preventDefault();
           return false;
         });
       }

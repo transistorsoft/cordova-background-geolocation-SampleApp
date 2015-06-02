@@ -4,7 +4,7 @@ angular.module('starter.controllers', [])
 /**
 * Maps Controller
 */
-.controller('Maps', function($scope, $ionicLoading, $state) {
+.controller('Maps', function($scope, $ionicModal, $ionicLoading, $state) {
   var PLAY_BUTTON_CLASS = "ion-play button-balanced",
       PAUSE_BUTTON_CLASS = "ion-pause button-assertive";
 
@@ -24,8 +24,44 @@ angular.module('starter.controllers', [])
 
   $scope.odometer = 0;
 
+  $ionicModal.fromTemplateUrl('my-modal.html', {
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function(modal) {
+    $scope.modal = modal;
+  });
+
   $scope.mapCreated = function(map) {
     $scope.map = map;
+    // Add custom LongPress event to google map so we can add Geofences with longpress event!
+    new LongPress(map, 500);
+
+    // Draw a red circle around the Marker we wish to move.
+    geofenceCursor = new google.maps.Marker({
+        map: map,
+        zIndex: 0,
+        clickable: false,
+        icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 100,
+            strokeColor: 'green',
+            strokeWeight: 2
+        }
+    });
+
+    google.maps.event.addListener(map, 'longpresscancel', function() {
+      geofenceCursor.setMap(null);
+      BackgroundGeolocation.playSound('LONG_PRESS_CANCEL');
+    });
+    google.maps.event.addListener(map, 'longpresshold', function(e) {      
+      geofenceCursor.setPosition(e.latLng);
+      geofenceCursor.setMap(map);
+      BackgroundGeolocation.playSound('LONG_PRESS_ACTIVATE')
+    });
+    google.maps.event.addListener(map, 'longpress', function(e) {
+      $scope.onAddGeofence(geofenceCursor.getPosition());
+      geofenceCursor.setMap(null);
+    });
   };
 
   /**
@@ -145,6 +181,7 @@ angular.module('starter.controllers', [])
     if (willEnable) {
 
     } else {
+      BackgroundGeolocation.playSound('BUTTON_CLICK');
       $scope.bgGeo.started = false;
       $scope.startButtonIcon = PLAY_BUTTON_CLASS;
     }
@@ -164,13 +201,14 @@ angular.module('starter.controllers', [])
   * Show Settings screen
   */
   $scope.onClickSettings = function() {
+    BackgroundGeolocation.playSound('BUTTON_CLICK');
     $state.transitionTo('settings');
   };
   /**
   * Center map button
   */
   $scope.centerOnMe = function () {
-    
+    BackgroundGeolocation.playSound('BUTTON_CLICK');
     if (!$scope.map) {
       return;
     }
@@ -189,19 +227,91 @@ angular.module('starter.controllers', [])
       alert('Unable to get location: ' + error.message);
     });
   };
+
+  /**
+  * Geofence features
+  */
+  $scope.newGeofence = {};
+
+  $scope.onAddGeofence = function(latLng) {
+    $scope.newGeofence = {
+      latitude: latLng.lat(),
+      longitude: latLng.lng(),
+      identifier: '',
+      radius: '',
+      notifyOnEntry: true,
+      notifyOnExit: false,
+      single: true,
+      action: 'new'
+    };
+    $scope.modal.show();
+  };
+  $scope.onEditGeofence = function() {
+    $scope.modal.hide();
+
+    if ($scope.newGeofence.action === 'new') {
+      // Add longpress event for adding GeoFence of hard-coded radius 200m.
+      var geofence = new google.maps.Circle({
+        fillColor: '#33cc66',
+        fillOpacity: 0.4,
+        strokeColor: '#33cc66',
+        params: {
+          identifier: $scope.newGeofence.identifier,
+          radius: $scope.newGeofence.radius,
+          notifyOnEntry: $scope.newGeofence.notifyOnEntry,
+          notifyOnExit: $scope.newGeofence.notifyOnExit,
+          single: $scope.newGeofence.single
+        },
+        radius: parseInt($scope.newGeofence.radius, 10),
+        center: new google.maps.LatLng($scope.newGeofence.latitude, $scope.newGeofence.longitude),
+        map: $scope.map
+      });
+      google.maps.event.addListener(geofence, 'click', function() {
+        $scope.newGeofence = this.params;
+        $scope.newGeofence.action = 'edit';
+        $scope.newGeofence.marker = geofence;
+        $scope.modal.show();
+      })
+      BackgroundGeolocation.addGeofence($scope.newGeofence);
+    } else {
+      BackgroundGeolocation.removeGeofence($scope.newGeofence.identifier);
+      $scope.newGeofence.marker.setMap(null);
+    }
+  };
+
+  $scope.onCancelGeofence = function() {
+    $scope.modal.hide();
+  }
 })
 
 /**
 * Settings Controller
 */
 .controller('Settings', function($scope, $ionicLoading, $state) {
+  $scope.syncButtonIcon = 'ion-load-c icon-animated';
+
   $scope.selectedValue = '';
+  $scope.isSyncing = false;
   $scope.isAutoSyncDisabled = function() {
-    return BackgroundGeolocation.getConfig().autoSync == 'true';
+    return !$scope.isSyncing && BackgroundGeolocation.getConfig().autoSync == 'true';
   }
 
   $scope.onClickSync = function() {
-    BackgroundGeolocation.sync();
+    if ($scope.isSyncing) { return false; }
+    
+    BackgroundGeolocation.playSound('BUTTON_CLICK');
+    $scope.isSyncing = true;
+    BackgroundGeolocation.sync(function(rs) {
+      BackgroundGeolocation.playSound('MESSAGE_SENT');
+      $scope.$apply(function() {
+        $scope.isSyncing = false;
+      });
+    }, function(error) {
+      console.warn('- sync error: ', error);
+      $scope.$apply(function() {
+        $scope.isSyncing = false;
+      })
+    });
   };
 
   $scope.getSettings = function(group) {
@@ -229,7 +339,7 @@ angular.module('starter.controllers', [])
   */
   $scope.onSelectSetting = function() {
     $state.selectedSetting = this.setting;
-
+    BackgroundGeolocation.playSound('BUTTON_CLICK');
     switch (this.setting.inputType) {
       case 'select':
       case 'text':
@@ -242,6 +352,7 @@ angular.module('starter.controllers', [])
   * Select setting-value
   */
   $scope.onSelectValue = function() {
+    BackgroundGeolocation.playSound('BUTTON_CLICK');
     BackgroundGeolocation.set($state.selectedSetting.name, this.value);
     $state.autoSyncDisabled = !BackgroundGeolocation.getConfig().autoSync;
     $state.go('settings');
