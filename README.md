@@ -8,16 +8,19 @@ Fully-featured, [Ionic](http://ionicframework.com/)-based sample-application for
 ## Installation
 
 (1) Start by cloning this repo
+
 ```
 $ git clone https://github.com/christocracy/cordova-background-geolocation-SampleApp.git
 ```
 
 (2) Now we must install the application's required plugins.  Copy/paste the following one-liner into your console to install all the required plugins.
+
 ```
 $ cordova plugin add cordova-plugin-device cordova-plugin-console cordova-plugin-whitelist cordova-plugin-splashscreen com.ionic.keyboard https://github.com/christocracy/cordova-background-geolocation.git#edge
 ```
 
 (3)  Add your desired platform(s) and build.  That's it.
+
 ```
 $ cordova platform add ios
 $ cordova build ios
@@ -26,3 +29,14 @@ $ cordova platform add android
 $ cordova build android
 $ cordova run android
 ```
+
+## Adding Geofences
+
+The app implements a **longtap** event on the map.  Simply **tap & hold** the map to initiate adding a geofence.
+
+![Tap-hold to add geofence](/resources/tap-hold-add-geofence.jpg "Tap-hold to add geofence")
+
+Enter an `identifier`, `radius`, `notifyOnExit`, `notifyOnEntry`.
+
+![Add geofence](/resources/add-geofence.jpg "Add geofence")
+
