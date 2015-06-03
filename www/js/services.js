@@ -15,7 +15,7 @@ var BackgroundGeolocation = (function() {
 		"ADD_GEOFENCE_IOS": 1114,
 		"ADD_GEOFENCE_ANDROID": 28,
 		"BUTTON_CLICK_IOS": 1104,
-		"BUTTON_CLICK_ANDROID": 19,
+		"BUTTON_CLICK_ANDROID": 89,
 		"MESSAGE_SENT_IOS": 1303,
 		"MESSAGE_SENT_ANDROID": 90
 	};
@@ -182,6 +182,16 @@ var BackgroundGeolocation = (function() {
 				});
 			}
 		},
+		onGeofence: function(callback, scope) {
+			var me = this;
+			if ($plugin) {
+				$plugin.onGeofence(function(params, taskId) {
+					callback.call(scope||me, params);
+					$plugin.finish(taskId);
+				});
+			}
+		},
+
 		/**
 		* Return the current BackgroundGeolocation config-state as stored in localStorage
 		* @return {Object}
@@ -240,8 +250,6 @@ var BackgroundGeolocation = (function() {
 			var me = this;
 			$plugin = bgGeoPlugin;
 
-			console.log('- BackgroundGeolocation setPlugin: ', bgGeoPlugin);
-
 			// Configure BackgroundGeolocation Plugin
 			$plugin.configure(fireLocationListeners, function(error) { 
 				console.warn('BackgroundGeolocation Error: ' + error);
@@ -258,12 +266,15 @@ var BackgroundGeolocation = (function() {
 		getPlugin: function() {
 			return $plugin;
 		},
-		addGeofence: function(data) {
+		addGeofence: function(data, callback) {
 			if ($plugin) {
 				var me = this;
 				$plugin.addGeofence(data, function(res) {
 					me.playSound('ADD_GEOFENCE');
+					callback.call(me, res);
 				});
+			} else {
+				callback.call(me);
 			}
 		},
 		removeGeofence: function(identifier) {
@@ -277,7 +288,6 @@ var BackgroundGeolocation = (function() {
 			}
 		},
 		playSound: function(action) {
-			console.log("- playSound", action);
 			if ($plugin) {
 				var soundId = $SOUNDS[action + '_' + $platform.toUpperCase()];
 				if (soundId) {

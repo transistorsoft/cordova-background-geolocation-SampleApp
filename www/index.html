@@ -140,61 +140,78 @@
       </ion-view>
     </script>
 
-    <script id="my-modal.html" type="text/ng-template">
+    <script id="templates/geofences/add.html" type="text/ng-template">
       <ion-modal-view>
         <ion-header-bar>
-          <button class="button button-positive button-clear" ng-click="onCancelGeofence()">Cancel</button>
-          <h1 class="title">{{ newGeofence.action == 'new' ? "Add Geofence" : "Edit Geofence" }}</h1>
-          <button class="button button-positive button-clear" ng-click="onEditGeofence()">{{newGeofence.action == 'new' ? 'Done' : 'Delete'}}</button>
+          <button class="button button-positive button-clear" ng-click="addGeofenceModal.hide()">Cancel</button>
+          <h1 class="title">Add Geofence</h1>
+          <button class="button button-positive button-clear" ng-click="onCreateGeofence()">Done</button>
         </ion-header-bar>
-        <ion-content>
+        <ion-content >
           <ul class="list">
             <li>
               <label class="item item-input">
                 <div class="input-label">Identifier</div>
-                <input type="text" ng-model="newGeofence.identifier" placeholder="(eg: Home, Office)" ng-required="true">
+                <input type="text" ng-model="geofenceRecord.identifier" placeholder="(eg: Home, Office)" ng-required="true">
               </label>
             </li>
             <li>
               <label class="item item-input item-select">
                 <div class="input-label">Radius</div>
-                <select ng-model="newGeofence.radius" placeholder="foo">
+                <select ng-model="geofenceRecord.radius" placeholder="foo">
                   <option value="100">100</option>
-                  <option value="150" selected>150</option>
+                  <option value="150">150</option>
                   <option value="200">200</option>
                   <option value="250">250</option>
                   <option value="300">300</option>
                   <option value="400">400</option>
                   <option value="500">500</option>
+                  <option value="1000">1000</option>
                 </select>
               </label>
             </li>
 
             <li class="item item-checkbox">
               <label class="checkbox">
-                <input type="checkbox" ng-model="newGeofence.notifyOnEntry">
+                <input type="checkbox" ng-model="geofenceRecord.notifyOnEntry">
               </label>
               Notify on ENTRY
             </li>
 
             <li class="item item-checkbox">
               <label class="checkbox">
-                <input type="checkbox" ng-model="newGeofence.notifyOnExit">
+                <input type="checkbox" ng-model="geofenceRecord.notifyOnExit">
               </label>
               Notify on EXIT
-            </li>
-
-            <li class="item item-checkbox">
-              <label class="checkbox">
-                <input type="checkbox" ng-model="newGeofence.single">
-              </label>
-              Single (remove geofence after first crossing)
             </li>
           </ul>
 
         </ion-content>
       </ion-modal-view>
     </script>
+
+    <script id="templates/geofences/show.html" type="text/ng-template">
+      <ion-modal-view>
+        <ion-header-bar>
+          <button class="button button-positive button-clear" ng-click="showGeofenceModal.hide()">Cancel</button>
+          <h1 class="title">Show Geofence</h1>
+        </ion-header-bar>
+        <ion-content >
+          <ion-list>
+            <ion-item class="item-icon-right">
+              Identifier
+              <i class="icon icon-accessory" style="padding-right: 1em">{{geofenceRecord.identifier}}</i>
+            </ion-item> 
+            <ion-item class="item-icon-right">
+              Radius
+              <i class="icon icon-accessory" style="padding-right: 1em">{{geofenceRecord.radius}}</i>
+            </ion-item>
+          </ion-list>
+          <button class="button button-assertive button-full" ng-click="onRemoveGeofence()">Delete</button>
+        </ion-content>
+      </ion-modal-view>
+    </script>
+
 
   </body>
 </html>
