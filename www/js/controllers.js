@@ -218,8 +218,10 @@ angular.module('starter.controllers', [])
     var center = new google.maps.LatLng(coords.latitude, coords.longitude);
     $scope.stationaryRadiusMarker.setRadius(radius);
     $scope.stationaryRadiusMarker.setCenter(center);
-
     $scope.map.setCenter(center);
+
+    // Never forget to kill your task, iOS will crash your app.
+    BackgroundGeolocation.finish(taskId);
   };
 
   /**
