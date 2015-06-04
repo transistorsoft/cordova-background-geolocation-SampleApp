@@ -160,7 +160,7 @@ angular.module('starter.controllers', [])
         map: $scope.map,
         geodesic: true,
         strokeColor: '#2677FF',
-        strokeOpacity: 0.8,
+        strokeOpacity: 0.7,
         strokeWeight: 5
       });
     }
@@ -173,7 +173,7 @@ angular.module('starter.controllers', [])
         zIndex: 1,
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
-          scale: 5,
+          scale: 6,
           fillColor: '#11b700',//'26cc77',
           fillOpacity: 0.8,
           strokeColor: '#0d6104',
@@ -295,9 +295,10 @@ angular.module('starter.controllers', [])
     });
 
     navigator.geolocation.getCurrentPosition(function (pos) {
-      console.log('Got pos', pos);
-      $scope.setCurrentLocationMarker(pos);
-      $scope.map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
+      var now = new Date(pos.timestamp);
+      if (!$scope.currentLocation || (now > $scope.currentLocation.timestamp)) {
+        $scope.map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
+      }
       $ionicLoading.hide();
     }, function (error) {
       alert('Unable to get location: ' + error.message);
@@ -330,9 +331,9 @@ angular.module('starter.controllers', [])
         marker.removed = true;
         marker.setOptions({
           fillColor: '#000000',
-          fillOpacity: 0.4,
+          fillOpacity: 0.3,
           strokeColor: '#000000',
-          strokeOpacity: 0.6
+          strokeOpacity: 0.5
         });
       }
     }, function(error) {
