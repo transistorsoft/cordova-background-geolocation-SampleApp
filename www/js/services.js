@@ -162,6 +162,11 @@ var BackgroundGeolocation = (function() {
 				}, 1000);
 			}
 		},
+		finish: function(taskId) {
+			if ($plugin) {
+				$plugin.finish(taskId);
+			}
+		},
 		/**
 		* Add an event-listener for location-received from $plugin
 		* @param {Function} callback
