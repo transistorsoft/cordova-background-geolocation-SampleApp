@@ -59,14 +59,6 @@ angular.module('starter.controllers', [])
     $scope.showGeofenceModal = modal;
   });
 
-  // Listen to geofence events.  Remove geofence after a crossing-event occurs.
-  ionic.Platform.ready(function() {
-    var bgGeo = BackgroundGeolocation.getPlugin();
-    if (bgGeo) {
-      
-    }
-  });
-
   /**
   * Show an alert
   * @param {String} title
@@ -384,6 +376,7 @@ angular.module('starter.controllers', [])
   * @param {Google.maps.Circle} circle
   */
   $scope.onShowGeofence = function(params) {
+    BackgroundGeolocation.playSound("LONG_PRESS_ACTIVATE");
     $scope.geofenceRecord = params;
     $scope.showGeofenceModal.show();
   };
@@ -391,7 +384,6 @@ angular.module('starter.controllers', [])
   * Remove geofence click-handler
   */
   $scope.onRemoveGeofence = function() {
-    BackgroundGeolocation.playSound('LONG_PRESS_ACTIVATE');
     var identifier = $scope.geofenceRecord.identifier;
     removeGeofence(identifier);
     $scope.showGeofenceModal.hide();
