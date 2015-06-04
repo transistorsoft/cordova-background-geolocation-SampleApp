@@ -8,46 +8,38 @@ angular.module('starter.controllers', [])
   var PLAY_BUTTON_CLASS = "ion-play button-balanced",
       PAUSE_BUTTON_CLASS = "ion-pause button-assertive";
 
+  // Add BackgroundGeolocation event-listeners when Platform is ready.
   ionic.Platform.ready(function() {
     var bgGeo = BackgroundGeolocation.getPlugin();
     if (bgGeo) {
       bgGeo.getGeofences(function(rs) {
         for (var n=0,len=rs.length;n<len;n++) {
-          createGeofence(rs[n]);
+          createGeofenceMarker(rs[n]);
         }
       });
     }
-
     BackgroundGeolocation.onLocation($scope.setCurrentLocationMarker);
     BackgroundGeolocation.onStationary($scope.setStationaryMarker);
-    BackgroundGeolocation.onGeofence(function(params) {
-      $scope.showAlert('Geofence ' + params.action, "Identifier: " + params.identifier);
-      if (bgGeo) {
-        bgGeo.removeGeofence(identifier, function() {
-          var marker = getGeofenceMarker(identifier);
-          if (marker) {
-            marker.removed = true;
-            marker.setOptions({
-              fillColor: '#000000',
-              fillOpacity: 0.4,
-              strokeColor: '#000000',
-              strokeOpacity: 0.6
-            });
-          }
-        });
-      }
-    });
+    BackgroundGeolocation.onGeofence($scope.onGeofence);
   });
 
+  /**
+  * BackgroundGelocation plugin state
+  */
+  $scope.bgGeo = {
+    enabled: window.localStorage.getItem('bgGeo:enabled') == 'true',
+    started: window.localStorage.getItem('bgGeo:started') == 'true'
+  };
+  $scope.startButtonIcon = ($scope.bgGeo.started) ? PAUSE_BUTTON_CLASS : PLAY_BUTTON_CLASS;
   $scope.map                    = undefined;
-  $scope.currentLocation        = undefined;
+  $scope.currentLocationMarker  = undefined;
   $scope.previousLocation       = undefined;
-  $scope.markers                = [];
-  $scope.geofences              = [];
+  $scope.locationMarkers        = [];
+  $scope.geofenceMarkers        = [];
   $scope.path                   = undefined;
   $scope.currentLocationMarker  = undefined;
   $scope.locationAccuracyMarker = undefined;
-  $scope.stationaryRadius       = undefined;
+  $scope.stationaryRadiusMarker = undefined;
 
   $scope.odometer = 0;
 
@@ -95,7 +87,6 @@ angular.module('starter.controllers', [])
     // Draw a red circle around the Marker we wish to move.
     geofenceCursor = new google.maps.Marker({
         map: map,
-        zIndex: 0,
         clickable: false,
         icon: {
             path: google.maps.SymbolPath.CIRCLE,
@@ -131,12 +122,12 @@ angular.module('starter.controllers', [])
   $scope.setCurrentLocationMarker = function(location) {
     var plugin = BackgroundGeolocation.getPlugin();
     if (plugin) {
+      // Update odometer
       plugin.getOdometer(function(value) {
         $scope.$apply(function() {
           $scope.odometer = (value/1000).toFixed(1);
         });
       });
-      
     }
     // Set currentLocation @property
     $scope.currentLocation = location;
@@ -146,11 +137,13 @@ angular.module('starter.controllers', [])
     if (!$scope.currentLocationMarker) {
       $scope.currentLocationMarker = new google.maps.Marker({
         map: $scope.map,
+        zIndex: 10,
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
-          scale: 3,
-          fillColor: 'blue',
-          strokeColor: 'blue',
+          scale: 12,
+          fillColor: '#2677FF',
+          fillOpacity: 1,
+          strokeColor: '#ffffff',
           strokeWeight: 5
         }
       });
@@ -161,26 +154,33 @@ angular.module('starter.controllers', [])
         map: $scope.map
       });
     }
+    if (!$scope.bgGeo.enabled) {
+      return;
+    }
     if (!$scope.path) {
       $scope.path = new google.maps.Polyline({
         map: $scope.map,
-        strokeColor: '#3366cc',
-        fillOpacity: 0.4
+        geodesic: true,
+        strokeColor: '#2677FF',
+        strokeOpacity: 0.8,
+        strokeWeight: 5
       });
     }
     var latlng = new google.maps.LatLng(coords.latitude, coords.longitude);
     
-    
     if ($scope.previousLocation) {
       var prevLocation = $scope.previousLocation;
       // Drop a breadcrumb of where we've been.
-      $scope.markers.push(new google.maps.Marker({
+      $scope.locationMarkers.push(new google.maps.Marker({
+        zIndex: 1,
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
-          scale: 3,
-          fillColor: 'green',
+          scale: 10,
+          fillColor: '26cc77',
+          fillOpacity: 1,
           strokeColor: 'green',
-          strokeWeight: 5
+          strokeWeight: 1,
+          strokeOpacity: 0.7
         },
         map: $scope.map,
         position: new google.maps.LatLng(prevLocation.coords.latitude, prevLocation.coords.longitude)
@@ -206,8 +206,8 @@ angular.module('starter.controllers', [])
 
     var coords = location.coords;
     
-    if (!$scope.stationaryRadius) {
-      $scope.stationaryRadius = new google.maps.Circle({
+    if (!$scope.stationaryRadiusMarker) {
+      $scope.stationaryRadiusMarker = new google.maps.Circle({
         fillColor: '#cc0000',
         fillOpacity: 0.4,
         strokeOpacity: 0,
@@ -216,37 +216,49 @@ angular.module('starter.controllers', [])
     }
     var radius = 50;
     var center = new google.maps.LatLng(coords.latitude, coords.longitude);
-    $scope.stationaryRadius.setRadius(radius);
-    $scope.stationaryRadius.setCenter(center);
+    $scope.stationaryRadiusMarker.setRadius(radius);
+    $scope.stationaryRadiusMarker.setCenter(center);
 
     $scope.map.setCenter(center);
   };
 
   /**
-  * BackgroundGelocation plugin state
-  */
-  $scope.bgGeo = {
-    enabled: window.localStorage.getItem('bgGeo:enabled') == 'true',
-    started: window.localStorage.getItem('bgGeo:started') == 'true'
-  };
-
-  $scope.startButtonIcon = ($scope.bgGeo.started) ? PAUSE_BUTTON_CLASS : PLAY_BUTTON_CLASS;
-
-  /**
   * Enable BackgroundGeolocation
   */
-  $scope.onClickEnable = function() {
-    var willEnable = $scope.bgGeo.enabled;
-    console.log('onClickEnable: ', willEnable);
-    BackgroundGeolocation.setEnabled(willEnable);
-    if (willEnable) {
+  $scope.onToggleEnabled = function() {
+    var isEnabled = $scope.bgGeo.enabled;
+    console.log('onToggleEnabled: ', isEnabled);
+    BackgroundGeolocation.setEnabled(isEnabled);
 
-    } else {
+    if (!isEnabled) {
       BackgroundGeolocation.playSound('BUTTON_CLICK');
       $scope.bgGeo.started = false;
       $scope.startButtonIcon = PLAY_BUTTON_CLASS;
+
+      // Clear location-markers.
+      var marker;
+      for (var n=0,len=$scope.locationMarkers.length;n<len;n++) {
+        marker = $scope.locationMarkers[n];
+        marker.setMap(null);
+      }
+      $scope.locationMarkers = [];
+
+      // Clear geofence markers.
+      for (var n=0,len=$scope.geofenceMarkers.length;n<len;n++) {
+        marker = $scope.geofenceMarkers[n];
+        marker.setMap(null);
+      }
+      $scope.geofenceMarkers = [];
+
+      // Clear red stationaryRadius marker
+      $scope.stationaryRadiusMarker.setMap(null);
+      $scope.stationaryRadiusMarker = undefined;
+
+      // Clear blue route PolyLine
+      $scope.path.setMap(null);
+      $scope.path = undefined;
     }
-  }
+  };
   /**
   * Start/stop aggressive monitoring / stationary mode
   */
@@ -283,7 +295,7 @@ angular.module('starter.controllers', [])
       console.log('Got pos', pos);
       $scope.setCurrentLocationMarker(pos);
       $scope.map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
-      $scope.loading.hide();
+      $ionicLoading.hide();
     }, function (error) {
       alert('Unable to get location: ' + error.message);
     });
@@ -294,6 +306,37 @@ angular.module('starter.controllers', [])
   */
   $scope.geofenceRecord = {};
 
+  /**
+  * Geofence event-handler from plugin
+  */
+  $scope.onGeofence = function(params, taskId) {
+    $scope.showAlert('Geofence ' + params.action, "Identifier: " + params.identifier);
+    
+    var bgGeo = BackgroundGeolocation.getPlugin();
+    // Remove geofence after it triggers.
+    bgGeo.removeGeofence(params.identifier, function() {
+      // We're inside a nested async callback here, which has now completed.  #finish the outer #onGeofence taskId now.
+      bgGeo.finish(taskId);
+      var marker = getGeofenceMarker(params.identifier);
+      // Grey-out the google.maps.Circle to show it's been triggered.
+      if (marker) {
+        marker.removed = true;
+        marker.setOptions({
+          fillColor: '#000000',
+          fillOpacity: 0.4,
+          strokeColor: '#000000',
+          strokeOpacity: 0.6
+        });
+      }
+    }, function(error) {
+      console.log('Failed to remove geofence: ' + error);
+      // Finish outer #onGeofence taskId now.
+      bgGeo.finish(taskId);
+    });
+  };
+  /**
+  * Add geofence click-handler
+  */
   $scope.onAddGeofence = function(latLng) {
     $scope.geofenceRecord = {
       latitude: latLng.lat(),
@@ -305,13 +348,22 @@ angular.module('starter.controllers', [])
     };
     $scope.addGeofenceModal.show();
   };
+  /**
+  * Create geofence click-handler
+  */
   $scope.onCreateGeofence = function() {
     $scope.addGeofenceModal.hide();
     BackgroundGeolocation.addGeofence($scope.geofenceRecord, function() {
-      createGeofence($scope.geofenceRecord);
+      createGeofenceMarker($scope.geofenceRecord);
     });
   };
-
+  /**
+  * Cancel geofence modal
+  */
+  $scope.onCancelGeofence = function() {
+    BackgroundGeolocation.playSound('LONG_PRESS_ACTIVATE');
+    $scope.modal.hide();
+  };
   /**
   * show geofence modal
   * @param {Google.maps.Circle} circle
@@ -320,14 +372,20 @@ angular.module('starter.controllers', [])
     $scope.geofenceRecord = params;
     $scope.showGeofenceModal.show();
   };
-
-  $scope.onRemoveGeofence = function() {    
+  /**
+  * Remove geofence click-handler
+  */
+  $scope.onRemoveGeofence = function() {
+    BackgroundGeolocation.playSound('LONG_PRESS_ACTIVATE');
     var identifier = $scope.geofenceRecord.identifier;
     removeGeofence(identifier);
     $scope.showGeofenceModal.hide();
   };
-
-  var createGeofence = function(params) {
+  /**
+  * Create google.maps.Circle geofence marker.
+  * @param {Object}
+  */
+  var createGeofenceMarker = function(params) {
     // Add longpress event for adding GeoFence of hard-coded radius 200m.
     var geofence = new google.maps.Circle({
       fillColor: '#33cc66',
@@ -342,21 +400,27 @@ angular.module('starter.controllers', [])
     google.maps.event.addListener(geofence, 'click', function() {
       $scope.onShowGeofence(this.params);
     });
-    $scope.geofences.push(geofence);
+    $scope.geofenceMarkers.push(geofence);
     return geofence;
   };
+  /**
+  * Fetch a google.maps.Circle marker
+  */
   var getGeofenceMarker = function(identifier) {
-    var index = $scope.geofences.map(function(geofence) { return geofence.params.identifier; }).indexOf(identifier);
+    var index = $scope.geofenceMarkers.map(function(geofence) { return geofence.params.identifier; }).indexOf(identifier);
     if (index >= 0) {
-      return $scope.geofences[index];
+      return $scope.geofenceMarkers[index];
     }
     return -1;
-  }
+  };
+  /**
+  * Remove a geofence
+  */
   var removeGeofence = function(identifier) {
     var marker = getGeofenceMarker(identifier);
     if (marker) {
-      var index = $scope.geofences.indexOf(marker);
-      $scope.geofences.splice(index, 1);
+      var index = $scope.geofenceMarkers.indexOf(marker);
+      $scope.geofenceMarkers.splice(index, 1);
       marker.setMap(null);
       if (marker.removed) {
         return;
@@ -364,16 +428,12 @@ angular.module('starter.controllers', [])
     }
     BackgroundGeolocation.removeGeofence(identifier);
   };
-
-  $scope.onCancelGeofence = function() {
-    $scope.modal.hide();
-  };
 })
 
 /**
 * Settings Controller
 */
-.controller('Settings', function($scope, $ionicLoading, $state) {
+.controller('Settings', function($scope, $state) {
   $scope.syncButtonIcon = 'ion-load-c icon-animated';
 
   $scope.selectedValue = '';

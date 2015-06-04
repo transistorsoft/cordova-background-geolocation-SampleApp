@@ -98,10 +98,15 @@ var BackgroundGeolocation = (function() {
 	*/
 	var fireLocationListeners = function(location, taskId) {
 		console.log('[js] BackgroundGeolocation location received: ' + JSON.stringify(location));
-		var listener;
+		var me = this;
+		var callback;
 		for (var n=0,len=$locationListeners.length;n<len;n++) {
-			listener = $locationListeners[n];
-			listener.fn.call(listener.scope, location);
+			callback = $locationListeners[n];
+			try {
+				callback.call(me, location);
+			} catch (e) {
+				console.log('error: ' + e.message);
+			}
 		}
 		$plugin.finish(taskId);
 	};
@@ -160,33 +165,38 @@ var BackgroundGeolocation = (function() {
 		/**
 		* Add an event-listener for location-received from $plugin
 		* @param {Function} callback
-		* @param {Object} [scope]
 		*/
-		onLocation: function(callback, scope) {
-			$locationListeners.push({
-				fn: callback,
-				scope: scope || this
-			});
+		onLocation: function(callback) {
+			$locationListeners.push(callback);
 		},
 		/**
 		* Add a stationary-listener
 		* @param {Function} stationary event-listener
-		* @param {Object} [scope]
 		*/
-		onStationary: function(callback, scope) {
+		onStationary: function(callback) {
 			var me = this;
 			if ($plugin) {
 				$plugin.onStationary(function(location, taskId) {
-					callback.call(scope||me, location);
-					$plugin.finish(taskId);
+					try {
+						callback.call(me, location, taskId);
+					} catch(e) {
+						$plugin.finish(taskId);
+						console.log('error: ' + e.message, e);
+					}
 				});
 			}
 		},
-		onGeofence: function(callback, scope) {
+		onGeofence: function(callback) {
 			var me = this;
 			if ($plugin) {
 				$plugin.onGeofence(function(params, taskId) {
-					callback.call(scope||me, params);
+					console.log('- onGeofence:' + JSON.stringify(params));
+					console.log('  taskId: ' + taskId);
+					try {
+						callback.call(me, params, taskId);
+					} catch (e) {
+						console.log('error: ' + e.message, e);	
+					}
 					$plugin.finish(taskId);
 				});
 			}

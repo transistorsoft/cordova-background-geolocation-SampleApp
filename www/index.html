@@ -34,7 +34,6 @@
     <ion-nav-bar class="bar-light">
         <ion-nav-back-button class="button-clear button-positive icon ion-chevron-left">Back</ion-nav-back-button>
     </ion-nav-bar>
-
     <ion-nav-view></ion-nav-view>
 
     <!-- Map screen -->
@@ -47,7 +46,7 @@
         
         <ion-nav-buttons side="right"> 
           <label class="toggle toggle-balanced">
-             <input type="checkbox" ng-click="onClickEnable()" ng-model="bgGeo.enabled">
+             <input type="checkbox" ng-click="onToggleEnabled()" ng-model="bgGeo.enabled">
              <div class="track">
                <div class="handle"></div>
              </div>
