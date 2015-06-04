@@ -91,8 +91,11 @@ angular.module('starter.controllers', [])
         icon: {
             path: google.maps.SymbolPath.CIRCLE,
             scale: 100,
-            strokeColor: 'green',
-            strokeWeight: 2
+            fillColor: '#2f71ff',
+            fillOpacity: 0.1,
+            strokeColor: '#2f71ff',
+            strokeWeight: 2,
+            strokeOpacity: 1
         }
     });
 
@@ -144,10 +147,12 @@ angular.module('starter.controllers', [])
           fillColor: '#2677FF',
           fillOpacity: 1,
           strokeColor: '#ffffff',
-          strokeWeight: 5
+          strokeOpacity: 1,
+          strokeWeight: 6
         }
       });
       $scope.locationAccuracyMarker = new google.maps.Circle({
+        zIndex: 9,
         fillColor: '#3366cc',
         fillOpacity: 0.4,
         strokeOpacity: 0,
@@ -159,6 +164,7 @@ angular.module('starter.controllers', [])
     }
     if (!$scope.path) {
       $scope.path = new google.maps.Polyline({
+        zIndex: 1,
         map: $scope.map,
         geodesic: true,
         strokeColor: '#2677FF',
@@ -175,10 +181,10 @@ angular.module('starter.controllers', [])
         zIndex: 1,
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
-          scale: 10,
-          fillColor: '26cc77',
-          fillOpacity: 1,
-          strokeColor: 'green',
+          scale: 5,
+          fillColor: '#11b700',//'26cc77',
+          fillOpacity: 0.8,
+          strokeColor: '#0d6104',
           strokeWeight: 1,
           strokeOpacity: 0.7
         },
@@ -208,9 +214,12 @@ angular.module('starter.controllers', [])
     
     if (!$scope.stationaryRadiusMarker) {
       $scope.stationaryRadiusMarker = new google.maps.Circle({
-        fillColor: '#cc0000',
-        fillOpacity: 0.4,
-        strokeOpacity: 0,
+        zIndex: 0,
+        fillColor: '#ff0000',
+        strokeColor: '#aa0000',
+        strokeWeight: 2,
+        fillOpacity: 0.5,
+        strokeOpacity: 0.5,
         map: $scope.map
       });
     }
@@ -300,6 +309,10 @@ angular.module('starter.controllers', [])
       $ionicLoading.hide();
     }, function (error) {
       alert('Unable to get location: ' + error.message);
+    }, {
+      maximumAge: 0, 
+      timeout: 5000, 
+      enableHighAccuracy: true
     });
   };
 
@@ -390,9 +403,11 @@ angular.module('starter.controllers', [])
   var createGeofenceMarker = function(params) {
     // Add longpress event for adding GeoFence of hard-coded radius 200m.
     var geofence = new google.maps.Circle({
-      fillColor: '#33cc66',
-      fillOpacity: 0.4,
-      strokeColor: '#33cc66',
+      fillColor: '#2f71ff',
+      fillOpacity: 0.3,
+      strokeColor: '#2f71ff',
+      strokeWeight: 2,
+      strokeOpacity: 0.9,
       params: params,
       radius: parseInt(params.radius, 10),
       center: new google.maps.LatLng(params.latitude, params.longitude),
