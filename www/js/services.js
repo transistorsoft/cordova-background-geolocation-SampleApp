@@ -17,7 +17,8 @@ var BackgroundGeolocation = (function() {
 		"BUTTON_CLICK_IOS": 1104,
 		"BUTTON_CLICK_ANDROID": 89,
 		"MESSAGE_SENT_IOS": 1303,
-		"MESSAGE_SENT_ANDROID": 90
+		"MESSAGE_SENT_ANDROID": 90,
+		"ERROR_IOS": 1006
 	};
 	
 	/**
@@ -157,12 +158,12 @@ var BackgroundGeolocation = (function() {
 			if ($plugin) {
 				$plugin.sync(success, failure);
 			} else {
-				setTimeout(function() {
-					success.call(this);
-				}, 1000);
+				// Fake it for browser testing.
+				setTimeout(success, 1000);
 			}
 		},
 		finish: function(taskId) {
+			console.log('- BackgroundGeolocationService#finish, taskId: ', taskId);
 			if ($plugin) {
 				$plugin.finish(taskId);
 			}
@@ -178,17 +179,10 @@ var BackgroundGeolocation = (function() {
 		* Add a stationary-listener
 		* @param {Function} stationary event-listener
 		*/
-		onStationary: function(callback) {
+		onStationary: function(callback, failure) {
 			var me = this;
 			if ($plugin) {
-				$plugin.onStationary(function(location, taskId) {
-					try {
-						callback.call(me, location, taskId);
-					} catch(e) {
-						$plugin.finish(taskId);
-						console.log('error: ' + e.message, e);
-					}
-				});
+				$plugin.onStationary(callback, failure);
 			}
 		},
 		onGeofence: function(callback) {

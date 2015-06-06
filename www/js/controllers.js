@@ -83,11 +83,11 @@ angular.module('starter.controllers', [])
         icon: {
             path: google.maps.SymbolPath.CIRCLE,
             scale: 100,
-            fillColor: '#2f71ff',
-            fillOpacity: 0.1,
-            strokeColor: '#2f71ff',
+            fillColor: '#11b700',   //'2f71ff',
+            fillOpacity: 0.2,
+            strokeColor: '#11b700', // 2f71ff
             strokeWeight: 2,
-            strokeOpacity: 1
+            strokeOpacity: 0.9
         }
     });
 
@@ -173,9 +173,9 @@ angular.module('starter.controllers', [])
         zIndex: 1,
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
-          scale: 6,
+          scale: 7,
           fillColor: '#11b700',//'26cc77',
-          fillOpacity: 0.8,
+          fillOpacity: 1,
           strokeColor: '#0d6104',
           strokeWeight: 1,
           strokeOpacity: 0.7
@@ -396,9 +396,10 @@ angular.module('starter.controllers', [])
   var createGeofenceMarker = function(params) {
     // Add longpress event for adding GeoFence of hard-coded radius 200m.
     var geofence = new google.maps.Circle({
-      fillColor: '#2f71ff',
-      fillOpacity: 0.3,
-      strokeColor: '#2f71ff',
+      zIndex: 100,
+      fillColor: '#11b700',
+      fillOpacity: 0.2,
+      strokeColor: '#11b700',
       strokeWeight: 2,
       strokeOpacity: 0.9,
       params: params,
@@ -457,11 +458,12 @@ angular.module('starter.controllers', [])
 
     BackgroundGeolocation.playSound('BUTTON_CLICK');
     $scope.isSyncing = true;
-    BackgroundGeolocation.sync(function(rs) {
+    BackgroundGeolocation.sync(function(rs, taskId) {
       BackgroundGeolocation.playSound('MESSAGE_SENT');
       $scope.$apply(function() {
         $scope.isSyncing = false;
       });
+      BackgroundGeolocation.finish(taskId);
     }, function(error) {
       console.warn('- sync error: ', error);
       $scope.$apply(function() {
