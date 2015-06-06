@@ -3,10 +3,11 @@
 Fully-featured, [Ionic](http://ionicframework.com/)-based sample-application for [Cordova Background Geolocation  (Premium Version)](http://christocracy.github.io/cordova-background-geolocation/)
 
 ## Home Screen
-![SampleApp home](https://www.dropbox.com/s/41gbtut47gk2exi/Screenshot%202015-06-06%2012.19.03.png?dl=1&width=300)
+![SampleApp home](![Geofence Features](https://www.dropbox.com/s/609iibr6ofzoq7p/Screenshot%202015-06-06%2017.05.33.png?dl=1)
+)
 
 ## Settings Screen
-![Android Battery Performance](https://www.dropbox.com/s/wnr67qg4n0py77z/Screenshot%202015-06-06%2012.24.23.png?dl=1)
+![Android Battery Performance](https://www.dropbox.com/s/9qif3rvznwkbphd/Screenshot%202015-06-06%2017.12.41.png?dl=1)
 
 ## Installation
 
