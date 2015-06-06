@@ -2,6 +2,8 @@
 
 Fully-featured, [Ionic](http://ionicframework.com/)-based sample-application for [Cordova Background Geolocation  (Premium Version)](http://christocracy.github.io/cordova-background-geolocation/)
 ![SampleApp home](https://www.dropbox.com/s/609iibr6ofzoq7p/Screenshot%202015-06-06%2017.05.33.png?dl=1)
+
+Edit settings and observe the behavour of **Background Geolocation** changing in **real time**.
 ![Settings Screen](https://www.dropbox.com/s/v6xwp6leuc5ysv9/Screenshot%202015-06-06%2019.08.58.png?dl=1)
 
 ## Installation
