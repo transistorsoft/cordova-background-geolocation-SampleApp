@@ -39,5 +39,4 @@ The app implements a **longtap** event on the map.  Simply **tap & hold** the ma
 
 Enter an `identifier`, `radius`, `notifyOnExit`, `notifyOnEntry`.
 
-![Add geofence](https://www.dropbox.com/s/e5wwhvzzugzv068/Screenshot%202015-06-06%2012.27.36.png?dl=1)
 
