@@ -2,7 +2,7 @@
 
 Fully-featured, [Ionic](http://ionicframework.com/)-based sample-application for [Cordova Background Geolocation  (Premium Version)](http://christocracy.github.io/cordova-background-geolocation/)
 
-![Android Battery Performance](/resources/sampleapp-ionic-home.png "SampleApp Home")
+![SampleApp home](https://www.dropbox.com/s/41gbtut47gk2exi/Screenshot%202015-06-06%2012.19.03.png?dl=1)
 ![Android Battery Performance](/resources/sampleapp-ionic-settings.png "SampleApp Settings")
 
 ## Installation
