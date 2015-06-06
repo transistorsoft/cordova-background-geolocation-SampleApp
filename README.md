@@ -6,9 +6,6 @@ Fully-featured, [Ionic](http://ionicframework.com/)-based sample-application for
 ##### Settings Screen
 ![Settings Screen](https://www.dropbox.com/s/v6xwp6leuc5ysv9/Screenshot%202015-06-06%2019.08.58.png?dl=1)
 
-##### Adding a Geofence
-![Android Battery Performance](https://www.dropbox.com/s/9qif3rvznwkbphd/Screenshot%202015-06-06%2017.12.41.png?dl=1)
-
 ## Installation
 
 (1) Start by cloning this repo
@@ -38,7 +35,7 @@ $ cordova run android
 
 The app implements a **longtap** event on the map.  Simply **tap & hold** the map to initiate adding a geofence.
 
-![Tap-hold to add geofence](https://www.dropbox.com/s/nnmnjdnafdqm0h7/Screenshot%202015-06-06%2012.29.18.png?dl=1)
+![Tap-hold to add geofence](https://www.dropbox.com/s/9qif3rvznwkbphd/Screenshot%202015-06-06%2017.12.41.png?dl=1)
 
 Enter an `identifier`, `radius`, `notifyOnExit`, `notifyOnEntry`.
 
