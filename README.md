@@ -2,7 +2,7 @@
 
 <a href="market://details?id=com.transistorsoft.background_geolocation.ionic">
 
-![Google Play](http://christocracy.github.io/cordova-background-geolocation/assets/images/google-play-icon.png)
+[![Google Play](http://christocracy.github.io/cordova-background-geolocation/assets/images/google-play-icon.png)](http://google.com)
 
 
 Fully-featured, [Ionic](http://ionicframework.com/)-based sample-application for [Cordova Background Geolocation  (Premium Version)](http://christocracy.github.io/cordova-background-geolocation/)
