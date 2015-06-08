@@ -1,6 +1,6 @@
 # Cordova Background Geolocation &mdash; Sample Application
 
-![Google Play](http://christocracy.github.io/cordova-background-geolocation/assets/images/google-play-icon.png)
+<img src="http://christocracy.github.io/cordova-background-geolocation/assets/images/google-play-icon.png" />
 
 
 Fully-featured, [Ionic](http://ionicframework.com/)-based sample-application for [Cordova Background Geolocation  (Premium Version)](http://christocracy.github.io/cordova-background-geolocation/)
