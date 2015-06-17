@@ -10,16 +10,8 @@ angular.module('starter.controllers', [])
 
   // Add BackgroundGeolocation event-listeners when Platform is ready.
   ionic.Platform.ready(function() {
-    var bgGeo = BackgroundGeolocation.getPlugin();
-    if (bgGeo) {
-      bgGeo.getGeofences(function(rs) {
-        for (var n=0,len=rs.length;n<len;n++) {
-          createGeofenceMarker(rs[n]);
-        }
-      });
-    }
     BackgroundGeolocation.onLocation($scope.setCurrentLocationMarker);
-    BackgroundGeolocation.onStationary($scope.setStationaryMarker);
+    BackgroundGeolocation.onMotionChange($scope.onMotionChange);
     BackgroundGeolocation.onGeofence($scope.onGeofence);
   });
 
@@ -73,6 +65,7 @@ angular.module('starter.controllers', [])
 
   $scope.mapCreated = function(map) {
     $scope.map = map;
+    
     // Add custom LongPress event to google map so we can add Geofences with longpress event!
     new LongPress(map, 500);
 
@@ -109,8 +102,36 @@ angular.module('starter.controllers', [])
       $scope.onAddGeofence(geofenceCursor.getPosition());
       geofenceCursor.setMap(null);
     });
+
+    // Add BackgroundGeolocation event-listeners when Platform is ready.
+    ionic.Platform.ready(function() {
+      var bgGeo = BackgroundGeolocation.getPlugin();
+      if (!bgGeo) { return; }
+      bgGeo.getGeofences(function(rs) {
+        for (var n=0,len=rs.length;n<len;n++) {
+          createGeofenceMarker(rs[n]);
+        }
+      });
+      $scope.centerOnMe();
+    });
   };
 
+  $scope.onMotionChange = function(isMoving, location, taskId) {
+    console.log('[js] onMotionChange: ', isMoving, JSON.stringify(location));
+    $scope.showAlert('onMotionChange', 'isMoving: ' + isMoving);
+
+    if ($scope.map) {
+      $scope.setCurrentLocationMarker(location);
+      $scope.map.setCenter(new google.maps.LatLng(location.coords.latitude, location.coords.longitude));
+      if (!isMoving) {
+        $scope.setStationaryMarker(location);
+      } else if ($scope.stationaryRadiusMarker) {
+        $scope.stationaryRadiusMarker.setMap(null);
+      }
+
+    }
+    BackgroundGeolocation.finish(taskId); 
+  }
   /**
   * Draw google map marker for current location
   */
@@ -198,7 +219,7 @@ angular.module('starter.controllers', [])
   /**
   * Draw red stationary-circle on google map
   */
-  $scope.setStationaryMarker = function(location, taskId) {
+  $scope.setStationaryMarker = function(location) {
     console.log('[js] BackgroundGeoLocation onStationary ' + JSON.stringify(location));
     $scope.setCurrentLocationMarker(location);
 
@@ -219,10 +240,9 @@ angular.module('starter.controllers', [])
     var center = new google.maps.LatLng(coords.latitude, coords.longitude);
     $scope.stationaryRadiusMarker.setRadius(radius);
     $scope.stationaryRadiusMarker.setCenter(center);
+    $scope.stationaryRadiusMarker.setMap($scope.map);
     $scope.map.setCenter(center);
 
-    // Never forget to kill your task, iOS will crash your app.
-    BackgroundGeolocation.finish(taskId);
   };
 
   /**
@@ -231,9 +251,22 @@ angular.module('starter.controllers', [])
   $scope.onToggleEnabled = function() {
     var isEnabled = $scope.bgGeo.enabled;
     console.log('onToggleEnabled: ', isEnabled);
-    BackgroundGeolocation.setEnabled(isEnabled);
+    BackgroundGeolocation.setEnabled(isEnabled, function() {
+      if (isEnabled) {
+        $scope.centerOnMe();
+      }
+    });
 
     if (!isEnabled) {
+      // Reset odometer to 0.
+      var plugin = BackgroundGeolocation.getPlugin();
+      if (plugin) {
+        plugin.resetOdometer(function() {
+          $scope.$apply(function() {
+            $scope.odometer = 0;
+          });
+        });
+      }
       BackgroundGeolocation.playSound('BUTTON_CLICK');
       $scope.bgGeo.started = false;
       $scope.startButtonIcon = PLAY_BUTTON_CLASS;
@@ -253,13 +286,18 @@ angular.module('starter.controllers', [])
       }
       $scope.geofenceMarkers = [];
 
+      
       // Clear red stationaryRadius marker
-      $scope.stationaryRadiusMarker.setMap(null);
-      $scope.stationaryRadiusMarker = undefined;
+      if ($scope.stationaryRadiusMarker) {
+        $scope.stationaryRadiusMarker.setMap(null);
+      }
+      //$scope.stationaryRadiusMarker = undefined;
 
       // Clear blue route PolyLine
-      $scope.path.setMap(null);
-      $scope.path = undefined;
+      if ($scope.path) {
+        $scope.path.setMap(null);
+      }
+      //$scope.path = undefined;
     }
   };
   /**
@@ -284,28 +322,16 @@ angular.module('starter.controllers', [])
   * Center map button
   */
   $scope.centerOnMe = function () {
-    BackgroundGeolocation.playSound('BUTTON_CLICK');
     if (!$scope.map) {
       return;
     }
 
-    $scope.loading = $ionicLoading.show({
-      content: 'Getting current location...',
-      showBackdrop: false
-    });
-
-    navigator.geolocation.getCurrentPosition(function (pos) {
-      var now = new Date(pos.timestamp);
-      if (!$scope.currentLocation || (now > $scope.currentLocation.timestamp)) {
-        $scope.map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
-      }
-      $ionicLoading.hide();
-    }, function (error) {
-      alert('Unable to get location: ' + error.message);
-    }, {
-      maximumAge: 0, 
-      timeout: 5000, 
-      enableHighAccuracy: true
+    BackgroundGeolocation.getCurrentPosition(function(location, taskId) {
+      $scope.map.setCenter(new google.maps.LatLng(location.coords.latitude, location.coords.longitude));
+      $scope.setCurrentLocationMarker(location);
+      BackgroundGeolocation.finish(taskId);
+    }, function(error) {
+      console.error("- getCurrentPostion failed: ", error);
     });
   };
 
@@ -477,7 +503,17 @@ angular.module('starter.controllers', [])
   };
 
   $scope.getValue = function(name) {
-    return BackgroundGeolocation.getConfig()[name];
+    if (name === 'triggerActivities') {
+      var value = BackgroundGeolocation.getConfig()[name];
+      var items = value.replace(/\s+/g, '').split(',');
+      if (items.length == 5) {
+        return 'ALL';
+      } else {
+        return value;
+      }
+    } else {
+      return BackgroundGeolocation.getConfig()[name];
+    }
   };
 
   $scope.getConfig = function() {
@@ -492,20 +528,40 @@ angular.module('starter.controllers', [])
     return $state.selectedSetting;
   };
 
+  $scope.getTriggerActivities = function() {
+    return $state.triggerActivities;
+  };
+
   /**
   * Row-click handler
   */
   $scope.onSelectSetting = function() {
     $state.selectedSetting = this.setting;
     BackgroundGeolocation.playSound('BUTTON_CLICK');
+
+    if (this.setting.name === 'triggerActivities') {
+    }
+    switch (this.setting.name) {
+      case 'triggerActivities':
+        $state.triggerActivities = {};
+        var activities = $scope.getConfig().triggerActivities.replace(/\s+/g, '').split(',');
+        var activity;
+        for (var n=0,len=activities.length;n<len;n++) {
+          activity = activities[n];
+          $state.triggerActivities[activity] = true;
+        }
+        break;
+    }
     switch (this.setting.inputType) {
       case 'select':
       case 'text':
         $state.go('settings/' + this.setting.name);
         break;
     }
+    
   };
 
+  
   /**
   * Select setting-value
   */
@@ -517,11 +573,21 @@ angular.module('starter.controllers', [])
   };
 
   $scope.onClickDone = function() {
+
     //BackgroundGeolocation.set($state.selectedSetting.name, this.value);
     var config  = this.getConfig();
     var name    = $state.selectedSetting.name;
     var value   = config[name];
 
+    switch (name) {
+      case 'triggerActivities':
+        var model = $state.triggerActivities;
+        value = Object.keys(model).filter(function(key) {
+          return (key.length > 0) && (model[key] === true);
+        });
+        value = value.length ? value.join(',') : '';
+        break;      
+    }
     BackgroundGeolocation.set(name, value);
     $state.go('settings');
   };

@@ -47,17 +47,17 @@ var BackgroundGeolocation = (function() {
   var $settings = {
     common: [
       {name: 'url', group: 'http', inputType: 'text', dataType: 'string', defaultValue: 'http://posttestserver.com/post.php?dir=ionic-cordova-background-geolocation'},
-      {name: 'autoSync', group: 'http', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: true},
-      {name: 'batchSync', group: 'http', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: false},
-      {name: 'stopOnTerminate', group: 'application', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: true},
-      {name: 'debug', group: 'application', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: true}
+      {name: 'autoSync', group: 'http', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'true'},
+      {name: 'batchSync', group: 'http', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'false'},
+      {name: 'stopOnTerminate', group: 'application', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'true'},
+      {name: 'debug', group: 'application', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'true'}
     ],
     iOS: [
       {name: 'desiredAccuracy', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [-1, 0, 10, 100, 1000], defaultValue: 0 },
       {name: 'distanceFilter', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 10, 20, 50, 100, 500], defaultValue: 20 },
       {name: 'stationaryRadius', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 20, 50, 100, 500], defaultValue: 20 },
       {name: 'activityType', group: 'geolocation', dataType: 'string', inputType: 'select', values: ['Other', 'AutomotiveNavigation', 'Fitness', 'OtherNavigation'], defaultValue: 'Other'},
-      {name: 'disableElasticity', group: 'geolocation', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: false}
+      {name: 'disableElasticity', group: 'geolocation', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'false'}
     ],
     Android: [
       {name: 'desiredAccuracy', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 10, 100, 1000], defaultValue: 0 },
@@ -65,9 +65,12 @@ var BackgroundGeolocation = (function() {
       {name: 'locationUpdateInterval', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 1000, 5000, 10000, 30000, 60000], defaultValue: 5000},
       {name: 'fastestLocationUpdateInterval', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 1000, 5000, 10000, 30000, 60000], defaultValue: 1000},
       {name: 'activityRecognitionInterval', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 1000, 10000, 30000, 60000], defaultValue: 10000},
+      {name: 'triggerActivities', group: 'geolocation', dataType: 'string', inputType: 'select', values: ['in_vehicle', 'on_bicycle', 'on_foot', 'running', 'walking'], defaultValue: 'in_vehicle, on_bicycle, running, walking, on_foot'},
       {name: 'stopTimeout', group: 'geolocation', dataType: 'integer', inputType: 'activity_recognition', inputType: 'select', values: [0, 1, 5, 10, 15], defaultValue: 0},
-      {name: 'forceReload', group: 'application', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: false},
-      {name: 'startOnBoot', group: 'application', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: false}
+      {name: 'forceReloadOnMotionChange', group: 'application', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'false'},
+      {name: 'forceReloadOnLocationChange', group: 'application', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'false'},
+      {name: 'forceReloadOnGeofence', group: 'application', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'false'},
+      {name: 'startOnBoot', group: 'application', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'false'}
     ]
   };
 
@@ -89,6 +92,9 @@ var BackgroundGeolocation = (function() {
   var getPlatformSettings = function() {
     if (platformSettings === undefined) {
       platformSettings = [].concat($settings[$platform||'iOS']).concat($settings.common);
+      if (!$platform) {
+        platformSettings = platformSettings.concat($settings['Android']);
+      }
     }
     return platformSettings;
   };
@@ -117,13 +123,13 @@ var BackgroundGeolocation = (function() {
     * Set the plugin state to track in background
     * @param {Boolean} willEnable
     */
-    setEnabled: function(willEnable) {
+    setEnabled: function(willEnable, callback) {
       window.localStorage.setItem('bgGeo:enabled', willEnable);
       if ($plugin) {
         if (willEnable) {
-          $plugin.start();
+          $plugin.start(callback);
         } else {
-          $plugin.stop();
+          $plugin.stop(callback);
         }
       }
     },
@@ -179,10 +185,10 @@ var BackgroundGeolocation = (function() {
     * Add a stationary-listener
     * @param {Function} stationary event-listener
     */
-    onStationary: function(callback, failure) {
+    onMotionChange: function(callback, failure) {
       var me = this;
       if ($plugin) {
-        $plugin.onStationary(callback, failure);
+        $plugin.onMotionChange(callback, failure);
       }
     },
     onGeofence: function(callback) {
@@ -294,6 +300,11 @@ var BackgroundGeolocation = (function() {
         }, function(error) {
           console.log('- FAILED to remove geofence');
         });
+      }
+    },
+    getCurrentPosition: function(callback, failure) {
+      if ($plugin) {
+        $plugin.getCurrentPosition(callback, failure);
       }
     },
     playSound: function(action) {

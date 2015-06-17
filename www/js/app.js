@@ -40,6 +40,11 @@ app.config(function($stateProvider, $urlRouterProvider) {
       templateUrl: 'templates/settings/radio-list.html',
       controller: 'Settings'
     })
+    .state('settings/triggerActivities', {
+      url: '/settings/triggerActivities',
+      templateUrl: 'templates/settings/trigger-activities.html',
+      controller: 'Settings'
+    })
     .state('settings/disableElasticity', {
       url: '/settings/disableElasticity',
       templateUrl: 'templates/settings/radio-list.html',
@@ -85,8 +90,18 @@ app.config(function($stateProvider, $urlRouterProvider) {
       templateUrl: 'templates/settings/radio-list.html',
       controller: 'Settings'
     })
-    .state('settings/forceReload', {
-      url: '/settings/forceReload',
+    .state('settings/forceReloadOnLocationChange', {
+      url: '/settings/forceReloadOnLocationChange',
+      templateUrl: 'templates/settings/radio-list.html',
+      controller: 'Settings'
+    })
+    .state('settings/forceReloadOnMotionChange', {
+      url: '/settings/forceReloadOnMotionChange',
+      templateUrl: 'templates/settings/radio-list.html',
+      controller: 'Settings'
+    })
+    .state('settings/forceReloadOnGeofence', {
+      url: '/settings/forceReloadOnGeofence',
       templateUrl: 'templates/settings/radio-list.html',
       controller: 'Settings'
     })

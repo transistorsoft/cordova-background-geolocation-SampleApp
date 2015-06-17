@@ -30,6 +30,9 @@ map {
 .settings .item .current-value.setting-url {
 	width: 75%;
 }
+.settings .item .current-value.setting-triggerActivities {
+	font-size: 12px;
+}
 /**
 * Hide chevron in ion-item when field is a checkbox
 */
