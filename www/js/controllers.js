@@ -121,11 +121,11 @@ angular.module('starter.controllers', [])
     $scope.showAlert('onMotionChange', 'isMoving: ' + isMoving);
 
     if ($scope.map) {
-      $scope.setCurrentLocationMarker(location);
       $scope.map.setCenter(new google.maps.LatLng(location.coords.latitude, location.coords.longitude));
       if (!isMoving) {
         $scope.setStationaryMarker(location);
       } else if ($scope.stationaryRadiusMarker) {
+        $scope.setCurrentLocationMarker(location);
         $scope.stationaryRadiusMarker.setMap(null);
       }
 
@@ -270,6 +270,9 @@ angular.module('starter.controllers', [])
       BackgroundGeolocation.playSound('BUTTON_CLICK');
       $scope.bgGeo.started = false;
       $scope.startButtonIcon = PLAY_BUTTON_CLASS;
+      
+      // Clear previousLocation
+      $scope.previousLocation = undefined;
 
       // Clear location-markers.
       var marker;
@@ -291,13 +294,12 @@ angular.module('starter.controllers', [])
       if ($scope.stationaryRadiusMarker) {
         $scope.stationaryRadiusMarker.setMap(null);
       }
-      //$scope.stationaryRadiusMarker = undefined;
 
       // Clear blue route PolyLine
       if ($scope.path) {
         $scope.path.setMap(null);
+        $scope.path = undefined;
       }
-      //$scope.path = undefined;
     }
   };
   /**
