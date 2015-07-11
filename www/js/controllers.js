@@ -10,9 +10,9 @@ angular.module('starter.controllers', [])
 
   // Add BackgroundGeolocation event-listeners when Platform is ready.
   ionic.Platform.ready(function() {
-    BackgroundGeolocation.onLocation($scope.setCurrentLocationMarker);
-    BackgroundGeolocation.onMotionChange($scope.onMotionChange);
-    BackgroundGeolocation.onGeofence($scope.onGeofence);
+    BackgroundGeolocationService.onLocation($scope.setCurrentLocationMarker);
+    BackgroundGeolocationService.onMotionChange($scope.onMotionChange);
+    BackgroundGeolocationService.onGeofence($scope.onGeofence);
   });
 
   /**
@@ -88,13 +88,13 @@ angular.module('starter.controllers', [])
     google.maps.event.addListener(map, 'longpresshold', function(e) {      
       geofenceCursor.setPosition(e.latLng);
       geofenceCursor.setMap(map);
-      BackgroundGeolocation.playSound('LONG_PRESS_ACTIVATE')
+      BackgroundGeolocationService.playSound('LONG_PRESS_ACTIVATE')
     });
 
     // Longpress cancelled.  Get rid of the circle cursor.
     google.maps.event.addListener(map, 'longpresscancel', function() {
       geofenceCursor.setMap(null);
-      BackgroundGeolocation.playSound('LONG_PRESS_CANCEL');
+      BackgroundGeolocationService.playSound('LONG_PRESS_CANCEL');
     });
 
     // Longpress initiated, add the geofence
@@ -103,9 +103,9 @@ angular.module('starter.controllers', [])
       geofenceCursor.setMap(null);
     });
 
-    // Add BackgroundGeolocation event-listeners when Platform is ready.
+    // Add BackgroundGeolocationService event-listeners when Platform is ready.
     ionic.Platform.ready(function() {
-      var bgGeo = BackgroundGeolocation.getPlugin();
+      var bgGeo = BackgroundGeolocationService.getPlugin();
       if (!bgGeo) { return; }
       bgGeo.getGeofences(function(rs) {
         for (var n=0,len=rs.length;n<len;n++) {
@@ -130,13 +130,13 @@ angular.module('starter.controllers', [])
       }
 
     }
-    BackgroundGeolocation.finish(taskId); 
+    BackgroundGeolocationService.finish(taskId); 
   }
   /**
   * Draw google map marker for current location
   */
   $scope.setCurrentLocationMarker = function(location) {
-    var plugin = BackgroundGeolocation.getPlugin();
+    var plugin = BackgroundGeolocationService.getPlugin();
     if (plugin) {
       // Update odometer
       plugin.getOdometer(function(value) {
@@ -242,16 +242,15 @@ angular.module('starter.controllers', [])
     $scope.stationaryRadiusMarker.setCenter(center);
     $scope.stationaryRadiusMarker.setMap($scope.map);
     $scope.map.setCenter(center);
-
   };
 
   /**
-  * Enable BackgroundGeolocation
+  * Enable BackgroundGeolocationService
   */
   $scope.onToggleEnabled = function() {
     var isEnabled = $scope.bgGeo.enabled;
     console.log('onToggleEnabled: ', isEnabled);
-    BackgroundGeolocation.setEnabled(isEnabled, function() {
+    BackgroundGeolocationService.setEnabled(isEnabled, function() {
       if (isEnabled) {
         $scope.centerOnMe();
       }
@@ -259,7 +258,7 @@ angular.module('starter.controllers', [])
 
     if (!isEnabled) {
       // Reset odometer to 0.
-      var plugin = BackgroundGeolocation.getPlugin();
+      var plugin = BackgroundGeolocationService.getPlugin();
       if (plugin) {
         plugin.resetOdometer(function() {
           $scope.$apply(function() {
@@ -267,7 +266,7 @@ angular.module('starter.controllers', [])
           });
         });
       }
-      BackgroundGeolocation.playSound('BUTTON_CLICK');
+      BackgroundGeolocationService.playSound('BUTTON_CLICK');
       $scope.bgGeo.started = false;
       $scope.startButtonIcon = PLAY_BUTTON_CLASS;
       
@@ -311,13 +310,13 @@ angular.module('starter.controllers', [])
     $scope.bgGeo.started    = willStart;
     $scope.startButtonIcon  = (willStart) ? PAUSE_BUTTON_CLASS : PLAY_BUTTON_CLASS;
 
-    BackgroundGeolocation.setPace(willStart);
+    BackgroundGeolocationService.setPace(willStart);
   };
   /**
   * Show Settings screen
   */
   $scope.onClickSettings = function() {
-    BackgroundGeolocation.playSound('BUTTON_CLICK');
+    BackgroundGeolocationService.playSound('BUTTON_CLICK');
     $state.transitionTo('settings');
   };
   /**
@@ -328,10 +327,10 @@ angular.module('starter.controllers', [])
       return;
     }
 
-    BackgroundGeolocation.getCurrentPosition(function(location, taskId) {
+    BackgroundGeolocationService.getCurrentPosition(function(location, taskId) {
       $scope.map.setCenter(new google.maps.LatLng(location.coords.latitude, location.coords.longitude));
       $scope.setCurrentLocationMarker(location);
-      BackgroundGeolocation.finish(taskId);
+      BackgroundGeolocationService.finish(taskId);
     }, function(error) {
       console.error("- getCurrentPostion failed: ", error);
     });
@@ -348,7 +347,7 @@ angular.module('starter.controllers', [])
   $scope.onGeofence = function(params, taskId) {
     $scope.showAlert('Geofence ' + params.action, "Identifier: " + params.identifier);
     
-    var bgGeo = BackgroundGeolocation.getPlugin();
+    var bgGeo = BackgroundGeolocationService.getPlugin();
     // Remove geofence after it triggers.
     bgGeo.removeGeofence(params.identifier, function() {
       // We're inside a nested async callback here, which has now completed.  #finish the outer #onGeofence taskId now.
@@ -389,7 +388,7 @@ angular.module('starter.controllers', [])
   */
   $scope.onCreateGeofence = function() {
     $scope.addGeofenceModal.hide();
-    BackgroundGeolocation.addGeofence($scope.geofenceRecord, function() {
+    BackgroundGeolocationService.addGeofence($scope.geofenceRecord, function() {
       createGeofenceMarker($scope.geofenceRecord);
     });
   };
@@ -397,7 +396,7 @@ angular.module('starter.controllers', [])
   * Cancel geofence modal
   */
   $scope.onCancelGeofence = function() {
-    BackgroundGeolocation.playSound('LONG_PRESS_ACTIVATE');
+    BackgroundGeolocationService.playSound('LONG_PRESS_ACTIVATE');
     $scope.modal.hide();
   };
   /**
@@ -405,7 +404,7 @@ angular.module('starter.controllers', [])
   * @param {Google.maps.Circle} circle
   */
   $scope.onShowGeofence = function(params) {
-    BackgroundGeolocation.playSound("LONG_PRESS_ACTIVATE");
+    BackgroundGeolocationService.playSound("LONG_PRESS_ACTIVATE");
     $scope.geofenceRecord = params;
     $scope.showGeofenceModal.show();
   };
@@ -465,7 +464,7 @@ angular.module('starter.controllers', [])
         return;
       }
     }
-    BackgroundGeolocation.removeGeofence(identifier);
+    BackgroundGeolocationService.removeGeofence(identifier);
   };
 })
 
@@ -478,20 +477,20 @@ angular.module('starter.controllers', [])
   $scope.selectedValue = '';
   $scope.isSyncing = false;
   $scope.isAutoSyncDisabled = function() {
-    return !$scope.isSyncing && BackgroundGeolocation.getConfig().autoSync == 'true';
+    return !$scope.isSyncing && BackgroundGeolocationService.getConfig().autoSync == 'true';
   }
 
   $scope.onClickSync = function() {
     if ($scope.isSyncing) { return false; }
 
-    BackgroundGeolocation.playSound('BUTTON_CLICK');
+    BackgroundGeolocationService.playSound('BUTTON_CLICK');
     $scope.isSyncing = true;
-    BackgroundGeolocation.sync(function(rs, taskId) {
-      BackgroundGeolocation.playSound('MESSAGE_SENT');
+    BackgroundGeolocationService.sync(function(rs, taskId) {
+      BackgroundGeolocationService.playSound('MESSAGE_SENT');
       $scope.$apply(function() {
         $scope.isSyncing = false;
       });
-      BackgroundGeolocation.finish(taskId);
+      BackgroundGeolocationService.finish(taskId);
     }, function(error) {
       console.warn('- sync error: ', error);
       $scope.$apply(function() {
@@ -501,12 +500,12 @@ angular.module('starter.controllers', [])
   };
 
   $scope.getSettings = function(group) {
-    return BackgroundGeolocation.getSettings(group);
+    return BackgroundGeolocationService.getSettings(group);
   };
 
   $scope.getValue = function(name) {
     if (name === 'triggerActivities') {
-      var value = BackgroundGeolocation.getConfig()[name];
+      var value = BackgroundGeolocationService.getConfig()[name];
       var items = value.replace(/\s+/g, '').split(',');
       if (items.length == 5) {
         return 'ALL';
@@ -514,12 +513,12 @@ angular.module('starter.controllers', [])
         return value;
       }
     } else {
-      return BackgroundGeolocation.getConfig()[name];
+      return BackgroundGeolocationService.getConfig()[name];
     }
   };
 
   $scope.getConfig = function() {
-    return BackgroundGeolocation.getConfig();
+    return BackgroundGeolocationService.getConfig();
   };
 
   $scope.getSettingValues = function() {
@@ -539,7 +538,7 @@ angular.module('starter.controllers', [])
   */
   $scope.onSelectSetting = function() {
     $state.selectedSetting = this.setting;
-    BackgroundGeolocation.playSound('BUTTON_CLICK');
+    BackgroundGeolocationService.playSound('BUTTON_CLICK');
 
     if (this.setting.name === 'triggerActivities') {
     }
@@ -568,15 +567,15 @@ angular.module('starter.controllers', [])
   * Select setting-value
   */
   $scope.onSelectValue = function() {
-    BackgroundGeolocation.playSound('BUTTON_CLICK');
-    BackgroundGeolocation.set($state.selectedSetting.name, this.value);
-    $state.autoSyncDisabled = !BackgroundGeolocation.getConfig().autoSync;
+    BackgroundGeolocationService.playSound('BUTTON_CLICK');
+    BackgroundGeolocationService.set($state.selectedSetting.name, this.value);
+    $state.autoSyncDisabled = !BackgroundGeolocationService.getConfig().autoSync;
     $state.go('settings');
   };
 
   $scope.onClickDone = function() {
 
-    //BackgroundGeolocation.set($state.selectedSetting.name, this.value);
+    //BackgroundGeolocationService.set($state.selectedSetting.name, this.value);
     var config  = this.getConfig();
     var name    = $state.selectedSetting.name;
     var value   = config[name];
@@ -590,12 +589,12 @@ angular.module('starter.controllers', [])
         value = value.length ? value.join(',') : '';
         break;      
     }
-    BackgroundGeolocation.set(name, value);
+    BackgroundGeolocationService.set(name, value);
     $state.go('settings');
   };
 
   /**
   * List of available settings
   */
-  $scope.settings = BackgroundGeolocation.getSettings();
+  $scope.settings = BackgroundGeolocationService.getSettings();
 });

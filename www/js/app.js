@@ -123,8 +123,8 @@ app.run(function($ionicPlatform) {
       StatusBar.styleDefault();
     }
     if (window.cordova) {
-      if (window.plugins && window.plugins.backgroundGeoLocation) {
-        BackgroundGeolocation.configurePlugin(window.plugins.backgroundGeoLocation);
+      if (window.BackgroundGeolocation) {
+        BackgroundGeolocationService.configurePlugin(window.BackgroundGeolocation);
       }
     }
   });

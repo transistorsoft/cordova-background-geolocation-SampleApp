@@ -3,7 +3,7 @@
 * and configuration state in localStorage
 * @author Chris Scott <chris@transistorsoft.com>
 */
-var BackgroundGeolocation = (function() {
+var BackgroundGeolocationService = (function() {
   /**
   * @private sound-id mapping for iOS & Android.  BackgroundGeolocation plugin has a simple system-sound API
   */
