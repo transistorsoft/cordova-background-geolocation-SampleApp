@@ -20,7 +20,7 @@ Edit settings and observe the behavour of **Background Geolocation** changing in
 $ git clone https://github.com/christocracy/cordova-background-geolocation-SampleApp.git
 ```
 
-- Now we must install the application's required plugins.  Copy/paste the following one-liner into your console to install all the required plugins.
+- Now we must install the application's required plugins.  Copy/paste the following one-liner (Cordova 5-style) into your console to install all the required plugins.
 
 ```
 $ cordova plugin add cordova-plugin-device cordova-plugin-console cordova-plugin-whitelist cordova-plugin-splashscreen com.ionic.keyboard https://github.com/christocracy/cordova-background-geolocation.git#edge
