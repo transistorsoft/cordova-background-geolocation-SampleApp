@@ -154,6 +154,7 @@ angular.module('starter.controllers', [])
       $scope.currentLocationMarker = new google.maps.Marker({
         map: $scope.map,
         zIndex: 10,
+        title: 'Current Location',
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
           scale: 12,
