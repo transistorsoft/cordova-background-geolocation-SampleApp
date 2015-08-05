@@ -26,7 +26,7 @@ $ git clone https://github.com/christocracy/cordova-background-geolocation-Sampl
 - Now we must install the application's required plugins.  Copy/paste the following one-liner (Cordova 5-style) into your console to install all the required plugins.
 
 ```
-$ cordova plugin add cordova-plugin-device cordova-plugin-console cordova-plugin-whitelist cordova-plugin-splashscreen com.ionic.keyboard https://github.com/christocracy/cordova-background-geolocation.git#edge
+$ cordova plugin add cordova-plugin-device cordova-plugin-console cordova-plugin-whitelist cordova-plugin-splashscreen com.ionic.keyboard https://github.com/transistorsoft/cordova-background-geolocation.git#edge
 ```
 
 - Add your desired platform(s) and build.  That's it.
