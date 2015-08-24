@@ -1,3 +1,5 @@
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/transistorsoft/cordova-background-geolocation-sampleapp/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
 # Cordova Background Geolocation &mdash; Sample Application
 
 <a href="market://details?id=com.transistorsoft.background_geolocation.ionic">
