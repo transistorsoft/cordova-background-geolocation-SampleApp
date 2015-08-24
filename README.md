@@ -30,11 +30,15 @@ $ cordova plugin add cordova-plugin-device cordova-plugin-console cordova-plugin
 
 **[Premium Version](https://github.com/transistorsoft/cordova-background-geolocation.git)**
 
-`$ cordova plugin add https://github.com/transistorsoft/cordova-background-geolocation.git`
+```
+$ cordova plugin add https://github.com/transistorsoft/cordova-background-geolocation.git
+```
 
 **[Lite Version](https://github.com/transistorsoft/cordova-background-geolocation-lt)**
 
-`$ cordova plugin add https://github.com/transistorsoft/cordova-background-geolocation-lt.git`
+```
+$ cordova plugin add https://github.com/transistorsoft/cordova-background-geolocation-lt.git
+```
 
 - Add your desired platform(s) and build.  That's it.
 
