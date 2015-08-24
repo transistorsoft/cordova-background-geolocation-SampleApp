@@ -51,7 +51,7 @@ $ cordova run android
 
 The app implements a **longtap** event on the map.  Simply **tap & hold** the map to initiate adding a geofence.
 
-![Tap-hold to add geofence](https://dl.dropboxusercontent.com/u/2319755/cordova-background-geolocaiton/screenshot-iphone5-add-geofence-framed.png)
+![Tap-hold to add geofence](https://dl.dropboxusercontent.com/u/2319755/cordova-background-geolocaiton/screenshot-iphone5-add-geofence-framed-README.png)
 
 Enter an `identifier`, `radius`, `notifyOnExit`, `notifyOnEntry`.
 
