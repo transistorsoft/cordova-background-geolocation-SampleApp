@@ -26,7 +26,7 @@ $ git clone https://github.com/christocracy/cordova-background-geolocation-Sampl
 $ cordova plugin add cordova-plugin-device cordova-plugin-console cordova-plugin-whitelist cordova-plugin-splashscreen com.ionic.keyboard
 ```
 
-**Step 3.**  Now install the `cordova-background-geolocation` plugin (Choose either Premium **or** Free version)
+**Step 3.**  Now install the `cordova-background-geolocation` plugin.  Install **one** of the following:
 
    **A. [Premium Version](https://github.com/transistorsoft/cordova-background-geolocation.git) (requires paid license)**
 
