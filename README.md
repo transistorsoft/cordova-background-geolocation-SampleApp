@@ -40,7 +40,7 @@ $ cordova plugin add https://github.com/transistorsoft/cordova-background-geoloc
 $ cordova plugin add https://github.com/transistorsoft/cordova-background-geolocation-lt.git
 ```
 
-**Step 4.** Add your desired platform(s) and build.  That's it.
+**Step 4.** Add your desired platform(s) and build.
 
 ```
 $ cordova platform add ios
@@ -50,6 +50,10 @@ $ cordova platform add android
 $ cordova build android
 $ cordova run android
 ```
+
+**Step 5.** The quickest way to see the plugin in-action is to boot the **iOS Simulator**
+
+![](https://dl.dropboxusercontent.com/u/2319755/cordova-background-geolocaiton/simulate-location.png)
 
 ## Adding Geofences
 
