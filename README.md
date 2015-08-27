@@ -51,7 +51,9 @@ $ cordova build android
 $ cordova run android
 ```
 
-**Step 5.** The quickest way to see the plugin in-action is to boot the **iOS Simulator**
+**Step 5.** Boot the **iOS** Simulator
+
+The quickest way to see the plugin in-action is to boot the **iOS** simulator and *simulate location*
 
 ![](https://dl.dropboxusercontent.com/u/2319755/cordova-background-geolocaiton/simulate-location.png)
 
