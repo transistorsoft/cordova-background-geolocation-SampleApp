@@ -28,7 +28,7 @@ $ cordova plugin add cordova-plugin-device cordova-plugin-console cordova-plugin
 
 **Step 3.**  Now install the `cordova-background-geolocation` plugin (Choose either Premium **or** Free version)
 
-   **A. **[Premium Version](https://github.com/transistorsoft/cordova-background-geolocation.git) (requires paid license)**
+   **A. [Premium Version](https://github.com/transistorsoft/cordova-background-geolocation.git) (requires paid license)**
 
 ```
 $ cordova plugin add https://github.com/transistorsoft/cordova-background-geolocation.git
