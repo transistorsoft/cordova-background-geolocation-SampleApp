@@ -59,11 +59,7 @@ The quickest way to see the plugin in-action is to boot the **iOS** simulator an
 
 ## Debug Mode
 
-The plugin has a `debug` mode for field-testing.  The plugin will emit sounds during its life-cycle events.  In order for debug sounds to operate *when the app is in background*, you must enable the `Audio and Airplay` **Background Mode**.
-
-![](https://camo.githubusercontent.com/ad01117185eb13a237efcfa1eaf7e39346a967ed/68747470733a2f2f646c2e64726f70626f7875736572636f6e74656e742e636f6d2f752f323331393735352f636f72646f76612d6261636b67726f756e642d67656f6c6f636169746f6e2f656e61626c652d6261636b67726f756e642d617564696f2e706e67)
-
-#### Debug Sounds
+The plugin has a `debug` mode for field-testing.  The plugin will emit sounds during its life-cycle events:
 
 | Event | iOS | Android |
 |-------|-----|---------|
@@ -74,6 +70,9 @@ The plugin has a `debug` mode for field-testing.  The plugin will emit sounds du
 | Stationary state | "bloom" | long "beeeeeeep" |
 | Geofence crossing | trumpets/fanfare | boop-boop-boop |
 
+**NOTE:**  In order for debug sounds to operate *when the app is in background*, you must enable the `Audio and Airplay` **Background Mode**.
+
+![](https://camo.githubusercontent.com/ad01117185eb13a237efcfa1eaf7e39346a967ed/68747470733a2f2f646c2e64726f70626f7875736572636f6e74656e742e636f6d2f752f323331393735352f636f72646f76612d6261636b67726f756e642d67656f6c6f636169746f6e2f656e61626c652d6261636b67726f756e642d617564696f2e706e67)
 
 ## Adding Geofences
 
