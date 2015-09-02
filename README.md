@@ -17,7 +17,7 @@ Edit settings and observe the behavour of **Background Geolocation** changing in
 **Step 1.** Start by cloning this repo
 
 ```
-$ git clone https://github.com/christocracy/cordova-background-geolocation-SampleApp.git
+$ git clone https://github.com/transistorsoft/cordova-background-geolocation-SampleApp.git
 ```
 
 **Step 2.**  Now we must install the application's required plugins.  Copy/paste the following one-liner (Cordova 5-style) into your console to install all the required plugins.
