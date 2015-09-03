@@ -47,6 +47,7 @@ var BackgroundGeolocationService = (function() {
   var $settings = {
     common: [
       {name: 'url', group: 'http', inputType: 'text', dataType: 'string', defaultValue: 'http://posttestserver.com/post.php?dir=ionic-cordova-background-geolocation'},
+      {name: 'method', group: 'http', inputType: 'select', dataType: 'string', values: ['POST', 'PUT'], defaultValue: 'POST'},
       {name: 'autoSync', group: 'http', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'true'},
       {name: 'batchSync', group: 'http', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'false'},
       {name: 'stopOnTerminate', group: 'application', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'true'},
@@ -302,9 +303,9 @@ var BackgroundGeolocationService = (function() {
         });
       }
     },
-    getCurrentPosition: function(callback, failure) {
+    getCurrentPosition: function(callback, failure, options) {
       if ($plugin) {
-        $plugin.getCurrentPosition(callback, failure);
+        $plugin.getCurrentPosition(callback, failure, options);
       }
     },
     playSound: function(action) {
