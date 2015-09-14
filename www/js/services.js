@@ -261,15 +261,23 @@ var BackgroundGeolocationService = (function() {
     * @param {BackgroundGeolocation} bgGeoPlugin
     */
     configurePlugin: function(bgGeoPlugin) {
-      $platform = ionic.Platform.device().platform;
+      var device = ionic.Platform.device();
+      $platform = device.platform;
 
-      var me = this;
+      var me      = this;
+      var config  = this.getConfig();
+
+      config.params = config.params || {};
+
+      // Append Cordova device-info to POST params so we can map a device-id to the location
+      config.params.device = device;
+
       $plugin = bgGeoPlugin;
 
       // Configure BackgroundGeolocation Plugin
       $plugin.configure(fireLocationListeners, function(error) { 
         console.warn('BackgroundGeolocation Error: ' + error);
-      }, this.getConfig());
+      }, config);
 
       if (this.getEnabled()) {
         $plugin.start();

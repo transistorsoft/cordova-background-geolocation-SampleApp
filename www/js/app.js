@@ -55,6 +55,11 @@ app.config(function($stateProvider, $urlRouterProvider) {
       templateUrl: 'templates/settings/url.html',
       controller: 'Settings'
     })
+    .state('settings/method', {
+      url: '/settings/method',
+      templateUrl: 'templates/settings/radio-list.html',
+      controller: 'Settings'
+    })
     .state('settings/autoSync', {
       url: '/settings/autoSync',
       templateUrl: 'templates/settings/radio-list.html',
