@@ -1,4 +1,4 @@
-var app = angular.module('starter', ['ionic', 'starter.controllers', 'starter.directives', 'ngIOS9UIWebViewPatch']);
+var app = angular.module('starter', ['ionic', 'starter.controllers', 'starter.directives']);
 
 app.config(function($stateProvider, $urlRouterProvider) {
 
