@@ -51,6 +51,8 @@ var BackgroundGeolocationService = (function() {
       {name: 'autoSync', group: 'http', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'true'},
       {name: 'batchSync', group: 'http', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'false'},
       {name: 'stopOnTerminate', group: 'application', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'true'},
+      {name: 'stopTimeout', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 1, 2, 5, 10], defaultValue: 1},
+      {name: 'activityRecognitionInterval', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 1000, 10000, 30000, 60000], defaultValue: 10000},
       {name: 'debug', group: 'application', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'true'}
     ],
     iOS: [
@@ -65,9 +67,7 @@ var BackgroundGeolocationService = (function() {
       {name: 'distanceFilter', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 10, 20, 50, 100, 500], defaultValue: 20 },
       {name: 'locationUpdateInterval', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 1000, 5000, 10000, 30000, 60000], defaultValue: 5000},
       {name: 'fastestLocationUpdateInterval', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 1000, 5000, 10000, 30000, 60000], defaultValue: 1000},
-      {name: 'activityRecognitionInterval', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 1000, 10000, 30000, 60000], defaultValue: 10000},
       {name: 'triggerActivities', group: 'geolocation', dataType: 'string', inputType: 'select', values: ['in_vehicle', 'on_bicycle', 'on_foot', 'running', 'walking'], defaultValue: 'in_vehicle, on_bicycle, running, walking, on_foot'},
-      {name: 'stopTimeout', group: 'geolocation', dataType: 'integer', inputType: 'activity_recognition', inputType: 'select', values: [0, 1, 5, 10, 15], defaultValue: 0},
       {name: 'forceReloadOnMotionChange', group: 'application', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'false'},
       {name: 'forceReloadOnLocationChange', group: 'application', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'false'},
       {name: 'forceReloadOnGeofence', group: 'application', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'false'},
@@ -146,8 +146,9 @@ var BackgroundGeolocationService = (function() {
     * @param {Boolean} willStart
     */
     setPace: function(willStart) {
-      window.localStorage.setItem('bgGeo:started', willStart);
+      window.localStorage.setItem('bgGeo:isMoving', willStart);
       if ($plugin) {
+        $config.isMoving = willStart;
         $plugin.changePace(willStart);
       }
     },
@@ -156,7 +157,7 @@ var BackgroundGeolocationService = (function() {
     * @return {Boolean} true if in aggressive-mode; false if in stationary-mode
     */
     getPace: function() {
-      return window.localStorage.getItem('bgGeo:started') === 'true';
+      return window.localStorage.getItem('bgGeo:isMoving') === 'true';
     },
     /**
     * Manually sync plugin's persisted locations to server
@@ -271,6 +272,7 @@ var BackgroundGeolocationService = (function() {
 
       // Append Cordova device-info to POST params so we can map a device-id to the location
       config.params.device = device;
+      config.isMoving = this.getPace();
 
       $plugin = bgGeoPlugin;
 
