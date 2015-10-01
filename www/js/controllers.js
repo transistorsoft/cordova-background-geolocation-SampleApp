@@ -8,21 +8,14 @@ angular.module('starter.controllers', [])
   var PLAY_BUTTON_CLASS = "ion-play button-balanced",
       PAUSE_BUTTON_CLASS = "ion-pause button-assertive";
 
-  // Add BackgroundGeolocation event-listeners when Platform is ready.
-  ionic.Platform.ready(function() {
-    BackgroundGeolocationService.onLocation($scope.setCurrentLocationMarker);
-    BackgroundGeolocationService.onMotionChange($scope.onMotionChange);
-    BackgroundGeolocationService.onGeofence($scope.onGeofence);
-  });
-
   /**
   * BackgroundGelocation plugin state
   */
   $scope.bgGeo = {
-    enabled: window.localStorage.getItem('bgGeo:enabled') == 'true',
-    started: window.localStorage.getItem('bgGeo:started') == 'true'
+    enabled: (window.localStorage.getItem('bgGeo:enabled') == 'true'),
+    isMoving: (window.localStorage.getItem('bgGeo:isMoving') == 'true')
   };
-  $scope.startButtonIcon = ($scope.bgGeo.started) ? PAUSE_BUTTON_CLASS : PLAY_BUTTON_CLASS;
+  $scope.startButtonIcon = ($scope.bgGeo.isMoving) ? PAUSE_BUTTON_CLASS : PLAY_BUTTON_CLASS;
   $scope.map                    = undefined;
   $scope.currentLocationMarker  = undefined;
   $scope.previousLocation       = undefined;
@@ -34,6 +27,13 @@ angular.module('starter.controllers', [])
   $scope.stationaryRadiusMarker = undefined;
 
   $scope.odometer = 0;
+
+  // Add BackgroundGeolocation event-listeners when Platform is ready.
+  ionic.Platform.ready(function() {
+    BackgroundGeolocationService.onLocation($scope.setCurrentLocationMarker);
+    BackgroundGeolocationService.onMotionChange($scope.onMotionChange);
+    BackgroundGeolocationService.onGeofence($scope.onGeofence);
+  });
 
   // Build Add Geofence Modal.
   $ionicModal.fromTemplateUrl('templates/geofences/add.html', {
@@ -118,7 +118,13 @@ angular.module('starter.controllers', [])
 
   $scope.onMotionChange = function(isMoving, location, taskId) {
     console.log('[js] onMotionChange: ', isMoving, JSON.stringify(location));
-    $scope.showAlert('onMotionChange', 'isMoving: ' + isMoving);
+    
+    // Cache isMoving state in localStorage 
+    window.localStorage.setItem('bgGeo:isMoving', isMoving);
+    $scope.bgGeo.isMoving = isMoving;
+
+    // Change state of start-button icon:  [>] or [||] 
+    $scope.startButtonIcon  = (isMoving) ? PAUSE_BUTTON_CLASS : PLAY_BUTTON_CLASS;
 
     if ($scope.map) {
       $scope.map.setCenter(new google.maps.LatLng(location.coords.latitude, location.coords.longitude));
@@ -128,7 +134,6 @@ angular.module('starter.controllers', [])
         $scope.setCurrentLocationMarker(location);
         $scope.stationaryRadiusMarker.setMap(null);
       }
-
     }
     BackgroundGeolocationService.finish(taskId); 
   }
@@ -268,7 +273,7 @@ angular.module('starter.controllers', [])
         });
       }
       BackgroundGeolocationService.playSound('BUTTON_CLICK');
-      $scope.bgGeo.started = false;
+      $scope.bgGeo.isMoving = false;
       $scope.startButtonIcon = PLAY_BUTTON_CLASS;
       
       // Clear previousLocation
@@ -306,9 +311,9 @@ angular.module('starter.controllers', [])
   * Start/stop aggressive monitoring / stationary mode
   */
   $scope.onClickStart = function() {
-    var willStart = !$scope.bgGeo.started;
+    var willStart = !$scope.bgGeo.isMoving;
     console.log('onClickStart: ', willStart);
-    $scope.bgGeo.started    = willStart;
+    $scope.bgGeo.isMoving    = willStart;
     $scope.startButtonIcon  = (willStart) ? PAUSE_BUTTON_CLASS : PLAY_BUTTON_CLASS;
 
     BackgroundGeolocationService.setPace(willStart);
