@@ -146,18 +146,9 @@ var BackgroundGeolocationService = (function() {
     * @param {Boolean} willStart
     */
     setPace: function(willStart) {
-      window.localStorage.setItem('bgGeo:isMoving', willStart);
       if ($plugin) {
-        $config.isMoving = willStart;
         $plugin.changePace(willStart);
       }
-    },
-    /**
-    * Is the plugin engaged for stationary or aggressive?
-    * @return {Boolean} true if in aggressive-mode; false if in stationary-mode
-    */
-    getPace: function() {
-      return window.localStorage.getItem('bgGeo:isMoving') === 'true';
     },
     /**
     * Manually sync plugin's persisted locations to server
@@ -272,7 +263,6 @@ var BackgroundGeolocationService = (function() {
 
       // Append Cordova device-info to POST params so we can map a device-id to the location
       config.params.device = device;
-      config.isMoving = this.getPace();
 
       $plugin = bgGeoPlugin;
 
