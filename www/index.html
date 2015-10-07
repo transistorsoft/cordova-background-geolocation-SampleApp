@@ -88,6 +88,16 @@
             </ion-item>
 
             <div class="item item-divider">
+              Activity Recognition Settings
+            </div>
+            <ion-item ng-repeat="setting in getSettings('activity recognition')" ng-click="onSelectSetting()" class="item-icon-right">
+              {{ setting.name }}
+              <i class="current-value setting-{{setting.name}}">{{ getValue(setting.name) }}</i>
+              <i class="icon ion-chevron-right icon-accessory"></i>
+              
+            </ion-item>
+
+            <div class="item item-divider">
               Application Settings
             </div>
             <ion-item ng-repeat="setting in getSettings('application')" ng-click="onSelectSetting()" item="setting" class="item-icon-right">

@@ -356,8 +356,6 @@ angular.module('starter.controllers', [])
     var bgGeo = BackgroundGeolocationService.getPlugin();
     // Remove geofence after it triggers.
     bgGeo.removeGeofence(params.identifier, function() {
-      // We're inside a nested async callback here, which has now completed.  #finish the outer #onGeofence taskId now.
-      bgGeo.finish(taskId);
       var marker = getGeofenceMarker(params.identifier);
       // Grey-out the google.maps.Circle to show it's been triggered.
       if (marker) {
@@ -369,6 +367,8 @@ angular.module('starter.controllers', [])
           strokeOpacity: 0.5
         });
       }
+      // We're inside a nested async callback here, which has now completed.  #finish the outer #onGeofence taskId now.
+      bgGeo.finish(taskId);
     }, function(error) {
       console.log('Failed to remove geofence: ' + error);
       // Finish outer #onGeofence taskId now.
