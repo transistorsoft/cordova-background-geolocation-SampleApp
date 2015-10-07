@@ -85,6 +85,11 @@ app.config(function($stateProvider, $urlRouterProvider) {
       templateUrl: 'templates/settings/radio-list.html',
       controller: 'Settings'
     })
+    .state('settings/stopDetectionDelay', {
+      url: '/settings/stopDetectionDelay',
+      templateUrl: 'templates/settings/radio-list.html',
+      controller: 'Settings'
+    })
     .state('settings/stopTimeout', {
       url: '/settings/stopTimeout',
       templateUrl: 'templates/settings/radio-list.html',
