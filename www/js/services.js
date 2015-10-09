@@ -267,7 +267,8 @@ var BackgroundGeolocationService = (function() {
       $plugin = bgGeoPlugin;
 
       // Configure BackgroundGeolocation Plugin
-      $plugin.configure(fireLocationListeners, function(error) { 
+      $plugin.configure(fireLocationListeners, function(error) {
+        window.alert('Location error: ' + error);
         console.warn('BackgroundGeolocation Error: ' + error);
       }, config);
 
