@@ -146,9 +146,11 @@ var BackgroundGeolocationService = (function() {
     * Toggle stationary/aggressive mode
     * @param {Boolean} willStart
     */
-    setPace: function(willStart) {
+    setPace: function(willStart, successFn) {
       if ($plugin) {
-        $plugin.changePace(willStart);
+        $plugin.changePace(willStart, successFn, function(error) {
+          alert('Failed to change pace: ' + error);
+        });
       }
     },
     /**
@@ -263,7 +265,7 @@ var BackgroundGeolocationService = (function() {
 
       // Append Cordova device-info to POST params so we can map a device-id to the location
       config.params.device = device;
-
+      
       $plugin = bgGeoPlugin;
 
       // Configure BackgroundGeolocation Plugin

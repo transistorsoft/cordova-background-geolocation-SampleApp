@@ -313,10 +313,11 @@ angular.module('starter.controllers', [])
   $scope.onClickStart = function() {
     var willStart = !$scope.bgGeo.isMoving;
     console.log('onClickStart: ', willStart);
-    $scope.bgGeo.isMoving    = willStart;
-    $scope.startButtonIcon  = (willStart) ? PAUSE_BUTTON_CLASS : PLAY_BUTTON_CLASS;
 
-    BackgroundGeolocationService.setPace(willStart);
+    BackgroundGeolocationService.setPace(willStart, function() {
+      $scope.bgGeo.isMoving    = willStart;
+      $scope.startButtonIcon  = (willStart) ? PAUSE_BUTTON_CLASS : PLAY_BUTTON_CLASS;
+    });
   };
   /**
   * Show Settings screen
@@ -339,6 +340,8 @@ angular.module('starter.controllers', [])
       BackgroundGeolocationService.finish(taskId);
     }, function(error) {
       console.error("- getCurrentPostion failed: ", error);
+    }, {
+      maximumAge: 0
     });
   };
 
