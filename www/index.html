@@ -95,8 +95,6 @@
             <ion-item ng-repeat="setting in getSettings('geolocation')" ng-click="onSelectSetting()" class="item-icon-right">
               {{ setting.name }}
               <i class="current-value setting-{{setting.name}}">{{ getValue(setting.name) }}</i>
-              <i class="icon ion-chevron-right icon-accessory"></i>
-              
             </ion-item>
 
             <div class="item item-divider">
@@ -105,8 +103,6 @@
             <ion-item ng-repeat="setting in getSettings('activity recognition')" ng-click="onSelectSetting()" class="item-icon-right">
               {{ setting.name }}
               <i class="current-value setting-{{setting.name}}">{{ getValue(setting.name) }}</i>
-              <i class="icon ion-chevron-right icon-accessory"></i>
-              
             </ion-item>
 
             <div class="item item-divider">
@@ -115,7 +111,6 @@
             <ion-item ng-repeat="setting in getSettings('application')" ng-click="onSelectSetting()" item="setting" class="item-icon-right">
               {{ setting.name }}
               <i class="current-value setting-{{setting.name}}">{{ getValue(setting.name) }}</i>
-              <i class="icon ion-chevron-right icon-accessory"></i>
             </ion-item>
           </ion-list>
 
@@ -125,7 +120,6 @@
             <ion-item ng-repeat="setting in getSettings('http')" ng-click="onSelectSetting()" item="setting" class="item-icon-right">
               {{ setting.name }}
               <i class="current-value setting-{{setting.name}}">{{ getValue(setting.name) }}</i>
-              <i class="icon ion-chevron-right icon-accessory"></i>
             </ion-item>
           </ion-list>
         </div>
