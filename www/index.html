@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: https://ssl.gstatic.com 'unsafe-eval' https://*.googleapis.com https://maps.gstatic.com https://maps.google.com; style-src * 'unsafe-inline'; media-src *"> -->
+    
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'"> -->
+
+    <meta http-equiv="Content-Security-Policy"
+      content="script-src * 'unsafe-eval';
+        connect-src * 'unsafe-eval';
+        object-src 'self';
+        style-src * 'unsafe-inline';
+        img-src *">
+
+
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
     <title></title>

@@ -106,7 +106,7 @@ var BackgroundGeolocationService = (function() {
   * callback simply calls upon all the added listeners here
   */
   var fireLocationListeners = function(location, taskId) {
-    console.log('[js] BackgroundGeolocation location received: ' + JSON.stringify(location));
+    console.log('[js] BackgroundGeolocation location received: ', JSON.stringify(location));
     var me = this;
     var callback;
     for (var n=0,len=$locationListeners.length;n<len;n++) {
@@ -265,7 +265,7 @@ var BackgroundGeolocationService = (function() {
 
       // Append Cordova device-info to POST params so we can map a device-id to the location
       config.params.device = device;
-      
+
       $plugin = bgGeoPlugin;
 
       // Configure BackgroundGeolocation Plugin

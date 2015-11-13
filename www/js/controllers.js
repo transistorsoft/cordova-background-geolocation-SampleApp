@@ -501,6 +501,7 @@ angular.module('starter.controllers', [])
       });
       BackgroundGeolocationService.finish(taskId);
     }, function(error) {
+      window.alert('Sync failed.  Network is available?');
       console.warn('- sync error: ', error);
       $scope.$apply(function() {
         $scope.isSyncing = false;
