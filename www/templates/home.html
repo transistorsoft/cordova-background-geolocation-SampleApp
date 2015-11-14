@@ -1,0 +1,26 @@
+<ion-view view-title="BG Geolocation">
+  <ion-nav-buttons side="left">
+    <a class="button button-clear button-positive" ng-click="onClickSettings()">Settings</a>
+  </ion-nav-buttons>
+  
+  <ion-nav-buttons side="right"> 
+    <label class="toggle toggle-balanced">
+       <input type="checkbox" ng-click="onToggleEnabled()" ng-model="bgGeo.enabled">
+       <div class="track">
+         <div class="handle"></div>
+       </div>
+    </label>
+  </ion-nav-buttons>
+
+  <ion-content scroll="false" data-tap-disabled="true">
+    <map on-create="mapCreated(map)"></map>
+  </ion-content>
+
+  <ion-footer-bar class="bar-stable">
+    <a ng-click="centerOnMe()" class="button button-icon icon ion-navigate"></a>
+    <h1 class="title">{{odometer}}km</h1>
+    <div class="buttons align-right">
+      <button class="button icon {{startButtonIcon}}" ng-disabled="!bgGeo.enabled" ng-click="onClickStart()" style="width:75px"></button>
+    </div>
+  </ion-footer-bar>
+</ion-view>

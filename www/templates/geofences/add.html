@@ -1,0 +1,47 @@
+<ion-modal-view>
+  <ion-header-bar>
+    <button class="button button-positive button-clear" ng-click="addGeofenceModal.hide()">Cancel</button>
+    <h1 class="title">Add Geofence</h1>
+    <button class="button button-positive button-clear" ng-click="onCreateGeofence()">Done</button>
+  </ion-header-bar>
+  <ion-content >
+    <ul class="list">
+      <li>
+        <label class="item item-input">
+          <div class="input-label">Identifier</div>
+          <input type="text" ng-model="geofenceRecord.identifier" placeholder="(eg: Home, Office)" ng-required="true">
+        </label>
+      </li>
+      <li>
+        <label class="item item-input item-select">
+          <div class="input-label">Radius</div>
+          <select ng-model="geofenceRecord.radius" placeholder="foo">
+            <option value="100">100</option>
+            <option value="150">150</option>
+            <option value="200">200</option>
+            <option value="250">250</option>
+            <option value="300">300</option>
+            <option value="400">400</option>
+            <option value="500">500</option>
+            <option value="1000">1000</option>
+          </select>
+        </label>
+      </li>
+
+      <li class="item item-checkbox">
+        <label class="checkbox">
+          <input type="checkbox" ng-model="geofenceRecord.notifyOnEntry">
+        </label>
+        Notify on ENTRY
+      </li>
+
+      <li class="item item-checkbox">
+        <label class="checkbox">
+          <input type="checkbox" ng-model="geofenceRecord.notifyOnExit">
+        </label>
+        Notify on EXIT
+      </li>
+    </ul>
+
+  </ion-content>
+</ion-modal-view>
