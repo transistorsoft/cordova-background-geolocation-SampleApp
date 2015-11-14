@@ -254,7 +254,7 @@ angular.module('starter.controllers', [])
   * Enable BackgroundGeolocationService
   */
   $scope.onToggleEnabled = function() {
-    var isEnabled = !$scope.bgGeo.enabled;
+    var isEnabled = $scope.bgGeo.enabled;
     
     console.log('onToggleEnabled: ', isEnabled);
     BackgroundGeolocationService.setEnabled(isEnabled, function() {
