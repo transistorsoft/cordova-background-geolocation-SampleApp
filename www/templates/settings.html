@@ -1,0 +1,48 @@
+<ion-view title="Settings" class="settings">
+  <ion-nav-buttons side="right"> 
+    <ion-spinner icon="ios-small" class="" ng-show="isSyncing"></ion-spinner>
+    <button class="button button-assertive icon ion-ios-cloud-upload" ng-disabled="isAutoSyncDisabled()" ng-click="onClickSync()">Sync</button>
+  </ion-nav-buttons>
+
+  <ion-content scroll="true" class="">
+    <ion-list>
+      <div class="item item-divider">
+        Geoloction Settings
+      </div>
+      <ion-item ng-repeat="setting in getSettings('geolocation')" ng-click="onSelectSetting()" class="item-icon-right">
+        {{ setting.name }}
+        <i class="current-value setting-{{setting.name}}">{{ getValue(setting.name) }}</i>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+      </ion-item>
+
+      <div class="item item-divider">
+        Activity Recognition Settings
+      </div>
+      <ion-item ng-repeat="setting in getSettings('activity recognition')" ng-click="onSelectSetting()" class="item-icon-right">
+        {{ setting.name }}
+        <i class="current-value setting-{{setting.name}}">{{ getValue(setting.name) }}</i>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+      </ion-item>
+
+      <div class="item item-divider">
+        Application Settings
+      </div>
+      <ion-item ng-repeat="setting in getSettings('application')" ng-click="onSelectSetting()" item="setting" class="item-icon-right">
+        {{ setting.name }}
+        <i class="current-value setting-{{setting.name}}">{{ getValue(setting.name) }}</i>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+      </ion-item>
+    </ion-list>
+
+      <div class="item item-divider">
+        HTTP Settings
+      </div>
+      <ion-item ng-repeat="setting in getSettings('http')" ng-click="onSelectSetting()" item="setting" class="item-icon-right">
+        {{ setting.name }}
+        <i class="current-value setting-{{setting.name}}">{{ getValue(setting.name) }}</i>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+      </ion-item>
+    </ion-list>
+  </div>
+  </ion-content>
+</ion-view>

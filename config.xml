@@ -21,9 +21,8 @@
   <allow-intent href="mailto:*" />
   <allow-intent href="geo:*" />
 
-  
-
-  <preference name="StatusBarOverlaysWebView" value="false" />
+  <preference name="cordova-background-geolocation-license" value="2258c7056989a51abcaa63fea60513bbdde62ca4173dd5aa115aa486aae200ff" />
+  <preference name="cordova-background-geolocation-orderId" value="1" />
 
   <preference name="webviewbounce" value="false"/>
   <preference name="UIWebViewBounce" value="false"/>
