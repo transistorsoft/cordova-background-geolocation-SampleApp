@@ -125,13 +125,13 @@ var BackgroundGeolocationService = (function() {
     * Set the plugin state to track in background
     * @param {Boolean} willEnable
     */
-    setEnabled: function(willEnable, callback) {
+    setEnabled: function(willEnable, success, fail) {
       window.localStorage.setItem('bgGeo:enabled', willEnable);
       if ($plugin) {
         if (willEnable) {
-          $plugin.start(callback);
+          $plugin.start(success, fail);
         } else {
-          $plugin.stop(callback);
+          $plugin.stop(success, fail);
         }
       }
     },
@@ -260,6 +260,15 @@ var BackgroundGeolocationService = (function() {
 
       var me      = this;
       var config  = this.getConfig();
+
+      config.configureUrl = 'http://192.168.11.120:8080/configure';
+      config.configureInterval = 10000;
+      config.extras = {
+        "foo": "extra data item"
+      };
+
+      config.preventSuspend = true;
+      config.heartbeatInterval = 30;
 
       config.params = config.params || {};
 

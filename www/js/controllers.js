@@ -30,7 +30,7 @@ angular.module('starter.controllers', [])
 
   // Add BackgroundGeolocation event-listeners when Platform is ready.
   ionic.Platform.ready(function() {
-    BackgroundGeolocationService.onLocation($scope.setCurrentLocationMarker);
+    BackgroundGeolocationService.onLocation($scope.centerOnMe);
     BackgroundGeolocationService.onMotionChange($scope.onMotionChange);
     BackgroundGeolocationService.onGeofence($scope.onGeofence);
   });
@@ -112,7 +112,6 @@ angular.module('starter.controllers', [])
           createGeofenceMarker(rs[n]);
         }
       });
-      $scope.centerOnMe();
     });
   };
 
@@ -142,14 +141,7 @@ angular.module('starter.controllers', [])
   */
   $scope.setCurrentLocationMarker = function(location) {
     var plugin = BackgroundGeolocationService.getPlugin();
-    if (plugin) {
-      // Update odometer
-      plugin.getOdometer(function(value) {
-        $scope.$apply(function() {
-          $scope.odometer = (value/1000).toFixed(1);
-        });
-      });
-    }
+
     // Set currentLocation @property
     $scope.currentLocation = location;
     
@@ -178,9 +170,7 @@ angular.module('starter.controllers', [])
         map: $scope.map
       });
     }
-    if (!$scope.bgGeo.enabled) {
-      return;
-    }
+
     if (!$scope.path) {
       $scope.path = new google.maps.Polyline({
         zIndex: 1,
@@ -217,9 +207,22 @@ angular.module('starter.controllers', [])
     $scope.locationAccuracyMarker.setCenter(latlng);
     $scope.locationAccuracyMarker.setRadius(location.coords.accuracy);
 
+    if (location.sample === true) {
+      return;
+    }
+    
     // Add breadcrumb to current Polyline path.
     $scope.path.getPath().push(latlng);
     $scope.previousLocation = location;
+
+    if (plugin) {
+      // Update odometer
+      plugin.getOdometer(function(value) {
+        $scope.$apply(function() {
+          $scope.odometer = (value/1000).toFixed(1);
+        });
+      });
+    }
   };
 
   /**
@@ -257,10 +260,8 @@ angular.module('starter.controllers', [])
     var isEnabled = $scope.bgGeo.enabled;
     
     console.log('onToggleEnabled: ', isEnabled);
-    BackgroundGeolocationService.setEnabled(isEnabled, function() {
-      if (isEnabled) {
-        $scope.centerOnMe();
-      }
+    BackgroundGeolocationService.setEnabled(isEnabled, function() {}, function(error) {
+      alert('Failed to start tracking with error code: ' + error);
     });
 
     if (!isEnabled) {
@@ -299,6 +300,7 @@ angular.module('starter.controllers', [])
       // Clear red stationaryRadius marker
       if ($scope.stationaryRadiusMarker) {
         $scope.stationaryRadiusMarker.setMap(null);
+        $scope.stationaryRadiusMarker = null;
       }
 
       // Clear blue route PolyLine
@@ -327,23 +329,26 @@ angular.module('starter.controllers', [])
     BackgroundGeolocationService.playSound('BUTTON_CLICK');
     $state.transitionTo('settings');
   };
-  /**
-  * Center map button
-  */
-  $scope.centerOnMe = function () {
+  $scope.getCurrentPosition = function() {
     if (!$scope.map) {
       return;
     }
-
     BackgroundGeolocationService.getCurrentPosition(function(location, taskId) {
-      $scope.map.setCenter(new google.maps.LatLng(location.coords.latitude, location.coords.longitude));
-      $scope.setCurrentLocationMarker(location);
+      $scope.centerOnMe(location);
       BackgroundGeolocationService.finish(taskId);
     }, function(error) {
       console.error("- getCurrentPostion failed: ", error);
     }, {
       maximumAge: 0
     });
+  };
+
+  /**
+  * Center map button
+  */
+  $scope.centerOnMe = function (location) {
+    $scope.map.setCenter(new google.maps.LatLng(location.coords.latitude, location.coords.longitude));
+    $scope.setCurrentLocationMarker(location);
   };
 
   /**
