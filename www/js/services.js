@@ -187,6 +187,12 @@ var BackgroundGeolocationService = (function() {
         $plugin.onMotionChange(callback, failure);
       }
     },
+    onHttp: function(callback, failure) {
+      var me = this;
+      if ($plugin) {
+        $plugin.on('http', callback, failure);
+      }
+    },
     onGeofence: function(callback) {
       var me = this;
       if ($plugin) {
@@ -251,6 +257,9 @@ var BackgroundGeolocationService = (function() {
       }
     },
     /**
+    #param-string-notificationtitle-app-name
+    #param-string-notificationtext-location-service-activated
+    #param-string-notificationcolor-null
     * Configure the BackgroundGeolocation Cordova $plugin
     * @param {BackgroundGeolocation} bgGeoPlugin
     */
@@ -261,20 +270,11 @@ var BackgroundGeolocationService = (function() {
       var me      = this;
       var config  = this.getConfig();
 
-      config.configureUrl = 'http://192.168.11.120:8080/configure';
-      config.configureInterval = 10000;
-      config.extras = {
-        "foo": "extra data item"
-      };
-
-      config.preventSuspend = true;
-      config.heartbeatInterval = 30;
-
       config.params = config.params || {};
-
       // Append Cordova device-info to POST params so we can map a device-id to the location
+      
       config.params.device = device;
-
+      
       $plugin = bgGeoPlugin;
 
       // Configure BackgroundGeolocation Plugin
@@ -282,10 +282,6 @@ var BackgroundGeolocationService = (function() {
         window.alert('Location error: ' + error);
         console.warn('BackgroundGeolocation Error: ' + error);
       }, config);
-
-      if (this.getEnabled()) {
-        $plugin.start();
-      }
     },
     /**
     * Return a reference to Cordova BackgroundGeolocation plugin
@@ -294,15 +290,17 @@ var BackgroundGeolocationService = (function() {
     getPlugin: function() {
       return $plugin;
     },
-    addGeofence: function(data, callback) {
+    addGeofence: function(data, success, failure) {
       if ($plugin) {
         var me = this;
         $plugin.addGeofence(data, function(res) {
           me.playSound('ADD_GEOFENCE');
-          callback.call(me, res);
+          success.call(me, res);
+        }, function(error) {
+          failure.call(me, error);
         });
       } else {
-        callback.call(me);
+        success.call(me);
       }
     },
     removeGeofence: function(identifier) {

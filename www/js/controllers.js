@@ -5,52 +5,6 @@ angular.module('starter.controllers', [])
 * Maps Controller
 */
 .controller('Maps', function($scope, $ionicModal, $ionicLoading, $ionicPopup, $state) {
-  var PLAY_BUTTON_CLASS = "ion-play button-balanced",
-      PAUSE_BUTTON_CLASS = "ion-pause button-assertive";
-
-  /**
-  * BackgroundGelocation plugin state
-  */
-  $scope.bgGeo = {
-    enabled: (window.localStorage.getItem('bgGeo:enabled') == 'true'),
-    isMoving: (window.localStorage.getItem('bgGeo:isMoving') == 'true')
-  };
-  $scope.startButtonIcon = ($scope.bgGeo.isMoving) ? PAUSE_BUTTON_CLASS : PLAY_BUTTON_CLASS;
-  $scope.map                    = undefined;
-  $scope.currentLocationMarker  = undefined;
-  $scope.previousLocation       = undefined;
-  $scope.locationMarkers        = [];
-  $scope.geofenceMarkers        = [];
-  $scope.path                   = undefined;
-  $scope.currentLocationMarker  = undefined;
-  $scope.locationAccuracyMarker = undefined;
-  $scope.stationaryRadiusMarker = undefined;
-
-  $scope.odometer = 0;
-
-  // Add BackgroundGeolocation event-listeners when Platform is ready.
-  ionic.Platform.ready(function() {
-    BackgroundGeolocationService.onLocation($scope.centerOnMe);
-    BackgroundGeolocationService.onMotionChange($scope.onMotionChange);
-    BackgroundGeolocationService.onGeofence($scope.onGeofence);
-  });
-
-  // Build Add Geofence Modal.
-  $ionicModal.fromTemplateUrl('templates/geofences/add.html', {
-    scope: $scope,
-    animation: 'slide-in-up'
-  }).then(function(modal) {
-    $scope.addGeofenceModal = modal;
-  });
-
-  // Build Add Geofence Modal.
-  $ionicModal.fromTemplateUrl('templates/geofences/show.html', {
-    scope: $scope,
-    animation: 'slide-in-up'
-  }).then(function(modal) {
-    $scope.showGeofenceModal = modal;
-  });
-
   /**
   * Show an alert
   * @param {String} title
@@ -136,6 +90,11 @@ angular.module('starter.controllers', [])
     }
     BackgroundGeolocationService.finish(taskId); 
   }
+
+  $scope.onHttp = function(response) {
+    console.log('- http response: ', response);
+  }
+
   /**
   * Draw google map marker for current location
   */
@@ -333,13 +292,20 @@ angular.module('starter.controllers', [])
     if (!$scope.map) {
       return;
     }
+    console.log('- getting current position');
+
     BackgroundGeolocationService.getCurrentPosition(function(location, taskId) {
+      console.log('- getCurrentPosition SUCCESS');
       $scope.centerOnMe(location);
       BackgroundGeolocationService.finish(taskId);
     }, function(error) {
       console.error("- getCurrentPostion failed: ", error);
     }, {
-      maximumAge: 0
+      maximumAge: 0,
+      timeout: 30,
+      extras: {
+        foo: "extra-data"
+      }
     });
   };
 
@@ -362,27 +328,31 @@ angular.module('starter.controllers', [])
   $scope.onGeofence = function(params, taskId) {
     $scope.showAlert('Geofence ' + params.action, "Identifier: " + params.identifier);
     
-    var bgGeo = BackgroundGeolocationService.getPlugin();
-    // Remove geofence after it triggers.
-    bgGeo.removeGeofence(params.identifier, function() {
-      var marker = getGeofenceMarker(params.identifier);
-      // Grey-out the google.maps.Circle to show it's been triggered.
-      if (marker) {
-        marker.removed = true;
-        marker.setOptions({
-          fillColor: '#000000',
-          fillOpacity: 0.3,
-          strokeColor: '#000000',
-          strokeOpacity: 0.5
-        });
-      }
-      // We're inside a nested async callback here, which has now completed.  #finish the outer #onGeofence taskId now.
-      bgGeo.finish(taskId);
-    }, function(error) {
-      console.log('Failed to remove geofence: ' + error);
-      // Finish outer #onGeofence taskId now.
-      bgGeo.finish(taskId);
-    });
+    var bgGeo   = BackgroundGeolocationService.getPlugin();
+    var marker  = getGeofenceMarker(params.identifier);
+    var geofence = marker.params;
+
+    // Destroy the geofence?
+    if (!geofence.notifyOnDwell || (geofence.notifyOnDwell && params.action === "DWELL")) {
+      bgGeo.removeGeofence(params.identifier, function() {
+        // Grey-out the google.maps.Circle to show it's been triggered.
+        if (marker) {
+          marker.removed = true;
+          marker.setOptions({
+            fillColor: '#000000',
+            fillOpacity: 0.3,
+            strokeColor: '#000000',
+            strokeOpacity: 0.5
+          });
+        }
+        // We're inside a nested async callback here, which has now completed.  #finish the outer #onGeofence taskId now.
+        bgGeo.finish(taskId);
+      }, function(error) {
+        console.log('Failed to remove geofence: ' + error);
+        // Finish outer #onGeofence taskId now.
+        bgGeo.finish(taskId);
+      });
+    }
   };
   /**
   * Add geofence click-handler
@@ -394,7 +364,9 @@ angular.module('starter.controllers', [])
       identifier: '',
       radius: 200,
       notifyOnEntry: true,
-      notifyOnExit: false
+      notifyOnExit: false,
+      notifyOnDwell: false,
+      loiteringDelay: undefined
     };
     $scope.addGeofenceModal.show();
   };
@@ -405,6 +377,9 @@ angular.module('starter.controllers', [])
     $scope.addGeofenceModal.hide();
     BackgroundGeolocationService.addGeofence($scope.geofenceRecord, function() {
       createGeofenceMarker($scope.geofenceRecord);
+    }, function(error) {
+      console.error(error);
+      alert("Failed to add geofence: " + error);
     });
   };
   /**
@@ -481,6 +456,56 @@ angular.module('starter.controllers', [])
     }
     BackgroundGeolocationService.removeGeofence(identifier);
   };
+
+  var PLAY_BUTTON_CLASS = "ion-play button-balanced",
+      PAUSE_BUTTON_CLASS = "ion-pause button-assertive";
+
+  /**
+  * BackgroundGelocation plugin state
+  */
+  $scope.bgGeo = {
+    enabled: (window.localStorage.getItem('bgGeo:enabled') == 'true'),
+    isMoving: (window.localStorage.getItem('bgGeo:isMoving') == 'true')
+  };
+  $scope.startButtonIcon = ($scope.bgGeo.isMoving) ? PAUSE_BUTTON_CLASS : PLAY_BUTTON_CLASS;
+  $scope.map                    = undefined;
+  $scope.currentLocationMarker  = undefined;
+  $scope.previousLocation       = undefined;
+  $scope.locationMarkers        = [];
+  $scope.geofenceMarkers        = [];
+  $scope.path                   = undefined;
+  $scope.currentLocationMarker  = undefined;
+  $scope.locationAccuracyMarker = undefined;
+  $scope.stationaryRadiusMarker = undefined;
+
+  $scope.odometer = 0;
+
+  // Add BackgroundGeolocation event-listeners when Platform is ready.
+  ionic.Platform.ready(function() {
+    BackgroundGeolocationService.onLocation($scope.centerOnMe);
+    BackgroundGeolocationService.onMotionChange($scope.onMotionChange);
+    BackgroundGeolocationService.onGeofence($scope.onGeofence);
+    BackgroundGeolocationService.onHttp($scope.onHttp, function(error) {
+      console.info('- http error: ', error);
+    });
+  });
+
+  // Build Add Geofence Modal.
+  $ionicModal.fromTemplateUrl('templates/geofences/add.html', {
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function(modal) {
+    $scope.addGeofenceModal = modal;
+  });
+
+  // Build Add Geofence Modal.
+  $ionicModal.fromTemplateUrl('templates/geofences/show.html', {
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function(modal) {
+    $scope.showGeofenceModal = modal;
+  });
+
 })
 
 /**
@@ -507,7 +532,7 @@ angular.module('starter.controllers', [])
       });
       BackgroundGeolocationService.finish(taskId);
     }, function(error) {
-      window.alert('Sync failed.  Network is available?');
+      window.alert(error);
       console.warn('- sync error: ', error);
       $scope.$apply(function() {
         $scope.isSyncing = false;

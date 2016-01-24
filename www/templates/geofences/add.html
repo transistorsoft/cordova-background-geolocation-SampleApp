@@ -41,6 +41,20 @@
         </label>
         Notify on EXIT
       </li>
+
+      <li class="item item-checkbox">
+        <label class="checkbox">
+          <input type="checkbox" ng-model="geofenceRecord.notifyOnDwell">
+        </label>
+        Notify on DWELL
+      </li>
+
+      <li>
+        <label class="item item-input">
+          <div class="input-label">Loitering delay (ms)</div>
+          <input type="number" ng-model="geofenceRecord.loiteringDelay" placeholder="Delay before DWELL transition fires" ng-required="true">
+        </label>
+      </li>
     </ul>
 
   </ion-content>
