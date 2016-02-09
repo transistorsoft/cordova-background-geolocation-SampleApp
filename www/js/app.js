@@ -125,6 +125,21 @@ app.config(function($stateProvider, $urlRouterProvider) {
       templateUrl: 'templates/settings/radio-list.html',
       controller: 'Settings'
     })
+    .state('settings/preventSuspend', {
+      url: '/settings/preventSuspend',
+      templateUrl: 'templates/settings/radio-list.html',
+      controller: 'Settings'
+    })
+    .state('settings/heartbeatInterval', {
+      url: '/settings/heartbeatInterval',
+      templateUrl: 'templates/settings/radio-list.html',
+      controller: 'Settings'
+    })
+    .state('settings/foregroundService', {
+      url: '/settings/foregroundService',
+      templateUrl: 'templates/settings/radio-list.html',
+      controller: 'Settings'
+    })
 });
 
 app.run(function($ionicPlatform) {
@@ -138,4 +153,29 @@ app.run(function($ionicPlatform) {
       }
     }
   });
-})
+});
+
+var getLocationsTask = null;
+var getCurrentPositionTask = null;
+
+function startSqliteTest(delay) {
+  var bg = window.BackgroundGeolocation;
+
+  getLocationsTask = setInterval(function() {
+    bg.getLocations(function(rs, tid) {
+      console.log('- getLocations: ', rs.length);
+      bg.finish(tid);
+    })
+  }, delay);
+
+  getCurrentPositionTask = setInterval(function() {
+    bg.getCurrentPosition(function(location, tid) {
+      console.log('- getCurrentPosition');
+      bg.finish(tid);
+    });
+  }, delay);
+}
+function stopSqliteTest() {
+  clearInterval(getLocationsTask);
+  clearInterval(getCurrentPositionTask);
+}
