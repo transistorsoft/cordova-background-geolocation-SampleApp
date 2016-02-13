@@ -66,6 +66,20 @@ angular.module('starter.controllers', [])
           createGeofenceMarker(rs[n]);
         }
       });
+
+      // Add BackgroundGeolocation event-listeners when Platform is ready.
+      BackgroundGeolocationService.onLocation($scope.centerOnMe);
+      bgGeo.on('motionchange', $scope.onMotionChange);
+      bgGeo.on('geofence', $scope.onGeofence);
+      bgGeo.on('http', $scope.onHttp, function(error) {
+        console.info('- http error: ', error);
+      });
+
+      bgGeo.on('heartbeat', function(params) {
+        var shakes = params.shakes;
+        var location = params.location;
+        console.log('- HEARTBEAT shakes: ', params.shakes);
+      });
     });
   };
 
@@ -480,16 +494,6 @@ angular.module('starter.controllers', [])
 
   $scope.odometer = 0;
 
-  // Add BackgroundGeolocation event-listeners when Platform is ready.
-  ionic.Platform.ready(function() {
-    BackgroundGeolocationService.onLocation($scope.centerOnMe);
-    BackgroundGeolocationService.onMotionChange($scope.onMotionChange);
-    BackgroundGeolocationService.onGeofence($scope.onGeofence);
-    BackgroundGeolocationService.onHttp($scope.onHttp, function(error) {
-      console.info('- http error: ', error);
-    });
-  });
-
   // Build Add Geofence Modal.
   $ionicModal.fromTemplateUrl('templates/geofences/add.html', {
     scope: $scope,
@@ -511,7 +515,7 @@ angular.module('starter.controllers', [])
 /**
 * Settings Controller
 */
-.controller('Settings', function($scope, $state) {
+.controller('Settings', function($scope, $ionicPopup, $state) {
   $scope.syncButtonIcon = 'ion-load-c icon-animated';
 
   $scope.selectedValue = '';
@@ -602,8 +606,39 @@ angular.module('starter.controllers', [])
     }
     
   };
+  $scope.data = {
+    email: window.localStorage.getItem('email-log-recipient')
+  };
 
-  
+  /**
+  * Email application log to someone
+  */
+  $scope.onEmailLog = function() {
+    var bgGeo = window.BackgroundGeolocation;
+    var myPopup = $ionicPopup.show({
+      template: '<input type="email" ng-model="data.email">',
+      title: 'Email application logs',
+      subTitle: 'Recipient email',
+      scope: $scope,
+      buttons: [{
+        text: 'Cancel'
+      },{
+        text: '<b>Send</b>',
+        type: 'button-positive',
+        onTap: function(e) {
+          if (!$scope.data.email) {
+            e.preventDefault();
+          } else {
+            myPopup.close();
+            // remember this email address
+            window.localStorage.setItem('email-log-recipient', $scope.data.email);
+            bgGeo.emailLog($scope.data.email);      
+          }
+        }
+      }]
+    });
+  };
+
   /**
   * Select setting-value
   */

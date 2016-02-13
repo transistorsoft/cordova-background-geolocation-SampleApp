@@ -134,7 +134,7 @@ var BackgroundGeolocationService = (function() {
         if (willEnable) {
           $plugin.start(success, fail);
         } else {
-          $plugin.stop(success, fail);
+          $plugin.stop();
         }
       }
     },

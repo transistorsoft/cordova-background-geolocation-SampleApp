@@ -8,7 +8,7 @@
       Transistor Software
     </author>
   <content src="index.html"/>
-  
+
   <preference name="cordova-background-geolocation-license" value="2258c7056989a51abcaa63fea60513bbdde62ca4173dd5aa115aa486aae200ff" />
   <preference name="cordova-background-geolocation-orderId" value="1" />
 
