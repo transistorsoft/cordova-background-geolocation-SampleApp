@@ -23,7 +23,7 @@ $ git clone https://github.com/transistorsoft/cordova-background-geolocation-Sam
 **Step 2.**  Now we must install the application's required plugins.  Copy/paste the following one-liner (Cordova 5-style) into your console to install all the required plugins.
 
 ```
-$ cordova plugin add cordova-plugin-device cordova-plugin-console cordova-plugin-whitelist cordova-plugin-splashscreen ionic.plugin.keyboard
+$ cordova plugin add cordova-plugin-device cordova-plugin-console cordova-plugin-whitelist cordova-plugin-splashscreen
 ```
 
 **Step 3.**  Now install the `cordova-background-geolocation` plugin.  Install **one** of the following:
