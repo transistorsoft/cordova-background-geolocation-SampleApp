@@ -22,138 +22,138 @@ app.config(function($stateProvider, $urlRouterProvider) {
     })
     .state('settings/distanceFilter', {
       url: '/settings/distanceFilter',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/stationaryRadius', {
       url: '/settings/stationaryRadius',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/desiredAccuracy', {
       url: '/settings/desiredAccuracy',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/activityType', {
       url: '/settings/activityType',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/triggerActivities', {
       url: '/settings/triggerActivities',
-      templateUrl: 'templates/settings/trigger-activities.html',
+      templateUrl: 'js/app/settings/trigger-activities.html',
       controller: 'Settings'
     })
     .state('settings/disableElasticity', {
       url: '/settings/disableElasticity',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/url', {
       url: '/settings/url',
-      templateUrl: 'templates/settings/url.html',
+      templateUrl: 'js/app/settings/url.html',
       controller: 'Settings'
     })
     .state('settings/method', {
       url: '/settings/method',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/autoSync', {
       url: '/settings/autoSync',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/batchSync', {
       url: '/settings/batchSync',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/locationUpdateInterval', {
       url: '/settings/locationUpdateInterval',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/fastestLocationUpdateInterval', {
       url: '/settings/fastestLocationUpdateInterval',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/activityRecognitionInterval', {
       url: '/settings/activityRecognitionInterval',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/stopDetectionDelay', {
       url: '/settings/stopDetectionDelay',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/stopTimeout', {
       url: '/settings/stopTimeout',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/stopOnTerminate', {
       url: '/settings/stopOnTerminate',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/forceReloadOnLocationChange', {
       url: '/settings/forceReloadOnLocationChange',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/forceReloadOnMotionChange', {
       url: '/settings/forceReloadOnMotionChange',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/forceReloadOnGeofence', {
       url: '/settings/forceReloadOnGeofence',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/startOnBoot', {
       url: '/settings/startOnBoot',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/debug', {
       url: '/settings/debug',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/preventSuspend', {
       url: '/settings/preventSuspend',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/heartbeatInterval', {
       url: '/settings/heartbeatInterval',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/foregroundService', {
       url: '/settings/foregroundService',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/deferTime', {
       url: '/settings/deferTime',
-      templateUrl: 'templates/settings/radio-list.html',
+      templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
     .state('settings/pausesLocationUpdatesAutomatically', {
       url: '/settings/pausesLocationUpdatesAutomatically',
-      templateUrl: 'templates/settings/radio-list.html',
-      contorller: 'Settings'
+      templateUrl: 'js/app/settings/radio-list.html',
+      controller: 'Settings'
     })
     .state('settings/useSignificantChangesOnly', {
       url: '/settings/useSignificantChangesOnly',
-      templateUrl: 'templates/settings/radio-list.html',
-      contorller: 'Settings'
+      templateUrl: 'js/app/settings/radio-list.html',
+      controller: 'Settings'
     })
 });
 
