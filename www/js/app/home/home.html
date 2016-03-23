@@ -5,7 +5,7 @@
   
   <ion-nav-buttons side="right"> 
     <label class="toggle toggle-balanced">
-       <input type="checkbox" ng-click="onToggleEnabled()" ng-model="bgGeo.enabled">
+       <input type="checkbox" ng-click="onToggleEnabled()" ng-model="state.enabled">
        <div class="track">
          <div class="handle"></div>
        </div>
@@ -13,7 +13,7 @@
   </ion-nav-buttons>
 
   <ion-content scroll="false" data-tap-disabled="true">
-    <map on-create="mapCreated(map)"></map>
+    <div id="map"></div>
   </ion-content>
 
   <ion-footer-bar class="bar-stable">
@@ -21,7 +21,7 @@
     <h1 class="title" style="text-align:center">{{odometer}}km</h1>
     <div class="buttons align-right">
       <ion-spinner icon="ios-small" class="" ng-show="isChangingPace"></ion-spinner>
-      <button class="button icon {{startButtonIcon}}" ng-disabled="!bgGeo.enabled" ng-click="onClickStart()" style="width:75px"></button>
+      <button class="button icon {{startButtonIcon}}" ng-disabled="!state.enabled" ng-click="onClickChangePace()" style="width:75px"></button>
     </div>
   </ion-footer-bar>
 </ion-view>

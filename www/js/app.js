@@ -1,4 +1,4 @@
-var app = angular.module('starter', ['ionic', 'starter.controllers', 'starter.directives']);
+var app = angular.module('starter', ['ionic', 'starter.Home', 'starter.Settings', 'services.Settings']);
 
 app.config(function($stateProvider, $urlRouterProvider) {
 
@@ -7,16 +7,16 @@ app.config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
     .state('home', {
       url: '/',
-      templateUrl: 'templates/home.html',
-      controller: 'Maps'
-    })
+      templateUrl: 'js/app/home/home.html',
+      controller: 'Home'
+    })    
     .state('getSettings', {
       url: '/getSettings',
       controller: 'Settings'
     })
     .state('settings', {
       url: '/settings',
-      templateUrl: 'templates/settings.html',
+      templateUrl: 'js/app/settings/settings.html',
       controller: 'Settings',
       cache: false
     })
@@ -140,6 +140,21 @@ app.config(function($stateProvider, $urlRouterProvider) {
       templateUrl: 'templates/settings/radio-list.html',
       controller: 'Settings'
     })
+    .state('settings/deferTime', {
+      url: '/settings/deferTime',
+      templateUrl: 'templates/settings/radio-list.html',
+      controller: 'Settings'
+    })
+    .state('settings/pausesLocationUpdatesAutomatically', {
+      url: '/settings/pausesLocationUpdatesAutomatically',
+      templateUrl: 'templates/settings/radio-list.html',
+      contorller: 'Settings'
+    })
+    .state('settings/useSignificantChangesOnly', {
+      url: '/settings/useSignificantChangesOnly',
+      templateUrl: 'templates/settings/radio-list.html',
+      contorller: 'Settings'
+    })
 });
 
 app.run(function($ionicPlatform) {
@@ -147,35 +162,5 @@ app.run(function($ionicPlatform) {
     if(window.StatusBar) {
       StatusBar.styleDefault();
     }
-    if (window.cordova) {
-      if (window.BackgroundGeolocation) {
-        BackgroundGeolocationService.configurePlugin(window.BackgroundGeolocation);
-      }
-    }
   });
 });
-
-var getLocationsTask = null;
-var getCurrentPositionTask = null;
-
-function startSqliteTest(delay) {
-  var bg = window.BackgroundGeolocation;
-
-  getLocationsTask = setInterval(function() {
-    bg.getLocations(function(rs, tid) {
-      console.log('- getLocations: ', rs.length);
-      bg.finish(tid);
-    })
-  }, delay);
-
-  getCurrentPositionTask = setInterval(function() {
-    bg.getCurrentPosition(function(location, tid) {
-      console.log('- getCurrentPosition');
-      bg.finish(tid);
-    });
-  }, delay);
-}
-function stopSqliteTest() {
-  clearInterval(getLocationsTask);
-  clearInterval(getCurrentPositionTask);
-}

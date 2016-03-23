@@ -1,0 +1,19 @@
+<ion-modal-view>
+  <ion-header-bar>
+    <button class="button button-positive button-clear" ng-click="showGeofenceModal.hide()">Cancel</button>
+    <h1 class="title">Show Geofence</h1>
+  </ion-header-bar>
+  <ion-content >
+    <ion-list>
+      <ion-item class="item-icon-right">
+        Identifier
+        <i class="icon icon-accessory" style="padding-right: 1em">{{geofenceRecord.identifier}}</i>
+      </ion-item> 
+      <ion-item class="item-icon-right">
+        Radius
+        <i class="icon icon-accessory" style="padding-right: 1em">{{geofenceRecord.radius}}</i>
+      </ion-item>
+    </ion-list>
+    <button class="button button-assertive button-full" ng-click="onRemoveGeofence()">Delete</button>
+  </ion-content>
+</ion-modal-view>

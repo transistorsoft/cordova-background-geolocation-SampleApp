@@ -1,0 +1,9 @@
+<ion-view title="{{getSelectedSetting().name}}" class="settings-values">
+  <ion-content class="">
+    <div class="list">
+      <ion-radio ng-model="getConfig()[this.getSelectedSetting().name]" ng-value="value" ng-repeat="value in getSettingValues()" ng-change="onSelectValue()" class="radio-positive">
+        {{value}}
+      </ion-radio>
+    </div>
+  </ion-content>
+</ion-view>

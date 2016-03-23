@@ -69,7 +69,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>TSLocationManager requires background location tracking</string>
+	<string>App requires background location tracking</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>App requires background location tracking</string>
 	<key>NSMainNibFile</key>
 	<string></string>
 	<key>NSMainNibFile~ipad</key>
