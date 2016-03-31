@@ -169,6 +169,11 @@ angular.module('starter.Home', [])
   function configureBackgroundGeolocation() {
     var config = Settings.getConfig();
     
+    config.params = {};
+
+    // Attach Device info to BackgroundGeolocation params.device    
+    config.params.device = ionic.Platform.device();
+
     bgGeo = window.BackgroundGeolocation;
     bgGeo.configure(onLocation, onLocationError, config);
 
@@ -197,6 +202,27 @@ angular.module('starter.Home', [])
       console.log('- HEARTBEAT shakes: ', params.shakes);
     });
   }
+
+  function configureBackgroundFetch() {
+    var Fetcher = window.BackgroundFetch;
+    // Your background-fetch handler.
+    var fetchCallback = function() {
+        console.log('[js] BackgroundFetch initiated');
+        bgGeo.getCurrentPosition(function(location, tid) {
+          console.log('[js] getCurrentPosition', JSON.stringify(location));
+          bgGeo.finish(tid);
+          Fetcher.finish();
+        });
+    }
+
+    var failureCallback = function() {
+        console.log('- BackgroundFetch failed');
+    };
+
+    Fetcher.configure(fetchCallback, failureCallback, {
+        stopOnTerminate: false  // <-- false is default
+    });
+  }
   /**
   * Platform is ready.  Boot the Home screen
   */
@@ -206,6 +232,9 @@ angular.module('starter.Home', [])
     if (!window.BackgroundGeolocation) {
       console.warn('Could not detect BackgroundGeolocation API');
       return;
+    }
+    if (window.BackgroundFetch) {
+      configureBackgroundFetch();
     }
     configureBackgroundGeolocation();
 	}
@@ -461,8 +490,14 @@ angular.module('starter.Home', [])
   $scope.onToggleEnabled = function() {
     if (!bgGeo) { return;}
     if ($scope.state.enabled) {
-      bgGeo.start(function() {
-        console.info('[js] BackgroundGeolocation started');
+      
+      bgGeo.start( function() {
+        // If BackgroundGeolocation is monitoring geofences, fetch them and add map-markers
+        bgGeo.getGeofences(function(rs) {
+          for (var n=0,len=rs.length;n<len;n++) {
+            createGeofenceMarker(rs[n]);
+          }
+        });
       });
     } else {
       bgGeo.stop(function() {

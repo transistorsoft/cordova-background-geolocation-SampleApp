@@ -83,8 +83,7 @@ angular.module('starter.Settings', [])
   $scope.onSelectValue = function() {
     if (bgGeo) {
       bgGeo.playSound(Settings.getSoundId('BUTTON_CLICK'));
-      
-      debugger;
+
       var config = {},
           name = $state.selectedSetting.name,
           value = this.value;
@@ -148,16 +147,12 @@ angular.module('starter.Settings', [])
     return $state.triggerActivities;
   };
 
-  $scope.state = {
-    
-  };
-
   /**
   * Email application log to someone
   */
   $scope.onEmailLog = function() {
     var myPopup = $ionicPopup.show({
-      template: '<input type="email" ng-model="data.email">',
+      template: '<input type="email" ng-model="state.email">',
       title: 'Email application logs',
       subTitle: 'Recipient email',
       scope: $scope,
