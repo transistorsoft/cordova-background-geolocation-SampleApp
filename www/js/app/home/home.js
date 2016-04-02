@@ -501,7 +501,7 @@ angular.module('starter.Home', [])
     if ($scope.state.enabled) {
       
       bgGeo.start( function() {
-        console.log('[js] BackgroundGeolocation started'));
+        console.log('[js] BackgroundGeolocation started');
 
         // If BackgroundGeolocation is monitoring geofences, fetch them and add map-markers
         bgGeo.getGeofences(function(rs) {
