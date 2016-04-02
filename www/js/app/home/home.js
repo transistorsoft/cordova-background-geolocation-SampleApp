@@ -6,7 +6,8 @@ angular.module('starter.Home', [])
 
   $scope.state = {
     enabled: false,
-    isMoving: false
+    isMoving: false,
+    startButtonIcon: PLAY_BUTTON_CLASS
   };
 
   /**
@@ -63,7 +64,7 @@ angular.module('starter.Home', [])
     // Change state of start-button icon:  [>] or [||] 
     $scope.$apply(function() {
       $scope.isChangingPace = false;
-      $scope.startButtonIcon  = (isMoving) ? PAUSE_BUTTON_CLASS : PLAY_BUTTON_CLASS;
+      $scope.state.startButtonIcon  = (isMoving) ? PAUSE_BUTTON_CLASS : PLAY_BUTTON_CLASS;
     });
 
     if (map) {
@@ -174,6 +175,14 @@ angular.module('starter.Home', [])
     // Attach Device info to BackgroundGeolocation params.device    
     config.params.device = ionic.Platform.device();
 
+    ////
+    // Hardcode the url
+    //
+    //
+    //config.url = 'http://192.168.11.120:8080/locations';
+    //
+    //
+  
     bgGeo = window.BackgroundGeolocation;
     bgGeo.configure(onLocation, onLocationError, config);
 
@@ -492,6 +501,8 @@ angular.module('starter.Home', [])
     if ($scope.state.enabled) {
       
       bgGeo.start( function() {
+        console.log('[js] BackgroundGeolocation started'));
+
         // If BackgroundGeolocation is monitoring geofences, fetch them and add map-markers
         bgGeo.getGeofences(function(rs) {
           for (var n=0,len=rs.length;n<len;n++) {
@@ -504,6 +515,7 @@ angular.module('starter.Home', [])
         console.info('[js] BackgroundGeolocation stopped');
       });
 
+      // Reset the odometer.
       bgGeo.resetOdometer(function() {
         $scope.$apply(function() {
           $scope.odometer = 0;
@@ -573,7 +585,7 @@ angular.module('starter.Home', [])
     bgGeo.changePace(willStart, function() {
       $scope.state.isMoving    = willStart;
       $scope.$apply(function() {
-        $scope.startButtonIcon  = (willStart) ? PAUSE_BUTTON_CLASS : PLAY_BUTTON_CLASS;
+        $scope.state.startButtonIcon  = (willStart) ? PAUSE_BUTTON_CLASS : PLAY_BUTTON_CLASS;
       });
     });
   };

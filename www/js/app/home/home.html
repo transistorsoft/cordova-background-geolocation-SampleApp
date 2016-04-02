@@ -21,7 +21,7 @@
     <h1 class="title" style="text-align:center">{{odometer}}km</h1>
     <div class="buttons align-right">
       <ion-spinner icon="ios-small" class="" ng-show="isChangingPace"></ion-spinner>
-      <button class="button icon {{startButtonIcon}}" ng-disabled="!state.enabled" ng-click="onClickChangePace()" style="width:75px"></button>
+      <button class="button icon {{state.startButtonIcon}}" ng-disabled="!state.enabled" ng-click="onClickChangePace()" style="width:75px"></button>
     </div>
   </ion-footer-bar>
 </ion-view>
