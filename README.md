@@ -37,7 +37,7 @@ $ cordova plugin add https://github.com/transistorsoft/cordova-background-geoloc
    **B. [Free iOS Version](https://github.com/transistorsoft/cordova-background-geolocation-lt)**
 
 ```
-$ cordova plugin add https://github.com/transistorsoft/cordova-background-geolocation-lt.git
+$ cordova plugin add cordova-background-geolocation-lt
 ```
 
 **Step 4.** Add your desired platform(s) and build.
