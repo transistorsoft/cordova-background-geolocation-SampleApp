@@ -90,11 +90,11 @@ angular.module('starter.Settings', [])
 
       config[name] = value;
 
-      bgGeo.setConfig(function() {
+      bgGeo.setConfig(config, function() {
         console.info('[js] setConfig success: ', name, value);
       }, function() {
         console.warn('[js] setConfig error: ', name, value);
-      }, config);
+      });
     }
     Settings.set(name, value);
     $state.autoSyncDisabled = !Settings.getConfig().autoSync;

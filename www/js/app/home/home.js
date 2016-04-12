@@ -88,7 +88,9 @@ angular.module('starter.Home', [])
     
     var marker  = getGeofenceMarker(params.identifier);
     var geofence = marker.params;
-
+    if (!geofence) {
+      return;
+    }
     // Destroy the geofence?
     if (!geofence.notifyOnDwell || (geofence.notifyOnDwell && params.action === "DWELL")) {
       bgGeo.removeGeofence(params.identifier, function() {
@@ -171,22 +173,26 @@ angular.module('starter.Home', [])
     var config = Settings.getConfig();
     
     config.params = {};
-
+  
     // Attach Device info to BackgroundGeolocation params.device    
     config.params.device = ionic.Platform.device();
 
-    ////
-    // Hardcode the url
-    //
-    //
-    //config.url = 'http://192.168.11.120:8080/locations';
-    //
-    //
-  
     bgGeo = window.BackgroundGeolocation;
-    bgGeo.configure(onLocation, onLocationError, config);
 
-    bgGeo.getState(function(state) {
+    bgGeo.on('location', onLocation, onLocationError);
+    bgGeo.on('motionchange', onMotionChange);
+    bgGeo.on('geofence', onGeofence);
+    bgGeo.on('http', onHttpSuccess, onHttpError);
+
+    bgGeo.on('heartbeat', function(params) {
+      var shakes = params.shakes;
+      var location = params.location;
+      console.log('- HEARTBEAT shakes: ', params.shakes);
+    });
+
+    // Ok, now #configure it!
+    bgGeo.configure(config, function(state) {
+      console.info('- configure success: ', state);
       $scope.$apply(function() {
         $scope.state.enabled = state.enabled;
         $scope.state.isMoving = state.isMoving;
@@ -201,15 +207,7 @@ angular.module('starter.Home', [])
     });
 
     // Add BackgroundGeolocation event-listeners when Platform is ready.
-    bgGeo.on('motionchange', onMotionChange);
-    bgGeo.on('geofence', onGeofence);
-    bgGeo.on('http', onHttpSuccess, onHttpError);
 
-    bgGeo.on('heartbeat', function(params) {
-      var shakes = params.shakes;
-      var location = params.location;
-      console.log('- HEARTBEAT shakes: ', params.shakes);
-    });
   }
 
   function configureBackgroundFetch() {
@@ -217,6 +215,7 @@ angular.module('starter.Home', [])
     // Your background-fetch handler.
     var fetchCallback = function() {
         console.log('[js] BackgroundFetch initiated');
+
         bgGeo.getCurrentPosition(function(location, tid) {
           console.log('[js] getCurrentPosition', JSON.stringify(location));
           bgGeo.finish(tid);
@@ -571,7 +570,7 @@ angular.module('starter.Home', [])
     }, function(error) {
       console.warn('[js] getCurrentPosition error: ', error);
     }, {
-      timeout: 30,
+      timeout: 10,
       extras: {name: 'getCurrentPosition'}
     })
   }
