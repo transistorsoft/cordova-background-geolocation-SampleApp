@@ -570,7 +570,7 @@ angular.module('starter.Home', [])
     }, function(error) {
       console.warn('[js] getCurrentPosition error: ', error);
     }, {
-      timeout: 30,
+      timeout: 10,
       extras: {name: 'getCurrentPosition'}
     })
   }
