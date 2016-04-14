@@ -32,11 +32,11 @@ If you're using **PhoneGap Build**, add the following plugins to your `config.xm
 ```
   <preference name="android-build-tool" value="gradle" />
 
-  <plugin name="cordova-background-geolocation-lt" spec="1.5.1" />
-  <plugin name="cordova-plugin-console" spec="1.0.2" />
-  <plugin name="cordova-plugin-device" spec="1.1.1" />
-  <plugin name="cordova-plugin-splashscreen" spec="3.2.1" />
-  <plugin name="cordova-plugin-whitelist" spec="1.2.1" />
+  <plugin name="cordova-background-geolocation-lt" />
+  <plugin name="cordova-plugin-console" />
+  <plugin name="cordova-plugin-device" />
+  <plugin name="cordova-plugin-splashscreen" />
+  <plugin name="cordova-plugin-whitelist" />
 
 ```
 
@@ -54,6 +54,11 @@ $ cordova plugin add https://github.com/transistorsoft/cordova-background-geoloc
 
 ```
 $ cordova plugin add cordova-background-geolocation-lt
+```
+
+Or for **PhoneGap Build**:
+```
+  <plugin name="cordova-background-geolocation-lt" />
 ```
 
 #### Step 4: Build
