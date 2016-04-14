@@ -14,19 +14,35 @@ Edit settings and observe the behavour of **Background Geolocation** changing in
 
 ## Installation
 
-**Step 1.** Start by cloning this repo
+#### Step 1: Start by cloning this repo
 
 ```
 $ git clone https://github.com/transistorsoft/cordova-background-geolocation-SampleApp.git
 ```
 
-**Step 2.**  Now we must install the application's required plugins.  Copy/paste the following one-liner (Cordova 5-style) into your console to install all the required plugins.
+#### Step 2:  Required plugins
+
+Now we must install the application's required plugins.  Copy/paste the following one-liner (Cordova 5-style) into your console to install all the required plugins.
 
 ```
 $ cordova plugin add cordova-plugin-device cordova-plugin-console cordova-plugin-whitelist cordova-plugin-splashscreen
 ```
 
-**Step 3.**  Now install the `cordova-background-geolocation` plugin.  Install **one** of the following:
+If you're using **PhoneGap Build**, add the following plugins to your `config.xml` instead:
+```
+  <preference name="android-build-tool" value="gradle" />
+
+  <plugin name="cordova-background-geolocation-lt" />
+  <plugin name="cordova-plugin-console" />
+  <plugin name="cordova-plugin-device" />
+  <plugin name="cordova-plugin-splashscreen" />
+  <plugin name="cordova-plugin-whitelist" />
+
+```
+
+#### Step 3 `cordova-background-geolocation` plugin.  
+
+Install **one** of the following:
 
    **A. [Premium Version](https://github.com/transistorsoft/cordova-background-geolocation.git) (requires paid license)**
 
@@ -40,7 +56,12 @@ $ cordova plugin add https://github.com/transistorsoft/cordova-background-geoloc
 $ cordova plugin add cordova-background-geolocation-lt
 ```
 
-**Step 4.** Add your desired platform(s) and build.
+Or for **PhoneGap Build**:
+```
+  <plugin name="cordova-background-geolocation-lt" />
+```
+
+#### Step 4: Build
 
 ```
 $ cordova platform add ios
@@ -51,7 +72,7 @@ $ cordova build android
 $ cordova run android
 ```
 
-**Step 5.** Boot the **iOS** Simulator
+#### Step 5: Boot the **iOS** Simulator
 
 The quickest way to see the plugin in-action is to boot the **iOS** simulator and *simulate location*
 
