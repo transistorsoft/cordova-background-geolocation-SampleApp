@@ -28,6 +28,18 @@ Now we must install the application's required plugins.  Copy/paste the followin
 $ cordova plugin add cordova-plugin-device cordova-plugin-console cordova-plugin-whitelist cordova-plugin-splashscreen
 ```
 
+If you're using **PhoneGap Build**, add the following plugins to your `config.xml` instead:
+```
+  <preference name="android-build-tool" value="gradle" />
+
+  <plugin name="cordova-background-geolocation-lt" spec="1.5.1" />
+  <plugin name="cordova-plugin-console" spec="1.0.2" />
+  <plugin name="cordova-plugin-device" spec="1.1.1" />
+  <plugin name="cordova-plugin-splashscreen" spec="3.2.1" />
+  <plugin name="cordova-plugin-whitelist" spec="1.2.1" />
+
+```
+
 #### Step 3 `cordova-background-geolocation` plugin.  
 
 Install **one** of the following:
