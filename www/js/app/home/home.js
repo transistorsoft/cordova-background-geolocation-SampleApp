@@ -174,13 +174,6 @@ angular.module('starter.Home', [])
     
     config.params = {};
     
-    config.url = 'http://192.168.11.120:8080/locations';
-    
-    config.forceReloadOnHeartbeat = true;
-    config.forceReloadOnMotionChange = true;
-
-    config.stopOnTerminate = false;
-
     // Attach Device info to BackgroundGeolocation params.device    
     config.params.device = ionic.Platform.device();
 
