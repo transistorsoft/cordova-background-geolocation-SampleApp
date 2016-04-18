@@ -173,7 +173,14 @@ angular.module('starter.Home', [])
     var config = Settings.getConfig();
     
     config.params = {};
-  
+    
+    config.url = 'http://192.168.11.120:8080/locations';
+    
+    config.forceReloadOnHeartbeat = true;
+    config.forceReloadOnMotionChange = true;
+
+    config.stopOnTerminate = false;
+
     // Attach Device info to BackgroundGeolocation params.device    
     config.params.device = ionic.Platform.device();
 
@@ -187,7 +194,10 @@ angular.module('starter.Home', [])
     bgGeo.on('heartbeat', function(params) {
       var shakes = params.shakes;
       var location = params.location;
-      console.log('- HEARTBEAT shakes: ', params.shakes);
+      console.log('- HEARTBEAT shakes: ', params.shakes, location);
+      bgGeo.getCurrentPosition(function(location) {
+        console.log("- location: ", location);
+      });
     });
 
     // Ok, now #configure it!
