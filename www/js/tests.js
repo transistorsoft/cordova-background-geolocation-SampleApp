@@ -80,8 +80,31 @@ var Tests = (function() {
       bg.start(function() {
         bg.changePace(true);  
       });
-      
+    },
+    /**
+    * Auto-build a scheule based upon current time.
+    *                ______________..._______________                      ___...
+    * ______________|                                |____________________|
+    * |<-- delay -->|<---------- duration ---------->|<---- interval ---->|<-- duration -->
+    *
+    * @param {Integer} count How many schedules to generate?
+    * @param {Integer} delay How many minutes in future to start generating schedules
+    * @param {Integer} duration How long is each trigger event
+    * @param {Integer} interval How long between trigger events
+    */
+    generateSchedule: function(count, delay, duration, interval) {
+      // Start 2min from now
+      var now = new Date();
+      var start = new Date(now.getTime() + delay*60000);
 
+      var rs = [];
+      for (var n=0,len=count;n<len;n++) {
+        var end = new Date(start.getTime() + duration*60000);
+        var schedule = '1-7 ' + start.getHours()+':'+start.getMinutes() + '-' + end.getHours()+':'+end.getMinutes();
+        start = new Date(end.getTime() + interval*60000);
+        rs.push(schedule);
+      }
+      return rs;
     }
   }
 })();

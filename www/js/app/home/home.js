@@ -79,6 +79,29 @@ angular.module('starter.Home', [])
     bgGeo.finish(taskId); 
   }
   /**
+  * BackgroundGeolocation heartbeat event handler
+  */
+  function onHeartbeat(params) {
+    var shakes = params.shakes;
+    var location = params.location;
+    console.log('- HEARTBEAT shakes: ', params.shakes, location);
+    bgGeo.getCurrentPosition(function(location) {
+      console.log("- location: ", location);
+    });
+  }
+  /**
+  * BackgroundGeolocation schedule event-handler
+  */
+  function onSchedule(state) {
+    console.info('- Schedule event: ', state.enabled, state);
+
+    $scope.$apply(function() {
+      $scope.state.enabled = state.enabled;
+      $scope.state.isMoving = false;
+    });
+  }
+
+  /**
   * BackgroundGeolocation geofence callback
   */
   function onGeofence(params, taskId) {
@@ -172,30 +195,43 @@ angular.module('starter.Home', [])
   function configureBackgroundGeolocation() {
     var config = Settings.getConfig();
     
+    // NOTE:  Optionally generate a schedule here.  @see /www/js/tests.js
+    //  1: how many schedules?
+    //  2: delay (minutes) from now to start generating schedules
+    //  3: schedule duration (minutes)
+    //  4: time between (minutes) generated schedule ON events
+    //
+    // UNCOMMENT TO AUTO-GENERATE A SERIES OF SCHEDULE EVENTS BASED UPON CURRENT TIME:
+    //config.schedule = Tests.generateSchedule(24, 1, 30, 30);
+    //
+
     config.params = {};
-    
+
     // Attach Device info to BackgroundGeolocation params.device    
     config.params.device = ionic.Platform.device();
-
+    
     bgGeo = window.BackgroundGeolocation;
 
     bgGeo.on('location', onLocation, onLocationError);
     bgGeo.on('motionchange', onMotionChange);
     bgGeo.on('geofence', onGeofence);
     bgGeo.on('http', onHttpSuccess, onHttpError);
-
-    bgGeo.on('heartbeat', function(params) {
-      var shakes = params.shakes;
-      var location = params.location;
-      console.log('- HEARTBEAT shakes: ', params.shakes, location);
-      bgGeo.getCurrentPosition(function(location) {
-        console.log("- location: ", location);
-      });
-    });
+    bgGeo.on('heartbeat', onHeartbeat);
+    bgGeo.on('schedule', onSchedule);
 
     // Ok, now #configure it!
     bgGeo.configure(config, function(state) {
       console.info('- configure success: ', state);
+
+      // If configured with a Schedule, start the Scheduler now.
+      if (state.schedule) {
+        bgGeo.startSchedule(function() {
+          console.log('[js] Start schedule success');
+        }, function(error) {
+          console.warn('- FAILED TO START SCHEDULE: ', error);
+        });
+      }
+
       $scope.$apply(function() {
         $scope.state.enabled = state.enabled;
         $scope.state.isMoving = state.isMoving;
@@ -208,22 +244,15 @@ angular.module('starter.Home', [])
         createGeofenceMarker(rs[n]);
       }
     });
-
-    // Add BackgroundGeolocation event-listeners when Platform is ready.
-
   }
 
   function configureBackgroundFetch() {
+    var config = Settings.getConfig();
     var Fetcher = window.BackgroundFetch;
     // Your background-fetch handler.
     var fetchCallback = function() {
         console.log('[js] BackgroundFetch initiated');
-
-        bgGeo.getCurrentPosition(function(location, tid) {
-          console.log('[js] getCurrentPosition', JSON.stringify(location));
-          bgGeo.finish(tid);
-          Fetcher.finish();
-        });
+        Fetcher.finish();
     }
 
     var failureCallback = function() {
@@ -231,7 +260,7 @@ angular.module('starter.Home', [])
     };
 
     Fetcher.configure(fetchCallback, failureCallback, {
-        stopOnTerminate: false  // <-- false is default
+        stopOnTerminate: config.stopOnTerminate
     });
   }
   /**
