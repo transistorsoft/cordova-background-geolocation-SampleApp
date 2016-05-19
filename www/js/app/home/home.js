@@ -266,7 +266,7 @@ angular.module('starter.Home', [])
   /**
   * Platform is ready.  Boot the Home screen
   */
-	function onPlatformReady() {
+  function onPlatformReady() {
     configureMap();
     // Configure BackgroundGeolocation
     if (!window.BackgroundGeolocation) {
@@ -277,9 +277,8 @@ angular.module('starter.Home', [])
       configureBackgroundFetch();
     }
     configureBackgroundGeolocation();
-	}
+  }
   
-
   // Build "Add Geofence" Modal.
   $ionicModal.fromTemplateUrl('js/app/home/add-geofence.html', {
     scope: $scope,
