@@ -26,7 +26,8 @@ angular.module('services.Settings', []).factory('Settings', function($rootScope)
       {name: 'stopDetectionDelay', group: 'activity recognition', dataType: 'integer', inputType: 'select', values: [0, 1, 2, 5], defaultValue: 0},
       {name: 'preventSuspend', group: 'application', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'false'},
       {name: 'pausesLocationUpdatesAutomatically', group: 'geolocation', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: undefined},
-      {name: 'useSignificantChangesOnly', group: 'geolocation', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'false'}
+      {name: 'useSignificantChangesOnly', group: 'geolocation', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'false'},
+      {name: 'disableMotionActivityUpdates', group: 'activity recognition', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'false'},
     ],
     Android: [
       {name: 'desiredAccuracy', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 10, 100, 1000], defaultValue: 0 },

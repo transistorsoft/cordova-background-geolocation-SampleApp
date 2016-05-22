@@ -84,10 +84,18 @@ angular.module('starter.Home', [])
   function onHeartbeat(params) {
     var shakes = params.shakes;
     var location = params.location;
-    console.log('- HEARTBEAT shakes: ', params.shakes, location);
-    bgGeo.getCurrentPosition(function(location) {
+    console.log('- heartbeat: ', params);
+
+    /**
+    * OPTIONAL.  retrieve current position during heartbeat callback
+    *
+    bgGeo.getCurrentPosition(function(location, taskId) {
       console.log("- location: ", location);
+      bgGeo.finish(taskId);      
     });
+    *
+    *
+    */
   }
   /**
   * BackgroundGeolocation schedule event-handler
@@ -206,7 +214,7 @@ angular.module('starter.Home', [])
     //
 
     config.params = {};
-
+  
     // Attach Device info to BackgroundGeolocation params.device    
     config.params.device = ionic.Platform.device();
     

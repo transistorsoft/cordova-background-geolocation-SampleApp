@@ -155,6 +155,11 @@ app.config(function($stateProvider, $urlRouterProvider) {
       templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
+    .state('settings/disableMotionActivityUpdates', {
+      url: '/settings/disableMotionActivityUpdates',
+      templateUrl: 'js/app/settings/radio-list.html',
+      controller: 'Settings'
+    })
 });
 
 app.run(function($ionicPlatform) {
