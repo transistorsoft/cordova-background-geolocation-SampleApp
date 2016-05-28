@@ -31,7 +31,7 @@ angular.module('starter.Home', [])
   * @param {Integer} taskId
   */
   function onLocation(location, taskId) {
-    console.log('[js] location: ', JSON.stringify(location));
+    console.log('[js] location: ', location);
     centerOnMe(location);
     bgGeo.finish(taskId);
   }
@@ -58,7 +58,7 @@ angular.module('starter.Home', [])
   * Background Geolocation motionchange callback
   */
   function onMotionChange(isMoving, location, taskId) {
-    console.log('[js] onMotionChange: ', isMoving, JSON.stringify(location));
+    console.log('[js] onMotionChange: ', isMoving, location);
     $scope.state.isMoving = isMoving;
 
     // Change state of start-button icon:  [>] or [||] 
@@ -210,9 +210,9 @@ angular.module('starter.Home', [])
     //  4: time between (minutes) generated schedule ON events
     //
     // UNCOMMENT TO AUTO-GENERATE A SERIES OF SCHEDULE EVENTS BASED UPON CURRENT TIME:
-    //config.schedule = Tests.generateSchedule(24, 1, 30, 30);
+    //config.schedule = Tests.generateSchedule(24, 1, 1, 1);
     //
-
+    //config.url = 'http://192.168.11.120:8080/locations';
     config.params = {};
   
     // Attach Device info to BackgroundGeolocation params.device    
@@ -461,8 +461,9 @@ angular.module('starter.Home', [])
       markers.push(new google.maps.Marker({
         zIndex: 1,
         icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 7,
+          path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+          rotation: last.coords.heading,
+          scale: 4,
           fillColor: '#11b700',//'26cc77',
           fillOpacity: 1,
           strokeColor: '#0d6104',
