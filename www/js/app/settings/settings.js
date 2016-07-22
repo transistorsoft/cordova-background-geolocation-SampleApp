@@ -195,7 +195,7 @@ angular.module('starter.Settings', [])
     $scope.isSyncing = true;
     
     bgGeo.sync(function(rs, taskId) {
-      console.info('[js] sync success');
+      console.info('[js] sync success: ', rs.length);
       bgGeo.playSound(Settings.getSoundId('MESSAGE_SENT'));
       $scope.$apply(function() {
         $scope.isSyncing = false;

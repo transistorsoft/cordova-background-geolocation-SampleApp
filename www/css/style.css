@@ -9,6 +9,33 @@
   height: 100%;
 }
 
+.footer { padding: 0; }
+.footer .col.navigate {
+  
+}
+.footer .col.status {
+
+}
+.footer .col.pace {    
+  
+}
+.footer .row {
+  padding: 0;
+  margin: 0;
+}
+.footer .row .col {
+
+}
+.navigate a.get-current-position {
+
+}
+.navigate .provider {
+    margin-top: 5px;
+}
+.status i.activity {
+    font-size: 22px;
+    width: 16px;
+}
 /**
 * Blue colored ion-radio
 */
