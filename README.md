@@ -7,7 +7,7 @@
 
 Fully-featured, [Ionic](http://ionicframework.com/)-based sample-application for [Cordova Background Geolocation  (Premium Version)](http://shop.transistorsoft.com/pages/cordova-background-geolocation-premium)
 
-![Home](https://dl.dropboxusercontent.com/u/2319755/cordova-background-geolocaiton/screenshot-iphone5-geofences-framed-2.0.0.jpg)
+![Home](https://dl.dropboxusercontent.com/u/2319755/cordova-background-geolocaiton/screenshot-iphone5-geofences-framed-README.png)
 ![Settings](https://dl.dropboxusercontent.com/u/2319755/cordova-background-geolocaiton/screenshot-iphone5-settings-framed-README.png)
 
 Edit settings and observe the behavour of **Background Geolocation** changing in **real time**.
