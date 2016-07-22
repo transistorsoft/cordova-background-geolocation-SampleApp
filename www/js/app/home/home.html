@@ -1,3 +1,4 @@
+
 <ion-view view-title="BG Geolocation">
   <ion-nav-buttons side="left">
     <a class="button button-clear button-positive" ng-click="onClickSettings()">Settings</a>
@@ -12,16 +13,41 @@
     </label>
   </ion-nav-buttons>
 
+
   <ion-content scroll="false" data-tap-disabled="true">
     <div id="map"></div>
   </ion-content>
 
-  <ion-footer-bar class="bar-stable">
-    <a ng-click="getCurrentPosition()" class="button button-icon icon ion-navigate"></a>
-    <h1 class="title" style="text-align:center">{{odometer}}km</h1>
-    <div class="buttons align-right">
-      <ion-spinner icon="ios-small" class="" ng-show="isChangingPace"></ion-spinner>
-      <button class="button icon {{state.startButtonIcon}}" ng-disabled="!state.enabled" ng-click="onClickChangePace()" style="width:75px"></button>
+  <ion-footer-bar class="footer bar-stable">
+      <div class="row">
+        <div class="col col-center navigate">
+          <a ng-click="getCurrentPosition()" class="get-current-position button button-icon icon ion-navigate"></a>
+          <span class="provider">
+            <i class="icon ion-alert-circled" ng-hide="provider.enabled" style="color: red;"></i>
+            <i class="icon ion-pinpoint" ng-hide="!provider.gps || !provider.enabled"></i>
+            <i class="icon ion-wifi" ng-hide="!provider.network || !provider.enabled"></i>
+          </span>
+        </div>
+        <div class="col col-center col-40 status" style="text-align:center">
+          <span>Activity</span>
+          <i class="activity icon {{activityName}} {{activityIcon}}"></i>
+          <span class="" style="text-align:center">{{odometer}}km</span>
+
+        </div>
+        <div class="col pace" style="text-align:right;">
+          <ion-spinner icon="ios-small" ng-show="isChangingPace"></ion-spinner>
+          <button class="button icon {{state.startButtonIcon}}" ng-disabled="!state.enabled" ng-click="onClickChangePace()" style="width:50px"></button>
+        </div>
+      </div>
+  
+    <!-- 
+    
+    <div style="-webkit-flex-direction:row;display:-webkit-flex;-webkit-flex:1">
+      
     </div>
+    <div class="buttons pull-right">
+      
+    </div>
+    -->
   </ion-footer-bar>
 </ion-view>

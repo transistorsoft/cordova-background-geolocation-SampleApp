@@ -16,13 +16,13 @@
         <service android:name="com.transistorsoft.locationmanager.scheduler.ScheduleService" />
         <service android:name="com.transistorsoft.locationmanager.scheduler.ScheduleAlarmService" />
         
-        <receiver android:name="com.transistorsoft.cordova.bggeo.BootReceiver">
+        <receiver android:name="com.transistorsoft.locationmanager.BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
     </application>
-    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="23" />
+    <uses-sdk android:minSdkVersion="18" android:targetSdkVersion="23" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />

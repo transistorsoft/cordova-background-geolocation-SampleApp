@@ -4,10 +4,29 @@ angular.module('starter.Home', [])
   var PLAY_BUTTON_CLASS = "ion-play button-balanced",
       PAUSE_BUTTON_CLASS = "ion-pause button-assertive";
 
+  var icons = {
+    activity_unknown: "ion-ios-help",
+    activity_still: "ion-man",
+    activity_on_foot: "ion-android-walk",
+    activity_walking: "ion-android-walk",
+    activity_running: "ion-android-walk",
+    activity_on_bicycle: "ion-android-bicycle",
+    activity_in_vehicle: "ion-android-car"
+  };
+
   $scope.state = {
     enabled: false,
     isMoving: false,
     startButtonIcon: PLAY_BUTTON_CLASS
+  };
+
+  // Motion Activity
+  $scope.activityIcon = icons.activity_still;
+  $scope.activityName = "still";
+  $scope.provider = {
+    enabled: true,
+    network: true,
+    gps: true
   };
 
   /**
@@ -97,6 +116,32 @@ angular.module('starter.Home', [])
     *
     */
   }
+
+  function onActivityChange(activityName) {
+    console.info('[js] Motion activity changed: ', activityName);
+    var icon = icons['activity_' + activityName];
+    if (!icon) {
+      console.warn("Failed to find activity icon for: " + activityName);
+      return;
+    }
+    console.log('- icon: ', icon);
+
+    $scope.$apply(function() {
+      $scope.activityName = activityName;
+      $scope.activityIcon = icon;
+    });
+  }
+
+  function onProviderChange(provider) {
+    console.info('[js] Location provider change: ', JSON.stringify(provider));
+    $scope.$apply(function() {
+      $scope.provider.enabled = provider.enabled;
+      $scope.provider.network = provider.network;
+      $scope.provider.gps = provider.gps;
+
+    }); 
+  }
+
   /**
   * BackgroundGeolocation schedule event-handler
   */
@@ -114,7 +159,7 @@ angular.module('starter.Home', [])
   */
   function onGeofence(params, taskId) {
     console.log('- onGeofence: ', JSON.stringify(params, null, 2));
-    
+
     $scope.showAlert('Geofence ' + params.action, "Identifier: " + params.identifier);
     
     var marker  = getGeofenceMarker(params.identifier);
@@ -124,6 +169,7 @@ angular.module('starter.Home', [])
     }
     // Destroy the geofence?
     if (!geofence.notifyOnDwell || (geofence.notifyOnDwell && params.action === "DWELL")) {
+      /*
       bgGeo.removeGeofence(params.identifier, function() {
         // Grey-out the google.maps.Circle to show it's been triggered.
         if (marker) {
@@ -142,6 +188,7 @@ angular.module('starter.Home', [])
         // Finish outer #onGeofence taskId now.
         bgGeo.finish(taskId);
       });
+      */
     }
   }
 
@@ -212,12 +259,16 @@ angular.module('starter.Home', [])
     // UNCOMMENT TO AUTO-GENERATE A SERIES OF SCHEDULE EVENTS BASED UPON CURRENT TIME:
     //config.schedule = Tests.generateSchedule(24, 1, 1, 1);
     //
-    //config.url = 'http://192.168.11.120:8080/locations';
+    config.url = 'http://192.168.11.100:8080/locations';
     config.params = {};
-  
+    //config.schedule = Tests.generateSchedule(24, 1, 1, 1);
+
     // Attach Device info to BackgroundGeolocation params.device    
     config.params.device = ionic.Platform.device();
-    
+    config.locationTimeout = 30;
+
+    //config.notificationIcon = "mipmap/icon_navigate";
+
     bgGeo = window.BackgroundGeolocation;
 
     bgGeo.on('location', onLocation, onLocationError);
@@ -226,8 +277,9 @@ angular.module('starter.Home', [])
     bgGeo.on('http', onHttpSuccess, onHttpError);
     bgGeo.on('heartbeat', onHeartbeat);
     bgGeo.on('schedule', onSchedule);
+    bgGeo.on('activitychange', onActivityChange);
+    bgGeo.on('providerchange', onProviderChange);
 
-    // Ok, now #configure it!
     bgGeo.configure(config, function(state) {
       console.info('- configure success: ', state);
 
@@ -323,7 +375,7 @@ angular.module('starter.Home', [])
   $scope.onCreateGeofence = function() {
     $scope.addGeofenceModal.hide();
     bgGeo.addGeofence($scope.geofenceRecord, function() {
-      bgGeo.playSound(Settings.getSoundId('ADD_GEOFENCE'));
+      //bgGeo.playSound(Settings.getSoundId('ADD_GEOFENCE'));
       createGeofenceMarker($scope.geofenceRecord);
     }, function(error) {
       console.error(error);
@@ -458,12 +510,21 @@ angular.module('starter.Home', [])
     if (lastLocation) {
       var last = lastLocation;
       // Drop a breadcrumb of where we've been.
+      var icon, scale;
+      if (markers.length % 2) {
+        icon = google.maps.SymbolPath.FORWARD_CLOSED_ARROW;
+        scale = 4;
+      } else {
+        icon = google.maps.SymbolPath.CIRCLE;
+        scale = 6;
+      }
+
       markers.push(new google.maps.Marker({
         zIndex: 1,
         icon: {
-          path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+          path: icon,
           rotation: last.coords.heading,
-          scale: 4,
+          scale: scale,
           fillColor: '#11b700',//'26cc77',
           fillOpacity: 1,
           strokeColor: '#0d6104',
@@ -539,8 +600,8 @@ angular.module('starter.Home', [])
     if (!bgGeo) { return;}
     if ($scope.state.enabled) {
       
-      bgGeo.start( function() {
-        console.log('[js] BackgroundGeolocation started');
+      bgGeo.start(function(state) {
+        console.log('[js] BackgroundGeolocation started', state);
 
         // If BackgroundGeolocation is monitoring geofences, fetch them and add map-markers
         bgGeo.getGeofences(function(rs) {
@@ -548,6 +609,8 @@ angular.module('starter.Home', [])
             createGeofenceMarker(rs[n]);
           }
         });
+      }, function(error) {
+        console.warn(error);
       });
     } else {
       bgGeo.stop(function() {
@@ -608,10 +671,16 @@ angular.module('starter.Home', [])
       centerOnMe(location);
       bgGeo.finish(taskId);
     }, function(error) {
-      console.warn('[js] getCurrentPosition error: ', error);
+      console.error('[js] getCurrentPosition error: ', error);
     }, {
       timeout: 10,
-      extras: {name: 'getCurrentPosition'}
+      samples: 3,
+      desiredAccuracy: 10,
+      maximumAge: 5000,
+      persist: false,
+      extras: {
+        'extra-param': 'getCurrentPosition'
+      }
     })
   }
 
@@ -621,10 +690,17 @@ angular.module('starter.Home', [])
     console.log('onClickStart: ', willStart);
     $scope.isChangingPace = true;
 
-    bgGeo.changePace(willStart, function() {
-      $scope.state.isMoving    = willStart;
+    bgGeo.changePace(willStart, function(location) {
+      console.log("[js] changePace success: ", location);
       $scope.$apply(function() {
+        $scope.isChangingPace = false;
+        $scope.state.isMoving    = willStart;
         $scope.state.startButtonIcon  = (willStart) ? PAUSE_BUTTON_CLASS : PLAY_BUTTON_CLASS;
+      });
+    }, function(error) {
+      console.error("[js] changePace failed with error: " + error);
+      $scope.$apply(function() {
+        $scope.isChangingPace = false;
       });
     });
   };

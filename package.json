@@ -1,6 +1,6 @@
 {
   "name": "bg-geolocation",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Background Geolocation Sample App",
   "dependencies": {
     "gulp": "^3.5.6",

@@ -35,6 +35,11 @@ app.config(function($stateProvider, $urlRouterProvider) {
       templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
+    .state('settings/locationTimeout', {
+      url: '/settings/locationTimeout',
+      templateUrl: 'js/app/settings/radio-list.html',
+      controller: 'Settings'
+    })
     .state('settings/activityType', {
       url: '/settings/activityType',
       templateUrl: 'js/app/settings/radio-list.html',
@@ -112,6 +117,16 @@ app.config(function($stateProvider, $urlRouterProvider) {
     })
     .state('settings/forceReloadOnGeofence', {
       url: '/settings/forceReloadOnGeofence',
+      templateUrl: 'js/app/settings/radio-list.html',
+      controller: 'Settings'
+    })
+    .state('settings/forceReloadOnHeartbeat', {
+      url: '/settings/forceReloadOnHeartbeat',
+      templateUrl: 'js/app/settings/radio-list.html',
+      controller: 'Settings'
+    })
+    .state('settings/forceReloadOnBoot', {
+      url: '/settings/forceReloadOnBoot',
       templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
