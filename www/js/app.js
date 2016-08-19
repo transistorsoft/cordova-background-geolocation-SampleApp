@@ -70,6 +70,11 @@ app.config(function($stateProvider, $urlRouterProvider) {
       templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
+    .state('settings/autoSyncThreshold', {
+      url: '/settings/autoSyncThreshold',
+      templateUrl: 'js/app/settings/radio-list.html',
+      controller: 'Settings'
+    })
     .state('settings/batchSync', {
       url: '/settings/batchSync',
       templateUrl: 'js/app/settings/radio-list.html',

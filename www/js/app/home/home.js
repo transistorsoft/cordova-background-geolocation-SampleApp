@@ -105,6 +105,16 @@ angular.module('starter.Home', [])
     var location = params.location;
     console.log('- heartbeat: ', params);
 
+    var bgGeo = window.BackgroundGeolocation;
+
+    // Location returned from heartbeat event is only the "Last Known Location".  We can manually insert those
+    // into the plugin's database if we wish.
+    bgGeo.insertLocation(params.location, function(uuid) {
+      console.log('- insert location success: ', uuid);
+    }, function(error) {
+      console.log('- insert FAILURE: ', error);
+    });
+
     /**
     * OPTIONAL.  retrieve current position during heartbeat callback
     *
@@ -169,26 +179,16 @@ angular.module('starter.Home', [])
     }
     // Destroy the geofence?
     if (!geofence.notifyOnDwell || (geofence.notifyOnDwell && params.action === "DWELL")) {
-      /*
-      bgGeo.removeGeofence(params.identifier, function() {
-        // Grey-out the google.maps.Circle to show it's been triggered.
-        if (marker) {
-          marker.removed = true;
-          marker.setOptions({
-            fillColor: '#000000',
-            fillOpacity: 0.3,
-            strokeColor: '#000000',
-            strokeOpacity: 0.5
-          });
-        }
-        // We're inside a nested async callback here, which has now completed.  #finish the outer #onGeofence taskId now.
-        bgGeo.finish(taskId);
-      }, function(error) {
-        console.log('Failed to remove geofence: ' + error);
-        // Finish outer #onGeofence taskId now.
-        bgGeo.finish(taskId);
-      });
-      */
+      if (marker) {
+        // Change the color of geofence marker to GREY so we know it has fired.
+        marker.removed = true;
+        marker.setOptions({
+          fillColor: '#000000',
+          fillOpacity: 0.3,
+          strokeColor: '#000000',
+          strokeOpacity: 0.5
+        });
+      }
     }
   }
 
@@ -261,13 +261,9 @@ angular.module('starter.Home', [])
     //
     config.url = 'http://192.168.11.100:8080/locations';
     config.params = {};
-    //config.schedule = Tests.generateSchedule(24, 1, 1, 1);
 
     // Attach Device info to BackgroundGeolocation params.device    
     config.params.device = ionic.Platform.device();
-    config.locationTimeout = 30;
-
-    //config.notificationIcon = "mipmap/icon_navigate";
 
     bgGeo = window.BackgroundGeolocation;
 
@@ -281,9 +277,12 @@ angular.module('starter.Home', [])
     bgGeo.on('providerchange', onProviderChange);
 
     bgGeo.configure(config, function(state) {
-      console.info('- configure success: ', state);
+      // Get the current position now, regardles of whether plugin is enabled/disabled.
+      bgGeo.getCurrentPosition(function(l) {
+        console.log('- get Initial Position');
+      });
 
-      // If configured with a Schedule, start the Scheduler now.
+      // If configured with a Schedule, start it:
       if (state.schedule) {
         bgGeo.startSchedule(function() {
           console.log('[js] Start schedule success');
@@ -374,8 +373,8 @@ angular.module('starter.Home', [])
   */
   $scope.onCreateGeofence = function() {
     $scope.addGeofenceModal.hide();
-    bgGeo.addGeofence($scope.geofenceRecord, function() {
-      //bgGeo.playSound(Settings.getSoundId('ADD_GEOFENCE'));
+    bgGeo.addGeofences([$scope.geofenceRecord], function() {
+      bgGeo.playSound(Settings.getSoundId('ADD_GEOFENCE'));
       createGeofenceMarker($scope.geofenceRecord);
     }, function(error) {
       console.error(error);
@@ -673,11 +672,11 @@ angular.module('starter.Home', [])
     }, function(error) {
       console.error('[js] getCurrentPosition error: ', error);
     }, {
-      timeout: 10,
+      timeout: 30,
       samples: 3,
       desiredAccuracy: 10,
       maximumAge: 5000,
-      persist: false,
+      persist: true,
       extras: {
         'extra-param': 'getCurrentPosition'
       }
