@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.transistorsoft.backgroundgeolocation.ionic" version="1.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.transistorsoft.backgroundgeolocation.ionic" version="2.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>BG Geo</name>
   <description>
         Cordova BackgroundGeolocation SampleApp
@@ -8,6 +8,7 @@
       Transistor Software
     </author>
   <content src="index.html"/>
+
 
   <preference name="cordova-background-geolocation-license" value="4bbb513c013111eae951647fd4f9e79f127fce6f7a00e9d327db9ea2a053a0df" />
 

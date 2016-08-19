@@ -48,19 +48,14 @@
         <i class="icon ion-chevron-right icon-accessory"></i>
       </ion-item>
     </ion-list>
-  </div>
   </ion-content>
-  <div class="bar bar-footer bar-neutral">
+  
+  <ion-footer-bar>
     <button id="btn-email-log" class="button button-positive icon ion-share" ng-click="onEmailLog()" style="width:100px">Send log</button>
     <h1 class="title">&nbsp;</h1>
     <div style="position: absolute;right: 5px;">
       <ion-spinner icon="ios-small" class="" ng-show="isSyncing"></ion-spinner>
       <button class="button button-assertive icon ion-ios-cloud-upload" style="width: 100px" ng-disabled="isAutoSyncDisabled()" ng-click="onClickSync()">Sync</button>
     </div>
-  </div>
-
-  
-
-
-
+  </ion-footer-bar>
 </ion-view>

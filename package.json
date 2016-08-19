@@ -14,14 +14,21 @@
     "gulp-util": "^2.2.14",
     "shelljs": "^0.3.0"
   },
+  "scripts": {
+    "link.android": "rm platforms/android/src/android/libs/tslocationmanager.aar && ln -s ~/workspace/cordova/background-geolocation/cordova-background-geolocation/src/android/libs/tslocationmanager.aar platforms/android/src/android/libs/tslocationmanager.aar",
+    "link.ios": "rm -rf platforms/ios/BG\\ Geo/Plugins/com.transistorsoft.cordova.background-geolocation/TSLocationManager.framework && ln -s ~/workspace/cordova/background-geolocation/cordova-background-geolocation/src/ios/TSLocationManager.framework ./platforms/ios/BG\\ Geo/Plugins/com.transistorsoft.cordova.background-geolocation/TSLocationManager.framework",
+    "reset": "ionic plugin remove com.transistorsoft.cordova.background-geolocation && ionic plugin add ../cordova-background-geolocation",
+    "reset.ios": "npm run reset && npm run link.ios",
+    "reset.android": "npm run reset && ionic build android && npm run link.android",
+    "run.android": "npm run reset.android && ionic run android && npm run link.android",
+    "run.ios": "npm run reset.ios && ionic build ios && open -a Xcode platforms/ios/BG\\ Geo.xcodeproj"
+  },
   "cordovaPlugins": [
     "cordova-plugin-device",
-    "cordova-plugin-console",
-    "cordova-plugin-whitelist",
     "cordova-plugin-splashscreen",
-    "com.ionic.keyboard",
+    "cordova-plugin-console",
     {
-      "locator": "https://github.com/christocracy/cordova-background-geolocation.git#edge",
+      "locator": "../cordova-background-geolocation",
       "id": "com.transistorsoft.cordova.background-geolocation"
     }
   ],
