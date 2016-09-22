@@ -7,6 +7,7 @@ angular.module('starter.Home', [])
   var icons = {
     activity_unknown: "ion-ios-help",
     activity_still: "ion-man",
+    activity_shaking: "ion-android-walk",
     activity_on_foot: "ion-android-walk",
     activity_walking: "ion-android-walk",
     activity_running: "ion-android-walk",
@@ -107,14 +108,6 @@ angular.module('starter.Home', [])
 
     var bgGeo = window.BackgroundGeolocation;
 
-    // Location returned from heartbeat event is only the "Last Known Location".  We can manually insert those
-    // into the plugin's database if we wish.
-    bgGeo.insertLocation(params.location, function(uuid) {
-      console.log('- insert location success: ', uuid);
-    }, function(error) {
-      console.log('- insert FAILURE: ', error);
-    });
-
     /**
     * OPTIONAL.  retrieve current position during heartbeat callback
     *
@@ -168,13 +161,16 @@ angular.module('starter.Home', [])
   * BackgroundGeolocation geofence callback
   */
   function onGeofence(params, taskId) {
-    console.log('- onGeofence: ', JSON.stringify(params, null, 2));
+    console.log('- onGeofence: ', JSON.stringify(params, null, 2));    
 
+    var bgGeo = window.BackgroundGeolocation;  
     $scope.showAlert('Geofence ' + params.action, "Identifier: " + params.identifier);
     
     var marker  = getGeofenceMarker(params.identifier);
     var geofence = marker.params;
+
     if (!geofence) {
+      bgGeo.finish(taskId);
       return;
     }
     // Destroy the geofence?
@@ -190,6 +186,7 @@ angular.module('starter.Home', [])
         });
       }
     }
+    bgGeo.finish(taskId);
   }
 
   /**
@@ -259,9 +256,9 @@ angular.module('starter.Home', [])
     // UNCOMMENT TO AUTO-GENERATE A SERIES OF SCHEDULE EVENTS BASED UPON CURRENT TIME:
     //config.schedule = Tests.generateSchedule(24, 1, 1, 1);
     //
-    config.url = 'http://192.168.11.100:8080/locations';
+    //config.url = 'http://192.168.11.100:8080/locations';
     config.params = {};
-
+    
     // Attach Device info to BackgroundGeolocation params.device    
     config.params.device = ionic.Platform.device();
 
@@ -277,11 +274,6 @@ angular.module('starter.Home', [])
     bgGeo.on('providerchange', onProviderChange);
 
     bgGeo.configure(config, function(state) {
-      // Get the current position now, regardles of whether plugin is enabled/disabled.
-      bgGeo.getCurrentPosition(function(l) {
-        console.log('- get Initial Position');
-      });
-
       // If configured with a Schedule, start it:
       if (state.schedule) {
         bgGeo.startSchedule(function() {
@@ -665,6 +657,7 @@ angular.module('starter.Home', [])
   */
   $scope.getCurrentPosition = function() {
     if (!bgGeo) { return; }
+    
     bgGeo.getCurrentPosition(function(location, taskId) {
       console.info('[js] getCurrentPosition: ', JSON.stringify(location));
       centerOnMe(location);
@@ -674,8 +667,8 @@ angular.module('starter.Home', [])
     }, {
       timeout: 30,
       samples: 3,
-      desiredAccuracy: 10,
-      maximumAge: 5000,
+      desiredAccuracy: 0,
+      //maximumAge: 5000,
       persist: true,
       extras: {
         'extra-param': 'getCurrentPosition'

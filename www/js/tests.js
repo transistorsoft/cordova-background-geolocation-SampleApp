@@ -105,6 +105,69 @@ var Tests = (function() {
         rs.push(schedule);
       }
       return rs;
+    },
+    crudTest: function() {
+      console.log("******************************");
+      console.log("* Crud test");
+      console.log("******************************");
+      var bgGeo = window.BackgroundGeolocation;
+      bgGeo.setConfig({autoSync: false});
+
+      bgGeo.getCurrentPosition(function(location, taskId) {
+        bgGeo.getLocations(function(rs, tid) {
+          if (!rs.length) {
+            console.warn("- getLocations FAIL: ", rs.length);
+            return;
+          }
+          var uuid = rs[0].uuid;
+          console.log("- uuid: ", uuid);
+
+          bgGeo.getCount(function(count) {
+            console.log('- Count BEFORE: ', count);
+          });
+          var params = {
+            coords: location.coords,
+            extras: {foo: 'insertLocation without timestamp'}
+          };
+          bgGeo.insertLocation(params, function() {
+            console.log('- INSERT location without timetamp');
+          }, function(error) {
+            console.log('- INSERT FAILED: ', error);
+          });
+          bgGeo.getLocation(uuid, function(location) {
+            console.log('- getLocation SUCCESS: ', JSON.stringify(location, null, 2));
+              location.extras = {"CRUD_TEST":"------------ CrudTest updateLocation ---------------"};
+              bgGeo.updateLocation(location, function() {
+                console.log('- Update location SUCCESS');
+                bgGeo.getLocation(uuid, function(l) {
+                  console.log('- Get Location after UPDATE: ', JSON.stringify(l, null, 2));
+
+                  bgGeo.destroyLocation(uuid, function() {
+                    console.log('- Destroy Location SUCCESS', uuid);
+                    bgGeo.getCount(function(count) {
+                      console.log('- Count: ', count);
+                    });
+                    bgGeo.getLocation(uuid, function() {
+                      console.warn('- Get Location should not SUCCEED!');
+                    }, function() {
+                      console.log('- GOOD: getLocation failed after destroy');
+                    });
+                  }, function(error) {
+                    console.warn('- Destroy Location FAILURE: ', uuid);
+                  });
+                }, function(error) {
+                  console.warn('- Get Location FAILED: ', error);
+                })
+              }, function(error) {
+                console.log('- Update location FAILURE: ', error);
+              });
+          }, function(error) {
+            console.log('- Failed to find location; ', uuid);
+          })
+        });        
+      }, {
+        persist: true
+      });
     }
   }
 })();

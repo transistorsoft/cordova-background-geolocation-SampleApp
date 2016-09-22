@@ -80,6 +80,11 @@ app.config(function($stateProvider, $urlRouterProvider) {
       templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
+    .state('settings/maxBatchSize', {
+      url: '/settings/maxBatchSize',
+      templateUrl: 'js/app/settings/radio-list.html',
+      controller: 'Settings'
+    })
     .state('settings/locationUpdateInterval', {
       url: '/settings/locationUpdateInterval',
       templateUrl: 'js/app/settings/radio-list.html',

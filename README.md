@@ -14,33 +14,31 @@ Edit settings and observe the behavour of **Background Geolocation** changing in
 
 ## Installation
 
-#### Step 1: Start by cloning this repo
+### Step 1: Start by cloning this repo
 
 ```
 $ git clone https://github.com/transistorsoft/cordova-background-geolocation-SampleApp.git
 ```
 
-#### Step 2:  Required plugins
+### Step 2:  Required plugins
 
 Now we must install the application's required plugins.  Copy/paste the following one-liner (Cordova 5-style) into your console to install all the required plugins.
 
 ```
-$ cordova plugin add cordova-plugin-device cordova-plugin-console cordova-plugin-whitelist cordova-plugin-splashscreen
+$ cordova plugin add cordova-plugin-device cordova-plugin-console cordova-plugin-splashscreen
 ```
 
 If you're using **PhoneGap Build**, add the following plugins to your `config.xml` instead:
-```
+```xml
   <preference name="android-build-tool" value="gradle" />
 
   <plugin name="cordova-background-geolocation-lt" />
   <plugin name="cordova-plugin-console" />
   <plugin name="cordova-plugin-device" />
   <plugin name="cordova-plugin-splashscreen" />
-  <plugin name="cordova-plugin-whitelist" />
-
 ```
 
-#### Step 3 `cordova-background-geolocation` plugin.  
+### Step 3: Install `cordova-background-geolocation` plugin.  
 
 Install **one** of the following:
 
@@ -50,7 +48,7 @@ Install **one** of the following:
 $ cordova plugin add https://github.com/transistorsoft/cordova-background-geolocation.git
 ```
 
-   **B. [Free iOS Version](https://github.com/transistorsoft/cordova-background-geolocation-lt)**
+   **B. [Free Version](https://github.com/transistorsoft/cordova-background-geolocation-lt)** (Free version can be built for Android but will only work with **this** sample app)
 
 ```
 $ cordova plugin add cordova-background-geolocation-lt
@@ -59,6 +57,13 @@ $ cordova plugin add cordova-background-geolocation-lt
 Or for **PhoneGap Build**:
 ```
   <plugin name="cordova-background-geolocation-lt" />
+```
+
+If you wish to build the **Free Version** for **Android** in your *own* app, modify your `config.xml` as follows (your app **must** be named `com.transistorsoft.backgroundgeolocation.ionic`:
+
+```xml
+<widget id="com.transistorsoft.backgroundgeolocation.ionic" version="2.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <preference name="cordova-background-geolocation-license" value="4bbb513c013111eae951647fd4f9e79f127fce6f7a00e9d327db9ea2a053a0df" />
 ```
 
 #### Step 4: Build
