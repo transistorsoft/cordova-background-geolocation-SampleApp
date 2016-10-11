@@ -80,8 +80,7 @@ angular.module('starter.Home', [])
   function onMotionChange(isMoving, location, taskId) {
     console.log('[js] onMotionChange: ', isMoving, location);
     $scope.state.isMoving = isMoving;
-
-    // Change state of start-button icon:  [>] or [||] 
+    // Change state of start-button icon:  [>] or [||]
     $scope.$apply(function() {
       $scope.isChangingPace = false;
       $scope.state.startButtonIcon  = (isMoving) ? PAUSE_BUTTON_CLASS : PLAY_BUTTON_CLASS;
@@ -96,7 +95,7 @@ angular.module('starter.Home', [])
         stationaryRadiusMarker.setMap(null);
       }
     }
-    bgGeo.finish(taskId); 
+    bgGeo.finish(taskId);
   }
   /**
   * BackgroundGeolocation heartbeat event handler
@@ -113,7 +112,7 @@ angular.module('starter.Home', [])
     *
     bgGeo.getCurrentPosition(function(location, taskId) {
       console.log("- location: ", location);
-      bgGeo.finish(taskId);      
+      bgGeo.finish(taskId);
     });
     *
     *
@@ -142,7 +141,7 @@ angular.module('starter.Home', [])
       $scope.provider.network = provider.network;
       $scope.provider.gps = provider.gps;
 
-    }); 
+    });
   }
 
   /**
@@ -161,18 +160,19 @@ angular.module('starter.Home', [])
   * BackgroundGeolocation geofence callback
   */
   function onGeofence(params, taskId) {
-    console.log('- onGeofence: ', JSON.stringify(params, null, 2));    
+    console.log('- onGeofence: ', JSON.stringify(params, null, 2));
 
-    var bgGeo = window.BackgroundGeolocation;  
+    var bgGeo = window.BackgroundGeolocation;
     $scope.showAlert('Geofence ' + params.action, "Identifier: " + params.identifier);
-    
-    var marker  = getGeofenceMarker(params.identifier);
-    var geofence = marker.params;
 
-    if (!geofence) {
+    var marker  = getGeofenceMarker(params.identifier);
+
+    if (!marker) {
       bgGeo.finish(taskId);
       return;
     }
+    var geofence = marker.params;
+
     // Destroy the geofence?
     if (!geofence.notifyOnDwell || (geofence.notifyOnDwell && params.action === "DWELL")) {
       if (marker) {
@@ -245,8 +245,9 @@ angular.module('starter.Home', [])
   * Configure BackgroundGeolocation plugin
   */
   function configureBackgroundGeolocation() {
+    bgGeo = window.BackgroundGeolocation;
     var config = Settings.getConfig();
-    
+
     // NOTE:  Optionally generate a schedule here.  @see /www/js/tests.js
     //  1: how many schedules?
     //  2: delay (minutes) from now to start generating schedules
@@ -258,11 +259,10 @@ angular.module('starter.Home', [])
     //
     //config.url = 'http://192.168.11.100:8080/locations';
     config.params = {};
-    
-    // Attach Device info to BackgroundGeolocation params.device    
-    config.params.device = ionic.Platform.device();
+    config.logMaxDays = 3;
 
-    bgGeo = window.BackgroundGeolocation;
+    // Attach Device info to BackgroundGeolocation params.device
+    config.params.device = ionic.Platform.device();
 
     bgGeo.on('location', onLocation, onLocationError);
     bgGeo.on('motionchange', onMotionChange);
@@ -272,8 +272,29 @@ angular.module('starter.Home', [])
     bgGeo.on('schedule', onSchedule);
     bgGeo.on('activitychange', onActivityChange);
     bgGeo.on('providerchange', onProviderChange);
+    bgGeo.on('geofenceschange', function(event) {
+      console.info('geofenceschange: ', event);
+      var on = event.on;
+      var off = event.off;
+
+      // If neighter on or off, ALL geofences have been destroyed.  Remove all markers.
+      if (!on.length && !off.length) {
+        removeGeofenceMarkers();
+        return;
+      }
+      for (var n=0,len=on.length;n<len;n++) {
+        // only create markers if they're not already rendered
+        if (!getGeofenceMarker(on[n].identifier)) {
+          createGeofenceMarker(on[n]);
+        }
+      }
+      for (var n=0,len=off.length;n<len;n++) {
+        removeGeofence(off[n]);
+      }
+    });
 
     bgGeo.configure(config, function(state) {
+
       // If configured with a Schedule, start it:
       if (state.schedule) {
         bgGeo.startSchedule(function() {
@@ -287,13 +308,6 @@ angular.module('starter.Home', [])
         $scope.state.enabled = state.enabled;
         $scope.state.isMoving = state.isMoving;
       });
-    });
-
-    // If BackgroundGeolocation is monitoring geofences, fetch them and add map-markers
-    bgGeo.getGeofences(function(rs) {
-      for (var n=0,len=rs.length;n<len;n++) {
-        createGeofenceMarker(rs[n]);
-      }
     });
   }
 
@@ -329,7 +343,7 @@ angular.module('starter.Home', [])
     }
     configureBackgroundGeolocation();
   }
-  
+
   // Build "Add Geofence" Modal.
   $ionicModal.fromTemplateUrl('js/app/home/add-geofence.html', {
     scope: $scope,
@@ -394,6 +408,7 @@ angular.module('starter.Home', [])
   */
   $scope.onRemoveGeofence = function() {
     var identifier = $scope.geofenceRecord.identifier;
+    bgGeo.removeGeofence(identifier);
     removeGeofence(identifier);
     $scope.showGeofenceModal.hide();
   };
@@ -424,6 +439,17 @@ angular.module('starter.Home', [])
     return geofence;
   };
   /**
+  * Remove all geofence markers
+  */
+  var removeGeofenceMarkers = function() {
+    for (var n=0,len=geofenceMarkers.length;n<len;n++) {
+      marker = geofenceMarkers[n];
+      marker.setMap(null);
+    }
+    geofenceMarkers = [];
+  };
+  
+  /**
   * Fetch a google.maps.Circle marker
   */
   var getGeofenceMarker = function(identifier) {
@@ -431,7 +457,7 @@ angular.module('starter.Home', [])
     if (index >= 0) {
       return geofenceMarkers[index];
     }
-    return -1;
+    return null;
   };
   /**
   * Remove a geofence
@@ -446,13 +472,12 @@ angular.module('starter.Home', [])
         return;
       }
     }
-    bgGeo.removeGeofence(identifier);
   };
 
-  
-  var currentLocation, 
+
+  var currentLocation,
       lastLocation,
-      currentLocationMarker, locationAccuracyMarker, polyline, 
+      currentLocationMarker, locationAccuracyMarker, polyline,
       markers = [], geofenceMarkers = [];
   /**
   * Create current position Marker
@@ -497,7 +522,7 @@ angular.module('starter.Home', [])
       });
     }
     var latlng = new google.maps.LatLng(coords.latitude, coords.longitude);
-    
+
     if (lastLocation) {
       var last = lastLocation;
       // Drop a breadcrumb of where we've been.
@@ -535,7 +560,7 @@ angular.module('starter.Home', [])
     if (location.sample === true) {
       return;
     }
-    
+
     // Add breadcrumb to current Polyline path.
     polyline.getPath().push(latlng);
     lastLocation = location;
@@ -553,7 +578,7 @@ angular.module('starter.Home', [])
     setCurrentLocationMarker(location);
 
     var coords = location.coords;
-    
+
     if (!stationaryRadiusMarker) {
       stationaryRadiusMarker = new google.maps.Circle({
         zIndex: 0,
@@ -590,16 +615,18 @@ angular.module('starter.Home', [])
   $scope.onToggleEnabled = function() {
     if (!bgGeo) { return;}
     if ($scope.state.enabled) {
-      
+
       bgGeo.start(function(state) {
         console.log('[js] BackgroundGeolocation started', state);
 
         // If BackgroundGeolocation is monitoring geofences, fetch them and add map-markers
+        /*
         bgGeo.getGeofences(function(rs) {
           for (var n=0,len=rs.length;n<len;n++) {
             createGeofenceMarker(rs[n]);
           }
         });
+        */
       }, function(error) {
         console.warn(error);
       });
@@ -619,7 +646,7 @@ angular.module('starter.Home', [])
       bgGeo.playSound(Settings.getSoundId('BUTTON_CLICK'));
       $scope.state.isMoving = false;
       $scope.state.startButtonIcon = PLAY_BUTTON_CLASS;
-      
+
       // Clear previousLocation
       lastLocation = undefined;
 
@@ -657,7 +684,7 @@ angular.module('starter.Home', [])
   */
   $scope.getCurrentPosition = function() {
     if (!bgGeo) { return; }
-    
+
     bgGeo.getCurrentPosition(function(location, taskId) {
       console.info('[js] getCurrentPosition: ', JSON.stringify(location));
       centerOnMe(location);

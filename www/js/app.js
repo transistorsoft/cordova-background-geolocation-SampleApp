@@ -30,6 +30,11 @@ app.config(function($stateProvider, $urlRouterProvider) {
       templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })
+    .state('settings/geofenceProximityRadius', {
+      url: '/settings/geofenceProximityRadius',
+      templateUrl: 'js/app/settings/radio-list.html',
+      controller: 'Settings'
+    })
     .state('settings/desiredAccuracy', {
       url: '/settings/desiredAccuracy',
       templateUrl: 'js/app/settings/radio-list.html',
