@@ -24,7 +24,75 @@ var Tests = (function() {
       clearInterval(getLocationsTask);
       clearInterval(getCurrentPositionTask);
     },
+    addGeofenceTest: function(length, prefix, success, failure) {
+      var bg = window.BackgroundGeolocation;
+      prefix = prefix || 'default';
+      bg.getCurrentPosition(function(location, taskId) {
+        for (var n=0;n<length;n++) {
+          bg.addGeofence({
+            notifyOnExit: true,
+            notifyOnEntry: true,
+            identifier: 'geofence_' + prefix + '_' + n,
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+            radius: 200
+          }, success, failure);
+        }
+        bg.finish(taskId);
+      });
+    },
+    addGeofencesTest: function(length, prefix, success, failure) {
+      prefix = prefix || 'default';
+      var bg = window.BackgroundGeolocation;
+      var rs = [];
+      bg.getCurrentPosition(function(location, taskId) {
+        for (var n=0;n<length;n++) {
+          rs.push({
+            notifyOnExit: true,
+            notifyOnEntry: true,
+            identifier: 'geofence_' + prefix + '_' + n,
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+            radius: 200
+          });
+        }
+        bg.addGeofences(rs, success, failure);
+        bg.finish(taskId);
+      });
+    },
+    removeGeofencesTest: function(success, failure) {
+      var bg = window.BackgroundGeolocation;
+      this.addGeofencesTest('remove_test', function() {
+        bg.getGeofences(function(rs) {
+          console.info('- getGeofences: ', rs.length);
 
+          bg.removeGeofences(function(response) {
+            console.log('- Success: ', response);
+            bg.getGeofences(function(rs) {
+              console.log('- removeGeofences: ', rs.length);
+            });
+          }, function(error) {
+            console.warn('- Error: ', error);
+          });
+        });
+      });
+    },
+    insertLocations: function(length, success, failure) {
+      var bg = window.BackgroundGeolocation;
+      var n = 0;
+      bg.getCurrentPosition(function(l, t) {
+        for (var i=0;i<length;i++) {
+          bg.insertLocation({
+            coords: {
+              latitude: l.coords.latitude,
+              longitude: l.coords.longitude
+            },
+            timestamp: l.timestamp,
+            uuid: 'uuid-' + i
+          }, success, failure);
+        }
+      });
+    },
     startGeofenceTest: function() {
       var geofences = [{
         identifier: "Geofence 1",
