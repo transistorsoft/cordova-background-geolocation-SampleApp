@@ -174,6 +174,39 @@ var Tests = (function() {
       }
       return rs;
     },
+
+    createGeofences(data, interval, params, callback) {
+      var bgGeo = window.BackgroundGeolocation;
+      bgGeo.removeGeofences();
+
+      interval = interval || 1;
+      params = params || {notifyOnEntry: true};
+      params.notifyOnEntry  = params.notifyOnEntry  || false;
+      params.notifyOnExit   = params.notifyOnExit   || false;
+      params.notifyOnDwell  = params.notifyOnDwell  || false;
+      var geofences = [];
+      var index = 1;
+      for (var n=0,len=data.length;n<len;n++) {
+        if (n % interval) { continue; }
+        geofences.push({
+          identifier: 'geofences_test_' + index++,
+          latitude: data[n].lat,
+          longitude: data[n].lng,
+          radius: 200,
+          notifyOnExit: params.notifyOnExit,
+          notifyOnEntry: params.notifyOnEntry,
+          notifyOnDwell: params.notifyOnDwell
+        });
+      };
+      bgGeo.addGeofences(geofences, function(result) {
+        console.log('Geofences loaded');
+        callback();
+      }, function(error) {
+        console.warn('Geofence load failure: ', error);
+        callback();
+      });
+    },
+
     crudTest: function() {
       console.log("******************************");
       console.log("* Crud test");

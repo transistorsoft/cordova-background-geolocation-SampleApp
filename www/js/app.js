@@ -1,7 +1,8 @@
-var app = angular.module('starter', ['ionic', 'starter.Home', 'starter.Settings', 'services.Settings']);
+var app = angular.module('starter', ['ionic', 'starter.Home', 'starter.Settings', 'services.Settings', 'services.Data']);
 
-app.config(function($stateProvider, $urlRouterProvider) {
-
+app.config(function($ionicConfigProvider, $stateProvider, $urlRouterProvider) {
+  $ionicConfigProvider.tabs.position('bottom');
+  
   $urlRouterProvider.otherwise('/')
 
   $stateProvider
@@ -187,6 +188,11 @@ app.config(function($stateProvider, $urlRouterProvider) {
     })
     .state('settings/disableMotionActivityUpdates', {
       url: '/settings/disableMotionActivityUpdates',
+      templateUrl: 'js/app/settings/radio-list.html',
+      controller: 'Settings'
+    })
+    .state('settings/logLevel', {
+      url: '/settings/logLevel',
       templateUrl: 'js/app/settings/radio-list.html',
       controller: 'Settings'
     })

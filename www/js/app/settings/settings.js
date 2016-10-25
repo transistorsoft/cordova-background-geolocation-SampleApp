@@ -1,14 +1,23 @@
 angular.module('starter.Settings', [])
 
-.controller('Settings', function($scope, $ionicModal, $ionicLoading, $ionicPopup, $state, Settings) {
+.controller('Settings', function($scope, $ionicModal, $ionicLoading, $ionicPopup, $state, Settings, Data) {
 	
   $scope.syncButtonIcon = 'ion-load-c icon-animated';
   $scope.selectedValue  = '';
   $scope.isSyncing      = false;
+  $scope.isLoadingGeofences = false;
 
+  $scope.geofences = {
+    notifyOnEntry: true,
+    notifyOnExit: false,
+    notifyOnDwell: false,
+    loiteringDelay: 10000
+  };
   $scope.state = {
     email: window.localStorage.getItem('email-log-recipient'),
-    debug: undefined
+    debug: undefined,
+    logLevel: undefined,
+    showMapMarkers: window.localStorage.getItem('settings:showMapMarkers') === 'true'
   };
 
   var bgGeo;
@@ -19,16 +28,16 @@ angular.module('starter.Settings', [])
 
     // Fetch current state of BackgroundGeolocation.  We want to set the state
     // of the Debug (  o) toggle button in top toolbar.
-    bgGeo.getState(function(state) {
-      $scope.$apply(function() {
-        $scope.state.debug = JSON.parse(state.debug);
-      });
-    });
+    var config = Settings.getConfig();
+    $scope.state.debug = config.debug;
+    $scope.state.logLevel = config.logLevel + '';
+
   });
 
   $scope.isAutoSyncDisabled = function() {
     return !$scope.isSyncing && Settings.getConfig().autoSync == 'true';
   }
+
 
   $scope.getSettings = function(group) {
     return Settings.getSettings(group);
@@ -90,6 +99,12 @@ angular.module('starter.Settings', [])
 
       config[name] = value;
 
+      if ($scope.state.hasOwnProperty(name)) {
+        $scope.$apply(function() {
+          $scope.state[name] = value;
+        });
+      }
+
       bgGeo.setConfig(config, function() {
         console.info('[js] setConfig success: ', name, value);
       }, function() {
@@ -115,18 +130,18 @@ angular.module('starter.Settings', [])
           return (key.length > 0) && (model[key] === true);
         });
         value = value.length ? value.join(',') : '';
-        break;      
+        break;
     }
     Settings.set(name, value);
 
     var config = {}
     config[name] = value;
 
-    bgGeo.setConfig(function() {
+    bgGeo.setConfig(config, function() {
       console.log('[js] setConfig success');
     }, function() {
       console.warn('[js] setConfig failure');
-    }, config);
+    });
 
     $state.go('settings');
   };
@@ -168,32 +183,80 @@ angular.module('starter.Settings', [])
             myPopup.close();
             // remember this email address
             window.localStorage.setItem('email-log-recipient', $scope.state.email);
-            bgGeo.emailLog($scope.state.email);      
+            bgGeo.emailLog($scope.state.email);
           }
         }
       }]
     });
   };
+  $scope.onRemoveGeofences = function() {
+    bgGeo.removeGeofences(function() {
+      bgGeo.playSound(Settings.getSoundId('MESSAGE_SENT'));
+    }, function() {
+      console.warn("Failed to remove geofences");
+    });
+  };
+  $scope.onLoadGeofences = function() {
+    if ($scope.isLoadingGeofences) { return false; }
+    $scope.isLoadingGeofences = true;
 
+    Data.getRoute('city_drive', function(data) {
+      Tests.createGeofences(data, 1, {
+        notifyOnEntry: $scope.geofences.notifyOnEntry,
+        notifyOnExit: $scope.geofences.notifyOnExit,
+        notifyOnDwell: $scope.geofences.notifyOnDwell,
+        loiteringDelay: $scope.geofences.loiteringDelay
+      }, function() {
+        $scope.$apply(function() {$scope.isLoadingGeofences = false;});
+        bgGeo.playSound(Settings.getSoundId('MESSAGE_SENT'));
+      });
+    });
+  };
+
+  /**
+  * change log level
+  */
+  $scope.onChangeLogLevel = function() {
+    Settings.set('logLevel', parseInt($scope.state.logLevel, 10));
+    bgGeo.setConfig({
+      logLevel: parseInt($scope.state.logLevel, 10)
+    });
+  };
+  /**
+  * toggle sounds & notifications
+  */
   $scope.onToggleDebug = function() {
+    console.log('toggleDebug: ', $scope.state.debug);
     Settings.set('debug', $scope.state.debug);
     if (!bgGeo) { return;}
 
-    bgGeo.setConfig(function() {
+    bgGeo.setConfig({
+      debug: $scope.state.debug
+    }, function() {
       console.log('[js] setConfig success');
     }, function() {
       console.log('[js] setConfig failure');
-    }, {
-      debug: Settings.get('debug')
     });
-  }
+  };
 
+  /**
+  * Toggle showMapMarkers
+  */
+  $scope.onToggleShowMapMarkers = function() {
+    console.log('onToggleShowMapMarkers: ', $scope.state.showMapMarkers);
+    
+
+    Settings.set('showMapMarkers', $scope.state.showMapMarkers);
+  }
+  /**
+  * Manual sync
+  */
   $scope.onClickSync = function() {
     if ($scope.isSyncing) { return false; }
 
     bgGeo.playSound(Settings.getSoundId('BUTTON_CLICK'));
     $scope.isSyncing = true;
-    
+
     bgGeo.sync(function(rs, taskId) {
       console.info('[js] sync success: ', rs.length);
       bgGeo.playSound(Settings.getSoundId('MESSAGE_SENT'));

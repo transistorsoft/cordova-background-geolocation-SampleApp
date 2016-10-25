@@ -1,8 +1,16 @@
 angular.module('starter.Home', [])
 
-.controller('Home', function($scope, $ionicModal, $ionicLoading, $ionicPopup, $state, Settings) {
+.controller('Home', function($scope, $ionicModal, $ionicLoading, $ionicPopup, $state, Settings, Data) {
   var PLAY_BUTTON_CLASS = "ion-play button-balanced",
       PAUSE_BUTTON_CLASS = "ion-pause button-assertive";
+
+  Settings.onChange(function(name, value) {
+    switch(name) {
+      case 'showMapMarkers':
+        onToggleShowMapMarkers(value);
+        break;
+    }
+  });
 
   var icons = {
     activity_unknown: "ion-ios-help",
@@ -18,7 +26,8 @@ angular.module('starter.Home', [])
   $scope.state = {
     enabled: false,
     isMoving: false,
-    startButtonIcon: PLAY_BUTTON_CLASS
+    startButtonIcon: PLAY_BUTTON_CLASS,
+    showMapMarkers: window.localStorage.getItem('settings:showMapMarkers') === 'true'
   };
 
   // Motion Activity
@@ -43,7 +52,7 @@ angular.module('starter.Home', [])
   };
 
   // Convenient, private reference to BackgroundGeolocation API
-	var bgGeo, map;
+  var bgGeo, map;
 
   /**
   * BackgroundGeolocation Location callback
@@ -73,7 +82,7 @@ angular.module('starter.Home', [])
   */
   function onHttpError(error) {
     console.info('[js] HTTP ERROR: ', error);
-  };
+  }
   /**
   * Background Geolocation motionchange callback
   */
@@ -163,7 +172,7 @@ angular.module('starter.Home', [])
     console.log('- onGeofence: ', JSON.stringify(params, null, 2));
 
     var bgGeo = window.BackgroundGeolocation;
-    $scope.showAlert('Geofence ' + params.action, "Identifier: " + params.identifier);
+    //$scope.showAlert('Geofence ' + params.action, "Identifier: " + params.identifier);
 
     var marker  = getGeofenceMarker(params.identifier);
 
@@ -225,7 +234,7 @@ angular.module('starter.Home', [])
     google.maps.event.addListener(map, 'longpresshold', function(e) {
       geofenceCursor.setPosition(e.latLng);
       geofenceCursor.setMap(map);
-      bgGeo.playSound(Settings.getSoundId('LONG_PRESS_ACTIVATE'))
+      bgGeo.playSound(Settings.getSoundId('LONG_PRESS_ACTIVATE'));
     });
 
     // Longpress cancelled.  Get rid of the circle cursor.
@@ -239,12 +248,12 @@ angular.module('starter.Home', [])
       onAddGeofence(geofenceCursor.getPosition());
       geofenceCursor.setMap(null);
     });
-  };
-
+  }
   /**
   * Configure BackgroundGeolocation plugin
   */
   function configureBackgroundGeolocation() {
+    var me = this;
     bgGeo = window.BackgroundGeolocation;
     var config = Settings.getConfig();
 
@@ -257,9 +266,9 @@ angular.module('starter.Home', [])
     // UNCOMMENT TO AUTO-GENERATE A SERIES OF SCHEDULE EVENTS BASED UPON CURRENT TIME:
     //config.schedule = Tests.generateSchedule(24, 1, 1, 1);
     //
+    //config.schedule = null;
     //config.url = 'http://192.168.11.100:8080/locations';
     config.params = {};
-    config.logMaxDays = 3;
 
     // Attach Device info to BackgroundGeolocation params.device
     config.params.device = ionic.Platform.device();
@@ -294,6 +303,7 @@ angular.module('starter.Home', [])
     });
 
     bgGeo.configure(config, function(state) {
+      console.log('state.schedule: ', state.schedule);
 
       // If configured with a Schedule, start it:
       if (state.schedule) {
@@ -448,7 +458,7 @@ angular.module('starter.Home', [])
     }
     geofenceMarkers = [];
   };
-  
+
   /**
   * Fetch a google.maps.Circle marker
   */
@@ -474,6 +484,16 @@ angular.module('starter.Home', [])
     }
   };
 
+  var onToggleShowMapMarkers = function(value) {
+    $scope.state.showMapMarkers = value;
+
+    // Clear location-markers.
+    var marker;
+    for (var n=0,len=markers.length;n<len;n++) {
+      marker = markers[n];
+      marker.setMap((value) ? map : null);
+    }
+  };
 
   var currentLocation,
       lastLocation,
@@ -523,7 +543,7 @@ angular.module('starter.Home', [])
     }
     var latlng = new google.maps.LatLng(coords.latitude, coords.longitude);
 
-    if (lastLocation) {
+    if (lastLocation && $scope.state.showMapMarkers) {
       var last = lastLocation;
       // Drop a breadcrumb of where we've been.
       var icon, scale;
