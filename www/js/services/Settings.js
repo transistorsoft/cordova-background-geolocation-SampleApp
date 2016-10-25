@@ -2,6 +2,7 @@ angular.module('services.Settings', []).factory('Settings', function($rootScope)
 	var config     = {};
   var device;
   var platform;
+  var listeners = [];
 
   var SETTINGS = {
     common: [
@@ -19,7 +20,8 @@ angular.module('services.Settings', []).factory('Settings', function($rootScope)
       {name: 'disableElasticity', group: 'geolocation', dataType: 'boolean', inputType: 'select', values: ['true', 'false'], defaultValue: 'false'},
       {name: 'heartbeatInterval', group: 'application', dataType: 'integer', inputType: 'select', values: [-1, 10, 30, 60, (2*60), (15*60)], defaultValue: 60},
       {name: 'locationTimeout', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 5, 10, 30, 60], defaultValue: 60},
-      {name: 'geofenceProximityRadius', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 100, 250, 500, 1000, 2500, 5000, 10000], defaultValue: 1000}
+      {name: 'geofenceProximityRadius', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 100, 250, 500, 1000, 2500, 5000, 10000], defaultValue: 1000},
+      {name: 'logLevel', group: 'application', dataType: 'integer', inputType: 'select', values: [0, 1, 2, 3, 4, 5], defaultValue: 5}
     ],
     iOS: [
       {name: 'desiredAccuracy', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [-1, 0, 10, 100, 1000], defaultValue: 0 },
@@ -74,6 +76,9 @@ angular.module('services.Settings', []).factory('Settings', function($rootScope)
     if (setting.dataType === 'integer') {
       value = parseInt(value, 10);
     }
+    if (setting.dataType === 'boolean') {
+      value = (value === 'true');
+    }
     config[setting.name] = value;
   }
 
@@ -95,6 +100,10 @@ angular.module('services.Settings', []).factory('Settings', function($rootScope)
   });
 
 	return {
+    onChange: function(listener) {
+      debugger;
+      listeners.push(listener);
+    },
 		getConfig: function() {
 			return config;
 		},
@@ -118,7 +127,11 @@ angular.module('services.Settings', []).factory('Settings', function($rootScope)
     */
     set: function(key, value) {
       window.localStorage.setItem('settings:' + key, value);
-      config[key] = value;
+      if (listeners.length) {
+        for (var n=0,len=listeners.length;n<len;n++) {
+          listeners[n](key, value);
+        }
+      }
     },
     /**
     * Return a sound ID
