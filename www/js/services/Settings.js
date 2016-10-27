@@ -101,7 +101,6 @@ angular.module('services.Settings', []).factory('Settings', function($rootScope)
 
 	return {
     onChange: function(listener) {
-      debugger;
       listeners.push(listener);
     },
 		getConfig: function() {

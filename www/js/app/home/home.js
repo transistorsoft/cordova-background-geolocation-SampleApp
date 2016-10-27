@@ -55,9 +55,7 @@ angular.module('starter.Home', [])
   var bgGeo, map;
 
   /**
-  * BackgroundGeolocation Location callback
-  * @param {Object} location
-  * @param {Integer} taskId
+  * @event BackgroundGeolocation location
   */
   function onLocation(location, taskId) {
     console.log('[js] location: ', location);
@@ -65,14 +63,13 @@ angular.module('starter.Home', [])
     bgGeo.finish(taskId);
   }
   /**
-  * Background Geolocation error callback
-  * @param {Integer} code
+  * @event BackgroundGeolocation location
   */
   function onLocationError(error) {
     console.error('[js] Location error: ', error);
   }
   /**
-  * Background Geolocation HTTP callback
+  * @event BackgroundGeolocation http
   */
   function onHttpSuccess(response) {
     console.info('[js] HTTP success', response);
@@ -84,7 +81,7 @@ angular.module('starter.Home', [])
     console.info('[js] HTTP ERROR: ', error);
   }
   /**
-  * Background Geolocation motionchange callback
+  * @event BackgroundGeolocation motionchange
   */
   function onMotionChange(isMoving, location, taskId) {
     console.log('[js] onMotionChange: ', isMoving, location);
@@ -107,7 +104,7 @@ angular.module('starter.Home', [])
     bgGeo.finish(taskId);
   }
   /**
-  * BackgroundGeolocation heartbeat event handler
+  * @event BackgroundGeolocation heartbeat
   */
   function onHeartbeat(params) {
     var shakes = params.shakes;
@@ -127,7 +124,9 @@ angular.module('starter.Home', [])
     *
     */
   }
-
+  /**
+  * @event BackgroundGeolocation activitychange
+  */
   function onActivityChange(activityName) {
     console.info('[js] Motion activity changed: ', activityName);
     var icon = icons['activity_' + activityName];
@@ -143,6 +142,9 @@ angular.module('starter.Home', [])
     });
   }
 
+  /**
+  * @event BackgroundGeolocation providerchange
+  */
   function onProviderChange(provider) {
     console.info('[js] Location provider change: ', JSON.stringify(provider));
     $scope.$apply(function() {
@@ -152,9 +154,8 @@ angular.module('starter.Home', [])
 
     });
   }
-
   /**
-  * BackgroundGeolocation schedule event-handler
+  * @event BackgroundGeolocation schedule
   */
   function onSchedule(state) {
     console.info('- Schedule event: ', state.enabled, state);
@@ -164,9 +165,31 @@ angular.module('starter.Home', [])
       $scope.state.isMoving = false;
     });
   }
-
   /**
-  * BackgroundGeolocation geofence callback
+  * @event BackgroundGeolocation geofenceschange
+  */
+  function onGeofencesChange(event) {
+    console.info('geofenceschange: ', event);
+    var on = event.on;
+    var off = event.off;
+
+    // If neighter on or off, ALL geofences have been destroyed.  Remove all markers.
+    if (!on.length && !off.length) {
+      removeGeofenceMarkers();
+      return;
+    }
+    for (var n=0,len=on.length;n<len;n++) {
+      // only create markers if they're not already rendered
+      if (!getGeofenceMarker(on[n].identifier)) {
+        createGeofenceMarker(on[n]);
+      }
+    }
+    for (var n=0,len=off.length;n<len;n++) {
+      removeGeofence(off[n]);
+    }
+  }
+  /**
+  * @event BackgroundGeolocation geofence
   */
   function onGeofence(params, taskId) {
     console.log('- onGeofence: ', JSON.stringify(params, null, 2));
@@ -281,26 +304,7 @@ angular.module('starter.Home', [])
     bgGeo.on('schedule', onSchedule);
     bgGeo.on('activitychange', onActivityChange);
     bgGeo.on('providerchange', onProviderChange);
-    bgGeo.on('geofenceschange', function(event) {
-      console.info('geofenceschange: ', event);
-      var on = event.on;
-      var off = event.off;
-
-      // If neighter on or off, ALL geofences have been destroyed.  Remove all markers.
-      if (!on.length && !off.length) {
-        removeGeofenceMarkers();
-        return;
-      }
-      for (var n=0,len=on.length;n<len;n++) {
-        // only create markers if they're not already rendered
-        if (!getGeofenceMarker(on[n].identifier)) {
-          createGeofenceMarker(on[n]);
-        }
-      }
-      for (var n=0,len=off.length;n<len;n++) {
-        removeGeofence(off[n]);
-      }
-    });
+    bgGeo.on('geofenceschange', onGeofencesChange);
 
     bgGeo.configure(config, function(state) {
       console.log('state.schedule: ', state.schedule);
@@ -546,10 +550,11 @@ angular.module('starter.Home', [])
     if (lastLocation && $scope.state.showMapMarkers) {
       var last = lastLocation;
       // Drop a breadcrumb of where we've been.
-      var icon, scale;
+      var icon, scale, anchor;
       if (markers.length % 2) {
         icon = google.maps.SymbolPath.FORWARD_CLOSED_ARROW;
         scale = 4;
+        anchor = new google.maps.Point(0, 2.6);
       } else {
         icon = google.maps.SymbolPath.CIRCLE;
         scale = 6;
@@ -561,6 +566,7 @@ angular.module('starter.Home', [])
           path: icon,
           rotation: last.coords.heading,
           scale: scale,
+          anchor: anchor,
           fillColor: '#11b700',//'26cc77',
           fillOpacity: 1,
           strokeColor: '#0d6104',
