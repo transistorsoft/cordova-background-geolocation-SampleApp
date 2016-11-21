@@ -17,6 +17,7 @@ angular.module('starter.Settings', [])
     email: window.localStorage.getItem('email-log-recipient'),
     debug: undefined,
     logLevel: undefined,
+    trackingMode: Settings.getTrackingMode(),
     showMapMarkers: window.localStorage.getItem('settings:showMapMarkers') === 'true'
   };
 
@@ -239,6 +240,18 @@ angular.module('starter.Settings', [])
     });
   };
 
+  $scope.onChangeTrackingMode = function() {
+    Settings.setTrackingMode($scope.state.trackingMode);
+    if (!bgGeo) { return; }
+    bgGeo.getState(function(state) {
+      if (!state.enabled) { return; }
+      if ($scope.state.trackingMode === 'location') {
+        bgGeo.start();
+      } else {
+        bgGeo.startGeofences();
+      }
+    });
+  }
   /**
   * Toggle showMapMarkers
   */

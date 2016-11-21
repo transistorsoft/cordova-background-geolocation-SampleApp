@@ -175,7 +175,7 @@ var Tests = (function() {
       return rs;
     },
 
-    createGeofences(data, interval, params, callback) {
+    createGeofences: function(data, interval, params, callback) {
       var bgGeo = window.BackgroundGeolocation;
       bgGeo.removeGeofences();
 

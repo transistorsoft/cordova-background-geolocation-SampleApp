@@ -55,6 +55,17 @@
                 <span ng-show="!isSyncing">Sync</span>
               </button>
             </div>
+
+            <label class="item item-input item-select">
+              <div class="input-label">
+                Tracking mode
+              </div>
+              <select ng-model="state.trackingMode" ng-change="onChangeTrackingMode()">
+                <option value="location">location</option>
+                <option value="geofence">geofence</option>
+              </select>
+            </label>
+
             <div class="item item-divider">Debug</div>
             <div class="item">
               <button id="btn-email-log" class="button button-positive" style="width:100%;" ng-click="onEmailLog()">Email logs</button>

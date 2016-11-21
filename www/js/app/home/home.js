@@ -25,6 +25,7 @@ angular.module('starter.Home', [])
 
   $scope.state = {
     enabled: false,
+    trackingMode: 'location',
     isMoving: false,
     startButtonIcon: PLAY_BUTTON_CLASS,
     showMapMarkers: window.localStorage.getItem('settings:showMapMarkers') === 'true'
@@ -287,12 +288,11 @@ angular.module('starter.Home', [])
     //  4: time between (minutes) generated schedule ON events
     //
     // UNCOMMENT TO AUTO-GENERATE A SERIES OF SCHEDULE EVENTS BASED UPON CURRENT TIME:
-    //config.schedule = Tests.generateSchedule(24, 1, 1, 1);
+    //config.schedule = Tests.generateSchedule(24*3, 0, 1, 1);
     //
     //config.schedule = null;
     //config.url = 'http://192.168.11.100:8080/locations';
     config.params = {};
-
     // Attach Device info to BackgroundGeolocation params.device
     config.params.device = ionic.Platform.device();
 
@@ -307,7 +307,7 @@ angular.module('starter.Home', [])
     bgGeo.on('geofenceschange', onGeofencesChange);
 
     bgGeo.configure(config, function(state) {
-      console.log('state.schedule: ', state.schedule);
+      console.log('state: ', state);
 
       // If configured with a Schedule, start it:
       if (state.schedule) {
@@ -379,7 +379,7 @@ angular.module('starter.Home', [])
       latitude: latLng.lat(),
       longitude: latLng.lng(),
       identifier: '',
-      radius: 200,
+      radius: "200",
       notifyOnEntry: true,
       notifyOnExit: false,
       notifyOnDwell: false,
@@ -616,7 +616,7 @@ angular.module('starter.Home', [])
         map: map
       });
     }
-    var radius = 50;
+    var radius = Settings.getTrackingMode() === 'location' ? 200 : (Settings.getConfig().geofenceProximityRadius / 2);
     var center = new google.maps.LatLng(coords.latitude, coords.longitude);
     stationaryRadiusMarker.setRadius(radius);
     stationaryRadiusMarker.setCenter(center);
@@ -641,21 +641,11 @@ angular.module('starter.Home', [])
   $scope.onToggleEnabled = function() {
     if (!bgGeo) { return;}
     if ($scope.state.enabled) {
-
-      bgGeo.start(function(state) {
-        console.log('[js] BackgroundGeolocation started', state);
-
-        // If BackgroundGeolocation is monitoring geofences, fetch them and add map-markers
-        /*
-        bgGeo.getGeofences(function(rs) {
-          for (var n=0,len=rs.length;n<len;n++) {
-            createGeofenceMarker(rs[n]);
-          }
-        });
-        */
-      }, function(error) {
-        console.warn(error);
-      });
+      if (Settings.getTrackingMode() === 'location') {
+        bgGeo.start();
+      } else {
+        bgGeo.startGeofences();
+      }
     } else {
       bgGeo.stop(function() {
         console.info('[js] BackgroundGeolocation stopped');

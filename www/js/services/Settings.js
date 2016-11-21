@@ -111,6 +111,12 @@ angular.module('services.Settings', []).factory('Settings', function($rootScope)
       var filterFn = function(setting) { return setting.group === group; };
       return (group) ? mySettings.filter(filterFn) : mySettings;
     },
+    getTrackingMode: function() {
+      return window.localStorage.getItem('settings:trackingMode') || 'location';
+    },
+    setTrackingMode: function(mode) {
+      window.localStorage.setItem('settings:trackingMode', mode);
+    },
     /**
     * Get a single config value by key
     * @param {String} key A BackgroundGeolocation setting key to return a value for
