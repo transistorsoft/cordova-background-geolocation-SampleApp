@@ -58,13 +58,6 @@ Or for **PhoneGap Build**:
 ```
   <plugin name="cordova-background-geolocation-lt" />
 ```
-#### Building Android
-If you wish try the **Free Version** for **Android** in your *own* app, modify your `config.xml` as follows (your app **must** be named `com.transistorsoft.backgroundgeolocation.ionic`:
-
-```xml
-<widget id="com.transistorsoft.backgroundgeolocation.ionic" version="2.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <preference name="cordova-background-geolocation-license" value="4bbb513c013111eae951647fd4f9e79f127fce6f7a00e9d327db9ea2a053a0df" />
-```
 
 #### Step 4: Build
 
@@ -76,6 +69,15 @@ $ cordova platform add android
 $ cordova build android
 $ cordova run android
 ```
+
+##### Building Android
+If you wish try the **Free Version** for **Android** in your *own* app, modify your `config.xml` as follows (your app **must** be named `com.transistorsoft.backgroundgeolocation.ionic`:
+
+```xml
+<widget id="com.transistorsoft.backgroundgeolocation.ionic" version="2.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <preference name="cordova-background-geolocation-license" value="4bbb513c013111eae951647fd4f9e79f127fce6f7a00e9d327db9ea2a053a0df" />
+```
+
 
 #### Step 5: Boot the **iOS** Simulator
 
