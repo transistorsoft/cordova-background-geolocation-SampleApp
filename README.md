@@ -59,7 +59,7 @@ Or for **PhoneGap Build**:
   <plugin name="cordova-background-geolocation-lt" />
 ```
 
-#### Step 4: Build
+### Step 4: Build
 
 ```
 $ cordova platform add ios
