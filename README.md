@@ -58,8 +58,8 @@ Or for **PhoneGap Build**:
 ```
   <plugin name="cordova-background-geolocation-lt" />
 ```
-
-If you wish to build the **Free Version** for **Android** in your *own* app, modify your `config.xml` as follows (your app **must** be named `com.transistorsoft.backgroundgeolocation.ionic`:
+#### Building Android
+If you wish try the **Free Version** for **Android** in your *own* app, modify your `config.xml` as follows (your app **must** be named `com.transistorsoft.backgroundgeolocation.ionic`:
 
 ```xml
 <widget id="com.transistorsoft.backgroundgeolocation.ionic" version="2.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
