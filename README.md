@@ -70,7 +70,7 @@ $ cordova build android
 $ cordova run android
 ```
 
-##### Building Android
+#### Building Android
 If you wish try the **Free Version** for **Android** in your *own* app, modify your `config.xml` as follows (your app **must** be named `com.transistorsoft.backgroundgeolocation.ionic`:
 
 ```xml
