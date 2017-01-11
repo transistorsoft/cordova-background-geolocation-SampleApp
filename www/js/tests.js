@@ -177,7 +177,7 @@ var Tests = (function() {
 
     createGeofences: function(data, interval, params, callback) {
       var bgGeo = window.BackgroundGeolocation;
-      bgGeo.removeGeofences();
+      //bgGeo.removeGeofences();
 
       interval = interval || 1;
       params = params || {notifyOnEntry: true};
@@ -193,6 +193,7 @@ var Tests = (function() {
           latitude: data[n].lat,
           longitude: data[n].lng,
           radius: 200,
+          extras: {foo:"bar"},
           notifyOnExit: params.notifyOnExit,
           notifyOnEntry: params.notifyOnEntry,
           notifyOnDwell: params.notifyOnDwell

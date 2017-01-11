@@ -86,6 +86,8 @@ angular.module('starter.Home', [])
   */
   function onMotionChange(isMoving, location, taskId) {
     console.log('[js] onMotionChange: ', isMoving, location);
+
+    // Perform long-running tasks in a backgroundTask to prevent iOS from suspending (max 180s).
     $scope.state.isMoving = isMoving;
     // Change state of start-button icon:  [>] or [||]
     $scope.$apply(function() {
@@ -102,6 +104,7 @@ angular.module('starter.Home', [])
         stationaryRadiusMarker.setMap(null);
       }
     }
+    // Signal completion of long-running task.
     bgGeo.finish(taskId);
   }
   /**
@@ -193,13 +196,12 @@ angular.module('starter.Home', [])
   * @event BackgroundGeolocation geofence
   */
   function onGeofence(params, taskId) {
-    console.log('- onGeofence: ', JSON.stringify(params, null, 2));
+    console.log('- onGeofence: ', params);
 
     var bgGeo = window.BackgroundGeolocation;
-    //$scope.showAlert('Geofence ' + params.action, "Identifier: " + params.identifier);
 
+    // Start long-running background-task.
     var marker  = getGeofenceMarker(params.identifier);
-
     if (!marker) {
       bgGeo.finish(taskId);
       return;
@@ -288,14 +290,15 @@ angular.module('starter.Home', [])
     //  4: time between (minutes) generated schedule ON events
     //
     // UNCOMMENT TO AUTO-GENERATE A SERIES OF SCHEDULE EVENTS BASED UPON CURRENT TIME:
-    //config.schedule = Tests.generateSchedule(24*3, 0, 1, 1);
-    //
-    //config.schedule = null;
+    //config.schedule = Tests.generateSchedule(48, 1, 1, 1);
     //config.url = 'http://192.168.11.100:8080/locations';
+
     config.params = {};
+
     // Attach Device info to BackgroundGeolocation params.device
     config.params.device = ionic.Platform.device();
 
+    bgGeo.on('geofenceschange', onGeofencesChange);
     bgGeo.on('location', onLocation, onLocationError);
     bgGeo.on('motionchange', onMotionChange);
     bgGeo.on('geofence', onGeofence);
@@ -304,7 +307,6 @@ angular.module('starter.Home', [])
     bgGeo.on('schedule', onSchedule);
     bgGeo.on('activitychange', onActivityChange);
     bgGeo.on('providerchange', onProviderChange);
-    bgGeo.on('geofenceschange', onGeofencesChange);
 
     bgGeo.configure(config, function(state) {
       console.log('state: ', state);
@@ -331,6 +333,7 @@ angular.module('starter.Home', [])
     // Your background-fetch handler.
     var fetchCallback = function() {
         console.log('[js] BackgroundFetch initiated');
+
         Fetcher.finish();
     }
 
@@ -383,7 +386,8 @@ angular.module('starter.Home', [])
       notifyOnEntry: true,
       notifyOnExit: false,
       notifyOnDwell: false,
-      loiteringDelay: undefined
+      loiteringDelay: undefined,
+      extras: {"foo":"bar"}
     };
     $scope.addGeofenceModal.show();
   }
