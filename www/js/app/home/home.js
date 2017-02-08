@@ -150,6 +150,7 @@ angular.module('starter.Home', [])
   * @event BackgroundGeolocation providerchange
   */
   function onProviderChange(provider) {
+    var bgGeo = window.BackgroundGeolocation;
     console.info('[js] Location provider change: ', JSON.stringify(provider));
     $scope.$apply(function() {
       $scope.provider.enabled = provider.enabled;
@@ -291,8 +292,11 @@ angular.module('starter.Home', [])
     //
     // UNCOMMENT TO AUTO-GENERATE A SERIES OF SCHEDULE EVENTS BASED UPON CURRENT TIME:
     //config.schedule = Tests.generateSchedule(48, 1, 1, 1);
-    //config.url = 'http://192.168.11.100:8080/locations';
-
+    config.url = 'http://192.168.11.100:8080/locations';
+    config.maxDaysToPersist = 14;
+    //
+    //
+    //
     config.params = {};
 
     // Attach Device info to BackgroundGeolocation params.device
