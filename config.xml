@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.transistorsoft.backgroundgeolocation.ionic" version="2.1.3" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.transistorsoft.backgroundgeolocation.ionic" version="2.4.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>BG Geo</name>
   <description>
         Cordova BackgroundGeolocation SampleApp
@@ -9,8 +9,19 @@
     </author>
   <content src="index.html"/>
 
+  <!-- For Free Version -->
+  <plugin name="cordova-background-geolocation-lt" spec="">
+    <variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="Background location-tracking is required" />
+    <variable name="LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION" value="Background location-tracking is required" />
+    <variable name="MOTION_USAGE_DESCRIPTION" value="Using the accelerometer increases battery-efficiency by intelligently toggling location-tracking only when the device is detected to be moving" />
+  </plugin>
 
-  <preference name="cordova-background-geolocation-license" value="4bbb513c013111eae951647fd4f9e79f127fce6f7a00e9d327db9ea2a053a0df" />
+  <!-- For Premium Version -->
+  <plugin name="cordova-background-geolocation" spec="">
+    <variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="Premium Background location-tracking is required" />
+    <variable name="LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION" value="Premium Background location-tracking is required" />
+    <variable name="MOTION_USAGE_DESCRIPTION" value="Premium Using the accelerometer increases battery-efficiency by intelligently toggling location-tracking only when the device is detected to be moving" />
+  </plugin>
 
   <plugin name="cordova-plugin-whitelist" spec="1" />
   <access origin="*"/>
