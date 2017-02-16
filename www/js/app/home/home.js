@@ -292,12 +292,12 @@ angular.module('starter.Home', [])
     //
     // UNCOMMENT TO AUTO-GENERATE A SERIES OF SCHEDULE EVENTS BASED UPON CURRENT TIME:
     //config.schedule = Tests.generateSchedule(48, 1, 1, 1);
-    config.url = 'http://192.168.11.100:8080/locations';
-    config.maxDaysToPersist = 14;
-    //
-    //
-    //
+    //config.url = 'http://192.168.11.100:8080/locations';
+
     config.params = {};
+    config.extras = {
+      'settings.extras': 'location-extras'
+    };
 
     // Attach Device info to BackgroundGeolocation params.device
     config.params.device = ionic.Platform.device();
@@ -401,6 +401,7 @@ angular.module('starter.Home', [])
   */
   $scope.onCreateGeofence = function() {
     $scope.addGeofenceModal.hide();
+
     bgGeo.addGeofences([$scope.geofenceRecord], function() {
       bgGeo.playSound(Settings.getSoundId('ADD_GEOFENCE'));
       createGeofenceMarker($scope.geofenceRecord);
