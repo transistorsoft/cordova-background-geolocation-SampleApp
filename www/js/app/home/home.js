@@ -196,21 +196,20 @@ angular.module('starter.Home', [])
   /**
   * @event BackgroundGeolocation geofence
   */
-  function onGeofence(params, taskId) {
-    console.log('- onGeofence: ', params);
+  function onGeofence(event, tid) {
+    console.log('- onGeofence: ', event);
 
     var bgGeo = window.BackgroundGeolocation;
 
     // Start long-running background-task.
-    var marker  = getGeofenceMarker(params.identifier);
+    var marker  = getGeofenceMarker(event.identifier);
     if (!marker) {
-      bgGeo.finish(taskId);
       return;
     }
     var geofence = marker.params;
 
     // Destroy the geofence?
-    if (!geofence.notifyOnDwell || (geofence.notifyOnDwell && params.action === "DWELL")) {
+    if (!geofence.notifyOnDwell || (geofence.notifyOnDwell && event.action === "DWELL")) {
       if (marker) {
         // Change the color of geofence marker to GREY so we know it has fired.
         marker.removed = true;
@@ -222,7 +221,6 @@ angular.module('starter.Home', [])
         });
       }
     }
-    bgGeo.finish(taskId);
   }
 
   /**
@@ -294,13 +292,14 @@ angular.module('starter.Home', [])
     //config.schedule = Tests.generateSchedule(48, 1, 1, 1);
     //config.url = 'http://192.168.11.100:8080/locations';
 
-    config.params = {};
-    config.extras = {
-      'settings.extras': 'location-extras'
-    };
-
     // Attach Device info to BackgroundGeolocation params.device
-    config.params.device = ionic.Platform.device();
+    config.params = {
+      device: ionic.Platform.device()
+    };
+    // Attach some arbitrary extras to each recorded location
+    config.extras = {
+      "location_extra_foo": "extra location data"
+    };
 
     bgGeo.on('geofenceschange', onGeofencesChange);
     bgGeo.on('location', onLocation, onLocationError);
@@ -316,7 +315,7 @@ angular.module('starter.Home', [])
       console.log('state: ', state);
 
       // If configured with a Schedule, start it:
-      if (state.schedule) {
+      if (state.schedule && state.schedule.length) {
         bgGeo.startSchedule(function() {
           console.log('[js] Start schedule success');
         }, function(error) {
@@ -329,6 +328,7 @@ angular.module('starter.Home', [])
         $scope.state.isMoving = state.isMoving;
       });
     });
+    
   }
 
   function configureBackgroundFetch() {
@@ -391,7 +391,10 @@ angular.module('starter.Home', [])
       notifyOnExit: false,
       notifyOnDwell: false,
       loiteringDelay: undefined,
-      extras: {"foo":"bar"}
+      extras: {
+        "geofence_extra_foo":"bar",
+        "location_extra_foo":"override location extra foo"
+      }
     };
     $scope.addGeofenceModal.show();
   }
