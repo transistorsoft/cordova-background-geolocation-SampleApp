@@ -193,7 +193,7 @@ var Tests = (function() {
           latitude: data[n].lat,
           longitude: data[n].lng,
           radius: 200,
-          extras: {foo:"bar"},
+          extras: {geofence_extra_foo:"bar"},
           notifyOnExit: params.notifyOnExit,
           notifyOnEntry: params.notifyOnEntry,
           notifyOnDwell: params.notifyOnDwell

@@ -203,7 +203,9 @@ angular.module('starter.Settings', [])
 
     Data.getRoute('city_drive', function(data) {
       Tests.createGeofences(data, 1, {
-        extras: {"geofence_extras": "extra geofence data"},
+        extras: {
+          "geofence_extra_foo": "extra geofence data"
+        },
         notifyOnEntry: $scope.geofences.notifyOnEntry,
         notifyOnExit: $scope.geofences.notifyOnExit,
         notifyOnDwell: $scope.geofences.notifyOnDwell,
