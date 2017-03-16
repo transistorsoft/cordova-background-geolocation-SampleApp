@@ -1,10 +1,15 @@
-import {Platform} from 'ionic-angular';
-import {Storage} from '@ionic/storage'
+import {
+  Platform,
+  Events
+} from 'ionic-angular';
 import {Injectable} from "@angular/core";
 import {Device} from 'ionic-native';
 
 const EMPTY_FN = function(){};
 
+/**
+* The collection of available BackgroundGeolocation settings
+*/
 const SETTINGS = {
   common: [
     {name: 'url', group: 'http', inputType: 'text', dataType: 'string', defaultValue: 'http://posttestserver.com/post.php?dir=ionic-cordova-background-geolocation'},
@@ -49,6 +54,9 @@ const SETTINGS = {
   ]
 };
 
+/**
+* A collection of soundId for use with BackgroundGeolocation#playSound
+*/
 const SOUND_MAP = {
   "iOS": {
     "LONG_PRESS_ACTIVATE": 1113,
@@ -76,16 +84,23 @@ const SOUND_MAP = {
 
 @Injectable()
 
+/**
+* @class BGService This is a wrapper for interacting with the BackgroundGeolocation plugin
+* througout the app.
+*/
 export class BGService {
+  private storage: any;
   private state: any;
   private settings: any;
   private plugin: any;
   private deviceInfo: any;
   private uuid:any;
 
-  constructor(public platform:Platform, public storage:Storage) {
-
-
+  constructor(private platform:Platform, private events: Events) {
+    // We don't need cordova-sqlite-storage.
+    this.storage = (<any>window).localStorage;
+    // We fetch put Device.uuid into localStorage to determine if this is first-boot of app.
+    this.uuid = this.storage.getItem('device:uuid');
     platform.ready().then(this._init.bind(this));
   }
 
@@ -98,9 +113,12 @@ export class BGService {
       manufacturer: Device.manufacturer
     };
 
+    ///
+    // Here is the glorious reference to the BackgroundGeolocation plugin
+    //
     this.plugin = (<any>window).BackgroundGeolocation;
 
-    // Build a collection of available settings.
+    // Build a collection of available settings for use on the Settings screen
     var settings = [].concat(SETTINGS[Device.platform||'iOS']).concat(SETTINGS.common);
     this.settings = {
       list: settings,
@@ -123,21 +141,15 @@ export class BGService {
         callback(state);
         return;
       }
-      this.storage.get('device:uuid').then((value) => {
-        if (value) {
-          // Not first boot:  we're done here.
-          callback(state);
-          return;
-        }
-        this.uuid = value;
-        // Override a few defaults on first-boot so user can hear debug sounds.
-        this.state.debug      = true;
-        this.state.logLevel   = this.plugin.LOG_LEVEL_VERBOSE;
-        this.state.params     = {device: this.deviceInfo};
-        // Add device:uuid to localStorage so we know we've booted before.
-        this.storage.set('device:uuid', this.deviceInfo.uuid);
-        callback(this.state);
-      });
+      // FIRST BOOT OF APP!  Cache the device uuid so we know we've seen this device before.
+      this.uuid = Device.uuid;
+      this.storage.setItem('device:uuid', this.uuid);
+
+      // Override a few defaults on first-boot so user can hear debug sounds.
+      this.state.debug      = true;
+      this.state.logLevel   = this.plugin.LOG_LEVEL_VERBOSE;
+      this.state.params     = {device: this.deviceInfo};
+      callback(this.state);
     });
   }
 
@@ -178,7 +190,39 @@ export class BGService {
     var config = {};
     config[name] = value;
 
-    this.plugin.setConfig(config, callback||EMPTY_FN);
+    this.plugin.setConfig(config, (state) => {
+      this.events.publish('change', name, value);
+      if (typeof(callback) == 'function') {
+        callback(state);
+      }
+    });
+  }
+  /**
+  * Start BackgroundGeolocation in provided mode
+  * @param {String} trackingMode
+  */
+  start(trackingMode:string) {
+    let onStarted = (state) => {
+      this.events.publish('start', trackingMode, state);
+    };
+    this.state.trackingMode = trackingMode;
+    this.plugin.stop();
+    if (trackingMode === 'location') {
+      this.plugin.start(onStarted);
+    } else {
+      this.plugin.startGeofences(onStarted);
+    }
+  }
+
+  /**
+  * Subscribe to BGService events
+  */
+  on(event, callback) {
+    this.events.subscribe(event, callback);
+  }
+
+  isLocationTrackingMode() {
+    return (this.state.trackingMode === 'location') || (this.state.trackingMode === 1);
   }
 
   getOptionsForSetting(name) {

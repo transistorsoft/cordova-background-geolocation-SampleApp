@@ -1,7 +1,7 @@
 <ion-header>
   <ion-navbar color="gold" mode="ios">
   	<ion-buttons start>
-  		<button ion-button (click)="onClickSettings()" style="font-size:2.3rem"><ion-icon name="arrow-dropup-circle"></ion-icon></button>
+  		<!-- <button ion-button (click)="onClickSettings()" style="font-size:2.3rem"><ion-icon name="arrow-dropup-circle"></ion-icon></button>-->
   	</ion-buttons>
     <ion-title mode="ios">
       BG Geo
@@ -13,6 +13,27 @@
 </ion-header>
 
 <ion-content>
+	<ion-fab top left edge #fab>
+   		<button ion-fab color="gold" (click)="onClickFab()"><ion-icon color="dark" name="arrow-dropdown-circle"></ion-icon></button>
+   		<ion-fab-list side="bottom">
+     		<button ion-fab (click)="onClickSettings()" color="gold">
+     			<ion-icon name="cog"></ion-icon>
+     		</button>
+     		<button ion-fab (click)="onClickSync()" color="gold">
+     			<ion-spinner [hidden]="!isSyncing" name="circles" color="dark"></ion-spinner>
+     			<ion-icon [hidden]="isSyncing" name="cloud-upload"></ion-icon>
+     		</button>
+     		<button ion-fab (click)="onClickResetOdometer()" color="gold">
+     			<ion-spinner [hidden]="!isResettingOdometer" name="circles" color="dark"></ion-spinner>
+     			<ion-icon [hidden]="isResettingOdometer" name="speedometer"></ion-icon>
+     		</button>
+     		<button ion-fab (click)="onClickEmailLogs()" color="gold">
+     			<ion-icon name="mail"></ion-icon>
+     		</button>
+
+   		</ion-fab-list>
+ 	</ion-fab>
+
 	<div #map id="map"></div>
 </ion-content>
 

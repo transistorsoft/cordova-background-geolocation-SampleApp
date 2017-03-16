@@ -20,18 +20,17 @@ declare var google;
 
 // Colors
 const COLORS = {
-  geofence_fill_color: "#11b700",
-  geofence_stroke_color: "#11b700",
-  geofence_fill_color_activated: "#404040",
-  geofence_stroke_color_activated: "404040",
-  marker_fill_color: "#11b700",
-  marker_stroke_color: "#0d6104",
-  stationary_geofence_fill_color: "#c80000",
-  stationary_geofence_stroke_color: "#aa0000",
-  current_location_fill_color: "#2677FF",
-  current_location_stroke_color: "#ffffff",
-  current_location_accuracy_fill_color: "#3366cc",
-  polyline_stroke_color: "#2677FF"
+  fill_color_blue: "#2677FF",
+  stroke_color_blue: "#2677FF",
+  stroke_color_white: "#fff",
+  fill_color_green: "11b700",
+  stroke_color_green: "11b700",
+  stroke_color_dark_green: "0d6104",
+  fill_color_red: "c80000",
+  stroke_color_red: "aa0000",
+  fill_color_grey: "#404040",
+  stroke_color_grey: "#404040",
+  fill_color_light_blue: "#3366cc"
 }
 // Icons
 const ICON_MAP = {
@@ -87,6 +86,9 @@ export class HomePage {
   locationMarkers: any;
   geofenceMarkers: any;
   lastDirectionChangeLocation: any;
+  isSyncing: boolean;
+  isResettingOdometer: boolean;
+  isFabOpen: boolean;
 
   constructor(
     public navCtrl: NavController,
@@ -95,12 +97,21 @@ export class HomePage {
     public zone:NgZone,
     public modalController: ModalController) {
 
+    this.bgService.on('change', this.onBackgroundGeolocationSettingsChanged.bind(this));    
+    this.bgService.on('start', this.onBackgroundGeolocationStarted.bind(this));
+
+    this.isFabOpen = false;
+    this.isSyncing = false;
+    this.isResettingOdometer = false;
+
     this.iconMap = ICON_MAP;
 
     // Initial state
     this.state = {
       enabled: false,
       isMoving: false,
+      geofenceProximityRadius: 1000,
+      trackingMode: 'location',
       paceIcon: this.iconMap['pace_false'],
       isChangingPace: false,
       activityIcon: this.iconMap['activity_unknown'],
@@ -116,7 +127,6 @@ export class HomePage {
 
   ionViewDidLoad(){
     this.platform.ready().then(() => {
-      this.bgGeo = this.bgService.getPlugin();
       this.configureMap();
       this.configureBackgroundGeolocation();
     });
@@ -157,9 +167,9 @@ export class HomePage {
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
         scale: 12,
-        fillColor: COLORS.current_location_fill_color,
+        fillColor: COLORS.fill_color_blue,
         fillOpacity: 1,
-        strokeColor: COLORS.current_location_stroke_color,
+        strokeColor: COLORS.stroke_color_white,
         strokeOpacity: 1,
         strokeWeight: 6
       }
@@ -168,15 +178,15 @@ export class HomePage {
     this.locationAccuracyCircle = new google.maps.Circle({
       map: this.map,
       zIndex: 9,
-      fillColor: COLORS.current_location_accuracy_fill_color,
+      fillColor: COLORS.fill_color_light_blue,
       fillOpacity: 0.4,
       strokeOpacity: 0
     });
     // Stationary Geofence
     this.stationaryRadiusCircle = new google.maps.Circle({
       zIndex: 0,
-      fillColor: COLORS.stationary_geofence_fill_color,
-      strokeColor: COLORS.stationary_geofence_stroke_color,
+      fillColor: COLORS.fill_color_red,
+      strokeColor: COLORS.stroke_color_red,
       strokeWeight: 2,
       fillOpacity: 0.2,
       strokeOpacity: 0.5,
@@ -187,7 +197,7 @@ export class HomePage {
       map: this.map,
       zIndex: 1,
       geodesic: true,
-      strokeColor: COLORS.polyline_stroke_color,
+      strokeColor: COLORS.stroke_color_blue,
       strokeOpacity: 0.7,
       strokeWeight: 5
     });
@@ -198,9 +208,9 @@ export class HomePage {
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
         scale: 100,
-        fillColor: COLORS.geofence_fill_color,
+        fillColor: COLORS.fill_color_green,
         fillOpacity: 0.2,
-        strokeColor: COLORS.geofence_stroke_color,
+        strokeColor: COLORS.stroke_color_green,
         strokeWeight: 2,
         strokeOpacity: 0.5
       }
@@ -230,6 +240,8 @@ export class HomePage {
         this.zone.run(() => {
           this.state.enabled = config.enabled;
           this.state.isMoving = config.isMoving;
+          this.state.geofenceProximityRadius = config.geofenceProximityRadius;
+          this.state.trackingMode = (state.trackingMode === 1 || state.trackingMode === 'location') ? 'location' : 'geofence';
           this.state.paceIcon = this.iconMap['pace_' + config.isMoving];
         });
         console.log('- Conigure success: ', state);
@@ -240,6 +252,14 @@ export class HomePage {
   ////
   // UI event handlers
   //
+  onClickFab() {
+    this.isFabOpen = !this.isFabOpen;
+    if (this.isFabOpen) {
+      this.bgService.playSound('OPEN');
+    } else {
+      this.bgService.playSound('CLOSE');
+    }
+  }
   onClickSettings() {
     //this.navCtrl.push(SettingsPage);
     this.bgService.playSound('OPEN');
@@ -247,21 +267,72 @@ export class HomePage {
     modal.present();
   }
 
+  onClickSync() {
+    this.bgService.playSound('BUTTON_CLICK');
+    this.isSyncing = true;
+
+    function onComplete() {
+      this.zone.run(() => { this.isSyncing = false; })
+    };
+
+    let bgGeo = this.bgService.getPlugin();
+    bgGeo.sync((rs, taskId) => {
+      this.bgService.playSound('MESSAGE_SENT');
+      bgGeo.finish(taskId);
+      onComplete.call(this);
+    }, function(error) {
+      onComplete.call(this);
+    });
+  }
+
+  onClickEmailLogs() {
+    this.bgService.playSound('BUTTON_CLICK');
+    let storage = (<any>window).localStorage;
+    var email = storage.getItem('settings:email');
+    if (!email) {
+      alert('Please enter an email address in the Settings screen');
+      return;
+    }
+    var bgGeo = this.bgService.getPlugin();
+    bgGeo.emailLog(email);
+  }
+
+  onClickResetOdometer() {
+    this.state.odometer = 0;
+    this.bgService.playSound('BUTTON_CLICK');
+    let bgGeo = this.bgService.getPlugin();
+    this.isResettingOdometer = true;
+    function onComplete() {
+      this.zone.run(() => { this.isResettingOdometer = false; })
+    };
+
+    bgGeo.resetOdometer((location) => {
+      onComplete.call(this);
+    }, (error) => {
+      onComplete.call(this);
+    });
+  }
+
   onToggleEnabled() {
     this.bgService.playSound('BUTTON_CLICK');
+    let bgGeo = this.bgService.getPlugin();
     if (this.state.enabled) {
-      this.bgGeo.start();
+      if (this.state.trackingMode === 'location') {
+        bgGeo.start();
+      } else {
+        bgGeo.startGeofences();
+      }
     } else {
       this.state.paceIcon = this.iconMap['pace_false'];
       this.state.isMoving = false;
-      this.bgGeo.stop();
+      bgGeo.stop();
       this.clearMarkers();
     }
   }
 
   onClickGetCurrentPosition() {
     this.bgService.playSound('BUTTON_CLICK');
-    var bgGeo = this.bgGeo;
+    let bgGeo = this.bgService.getPlugin();
     bgGeo.getCurrentPosition((location, taskId) => {
       console.log('[js] getCurrentPosition: ', location);
       bgGeo.finish(taskId);
@@ -279,10 +350,12 @@ export class HomePage {
       this.zone.run(() => { this.isChangingPace = false; })
     }
     this.bgService.playSound('BUTTON_CLICK');
+    let bgGeo = this.bgService.getPlugin();
+
     this.state.isChangingPace = true;
     this.state.isMoving = !this.state.isMoving;
     this.state.paceIcon = this.iconMap['pace_' + this.state.isMoving];
-    this.bgGeo.changePace(this.state.isMoving, () => {
+    bgGeo.changePace(this.state.isMoving, () => {
       onComplete.call(this);
     }, (error) => {
       onComplete.call(this);
@@ -315,22 +388,46 @@ export class HomePage {
   }
 
   ////
+  // BgService listeners
+  //
+  onBackgroundGeolocationSettingsChanged(name:string, value:any) {
+    console.log('Home received background-geolocation settingschanged event: ', name, value);
+    switch(name) {
+      case 'geofenceProximityRadius':
+        this.state.geofenceProximityRadius = value;
+        this.stationaryRadiusCircle.setRadius(value/2);
+        break;
+    }
+  }
+
+  onBackgroundGeolocationStarted(trackingMode:string, state:any) {
+    this.clearMarkers();
+
+    //this.stationaryRadiusCircle.setRadius(value/2);
+    this.zone.run(() => {
+      this.state.enabled = state.enabled;
+      this.state.isMoving = state.isMoving;
+    });
+  }
+  ////
   // Background Geolocation event-listeners
   //
   onLocation(location:any, taskId:any) {
     console.log('- Location: ', location);
+    let bgGeo = this.bgService.getPlugin();
     this.setCenter(location);
     if (!location.sample) {
       this.zone.run(() => {
         // Convert meters -> km -> round nearest hundredth -> fix float xxx.x
         this.state.odometer = parseFloat((Math.round((location.odometer/1000)*10)/10).toString()).toFixed(1);
+        bgGeo.finish(taskId);
       });
     }
-    this.bgGeo.finish(taskId);
   }
 
   onMotionChange(isMoving:boolean, location:any, taskId:any) {
     console.log('[js] motionchange: ', isMoving, location);
+    let bgGeo = this.bgService.getPlugin();
     if (isMoving) {
       this.hideStationaryCircle();
     } else {
@@ -340,8 +437,8 @@ export class HomePage {
       this.state.paceIcon = this.iconMap['pace_' + isMoving];
       this.state.isChangingPace = false;
       this.state.isMoving = isMoving;
+      bgGeo.finish(taskId);
     });
-    this.bgGeo.finish(taskId);
   }
 
   onActivityChange(activityName:string) {
@@ -387,12 +484,15 @@ export class HomePage {
     });
     if (!circle) { return; }
 
+    var marker = this.buildLocationMarker(event.location);
+    this.locationMarkers.push(marker);
+
     // Change the color of activated geofence to light-grey.
     circle.activated = true;
     circle.setOptions({
-      fillColor: COLORS.geofence_fill_color_activated,
+      fillColor: COLORS.fill_color_grey,
       fillOpacity: 0.2,
-      strokeColor: COLORS.geofence_stroke_color_activated,
+      strokeColor: COLORS.stroke_color_grey,
       strokeOpacity: 0.4
     });
   }
@@ -434,31 +534,46 @@ export class HomePage {
   buildLocationMarker(location) {
     var icon = google.maps.SymbolPath.CIRCLE;
     var scale = 5;
+    var zIndex = 1;
     var anchor;
+    var fillColor, strokeColor;
 
     if (!this.lastDirectionChangeLocation) {
       this.lastDirectionChangeLocation = location;
     }
 
-    // Render an arrow marker if heading changes by 10 degrees or every 5 points.
-    var deltaHeading = Math.abs(location.coords.heading - this.lastDirectionChangeLocation.coords.heading);
-    if (deltaHeading >= 10 || !(this.locationMarkers.length % 5)) {
-      icon = google.maps.SymbolPath.FORWARD_CLOSED_ARROW;
-      scale = 3;
-      anchor = new google.maps.Point(0, 2.6);
-      this.lastDirectionChangeLocation = location;
+    if (location.event === 'geofence') {
+      if (location.geofence.action.toLowerCase() === 'enter') {
+        fillColor = COLORS.fill_color_green;
+        strokeColor = COLORS.stroke_color_dark_green;
+      } else {
+        fillColor = COLORS.fill_color_red;
+        strokeColor = COLORS.stroke_color_red;
+      }
+      zIndex = 2;
+    } else {
+      fillColor = COLORS.fill_color_blue;
+      strokeColor = COLORS.stroke_color_white;
+      // Render an arrow marker if heading changes by 10 degrees or every 5 points.
+      var deltaHeading = Math.abs(location.coords.heading - this.lastDirectionChangeLocation.coords.heading);
+      if (deltaHeading >= 10 || !(this.locationMarkers.length % 5)) {
+        icon = google.maps.SymbolPath.FORWARD_CLOSED_ARROW;
+        scale = 3;
+        anchor = new google.maps.Point(0, 2.6);
+        this.lastDirectionChangeLocation = location;
+      }
     }
 
     return new google.maps.Marker({
-      zIndex: 1,
+      zIndex: zIndex,
       icon: {
         path: icon,
         rotation: location.coords.heading,
         scale: scale,
         anchor: anchor,
-        fillColor: COLORS.marker_fill_color,
+        fillColor: fillColor,
         fillOpacity: 1,
-        strokeColor: COLORS.marker_stroke_color,
+        strokeColor: strokeColor,
         strokeWeight: 1,
         strokeOpacity: 0.7
       },
@@ -472,9 +587,9 @@ export class HomePage {
     var geofence = new google.maps.Circle({
       identifier: params.identifier,
       zIndex: 100,
-      fillColor: COLORS.geofence_fill_color,
+      fillColor: COLORS.fill_color_green,
       fillOpacity: 0.2,
-      strokeColor: COLORS.geofence_stroke_color,
+      strokeColor: COLORS.stroke_color_green,
       strokeWeight: 2,
       strokeOpacity: 0.5,
       params: params,
@@ -490,42 +605,46 @@ export class HomePage {
     return geofence;
   }
 
-  showStationaryCircle(location:any) {
-    //setCurrentLocationMarker(location);
-    this.bgService.getState(function(state) {
-      var coords = location.coords;
-      var radius = (state.trackingMode === 'location' || state.trackingMode === 1) ? 200 : (state.geofenceProximityRadius / 2);
-      var center = new google.maps.LatLng(coords.latitude, coords.longitude);
-
-      this.stationaryRadiusCircle.setRadius(radius);
-      this.stationaryRadiusCircle.setCenter(center);
-      this.stationaryRadiusCircle.setMap(this.map);
-      this.map.setCenter(center);
-    }.bind(this));
-  }
-
-  hideStationaryCircle() {
-    // Create a little red breadcrumb circle of our last stop-position
-    var stopZone = new google.maps.Marker({
+  buildStopZoneMarker(latlng:any) {
+    return new google.maps.Marker({
       zIndex: 1,
       map: this.map,
-      position: this.stationaryRadiusCircle.getCenter(),
+      position: latlng,
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
         scale: 12,
-        fillColor: COLORS.stationary_geofence_fill_color,
+        fillColor: COLORS.fill_color_red,
         fillOpacity: 0.2,
-        strokeColor: COLORS.stationary_geofence_stroke_color,
+        strokeColor: COLORS.stroke_color_red,
         strokeWeight: 1,
         strokeOpacity: 0.5
       }
     });
+  }
+
+  showStationaryCircle(location:any) {
+    var coords = location.coords;
+    var radius = this.bgService.isLocationTrackingMode() ? 200 : (this.state.geofenceProximityRadius / 2);
+    var center = new google.maps.LatLng(coords.latitude, coords.longitude);
+
+    console.log('**** showStationaryCircle: ', radius, center);
+
+    this.stationaryRadiusCircle.setRadius(radius);
+    this.stationaryRadiusCircle.setCenter(center);
+    this.stationaryRadiusCircle.setMap(this.map);
+    this.map.setCenter(center);
+  }
+
+  hideStationaryCircle() {
+    // Create a little red breadcrumb circle of our last stop-position
+    var latlng = this.stationaryRadiusCircle.getCenter();
+    var stopZone = this.buildStopZoneMarker(latlng);
     var lastMarker = this.locationMarkers.pop();
     if (lastMarker) {
       lastMarker.setMap(null);
     }
     this.locationMarkers.push(stopZone);
-
+    this.polyline.getPath().push(latlng);
     this.stationaryRadiusCircle.setMap(null);
   }
 
