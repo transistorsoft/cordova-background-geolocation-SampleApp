@@ -1,82 +1,52 @@
-# Cordova Background Geolocation &mdash; Sample Application
+# :large_blue_diamond: [Ionic 2] Cordova Background Geolocation &mdash; Demo
+
+:warning: For the Ionic 1 version, use the branch [ionic1](https://github.com/transistorsoft/cordova-background-geolocation-SampleApp/tree/ionic1)
 
 <a href="market://details?id=com.transistorsoft.background_geolocation.ionic">
 
-
 [![Google Play](https://dl.dropboxusercontent.com/u/2319755/cordova-background-geolocaiton/google-play-icon.png)](http://play.google.com/store/apps/details?id=com.transistorsoft.background_geolocation.ionic)
 
-Fully-featured, [Ionic](http://ionicframework.com/)-based sample-application for [Cordova Background Geolocation  (Premium Version)](http://shop.transistorsoft.com/pages/cordova-background-geolocation-premium)
+Fully-featured, [Ionic](http://ionicframework.com/)-based sample-application for [Cordova Background Geolocation](http://shop.transistorsoft.com/pages/cordova-background-geolocation-premium)
 
 ![Home](https://dl.dropboxusercontent.com/u/2319755/cordova-background-geolocaiton/screenshot-iphone5-geofences-framed-README.png)
 ![Settings](https://dl.dropboxusercontent.com/u/2319755/cordova-background-geolocaiton/screenshot-iphone5-settings-framed-README.png)
 
 Edit settings and observe the behavour of **Background Geolocation** changing in **real time**.
 
-## Installation
+## :large_blue_diamond: Installation
 
 ### Step 1: Start by cloning this repo
 
-```
+```bash
 $ git clone https://github.com/transistorsoft/cordova-background-geolocation-SampleApp.git
 ```
 
-### Step 2:  Required plugins
+----------------------------------------------------------------------------
+:warning: For the **Ionic 1** version, use the tagged branch [ionic1](https://github.com/transistorsoft/cordova-background-geolocation-SampleApp/tree/ionic1) and [follow further setup steps](https://github.com/transistorsoft/cordova-background-geolocation-SampleApp/tree/ionic1#step-2--required-plugins) on the `README` there.
 
-Now we must install the application's required plugins.  Copy/paste the following one-liner (Cordova 5-style) into your console to install all the required plugins.
-
-```
-$ cordova plugin add cordova-plugin-device cordova-plugin-console cordova-plugin-splashscreen
-```
-
-If you're using **PhoneGap Build**, add the following plugins to your `config.xml` instead:
-```xml
-  <preference name="android-build-tool" value="gradle" />
-
-  <plugin name="cordova-background-geolocation-lt" />
-  <plugin name="cordova-plugin-console" />
-  <plugin name="cordova-plugin-device" />
-  <plugin name="cordova-plugin-splashscreen" />
+```bash
+$ git checkout ionic1
 ```
 
-### Step 3: Install `cordova-background-geolocation` plugin.  
+----------------------------------------------------------------------------
 
-Install **one** of the following:
+### Step 2:  Building and Running the Ionic 2 App
 
-   **A. [Premium Version](https://github.com/transistorsoft/cordova-background-geolocation.git) (requires paid license)**
+```bash
+$ npm install
 
+$ ionic platform add android
+$ ionic run android --device
+
+$ ionic platform add ios
+$ ionic run ios --emulator
 ```
-$ cordova plugin add https://github.com/transistorsoft/cordova-background-geolocation.git
-```
-
-   **B. [Free Version](https://github.com/transistorsoft/cordova-background-geolocation-lt)** (Free version can be built for Android but will only work with **this** sample app)
-
-```
-$ cordova plugin add cordova-background-geolocation-lt
-```
-
-Or for **PhoneGap Build**:
-```
-  <plugin name="cordova-background-geolocation-lt" />
-```
-
-### Step 4: Build
-
-```
-$ cordova platform add ios
-$ cordova build ios
-
-$ cordova platform add android
-$ cordova build android
-$ cordova run android
-```
-
-#### Step 5: Boot the **iOS** Simulator
 
 The quickest way to see the plugin in-action is to boot the **iOS** simulator and *simulate location*
 
 ![](https://dl.dropboxusercontent.com/u/2319755/cordova-background-geolocaiton/simulate-location.png)
 
-## Debug Mode
+## :large_blue_diamond: Debug Mode
 
 The plugin has a `debug` mode for field-testing.  The plugin will emit sounds during its life-cycle events:
 
@@ -93,7 +63,7 @@ The plugin has a `debug` mode for field-testing.  The plugin will emit sounds du
 
 ![](https://camo.githubusercontent.com/ad01117185eb13a237efcfa1eaf7e39346a967ed/68747470733a2f2f646c2e64726f70626f7875736572636f6e74656e742e636f6d2f752f323331393735352f636f72646f76612d6261636b67726f756e642d67656f6c6f636169746f6e2f656e61626c652d6261636b67726f756e642d617564696f2e706e67)
 
-## Simple Testing Server
+## :large_blue_diamond: Simple Testing Server
 
 A simple Node-based [web-application](https://github.com/transistorsoft/background-geolocation-console) with SQLite database is available for field-testing and performance analysis.  If you're familiar with Node, you can have this server up-and-running in about **one minute**.
 
@@ -101,7 +71,7 @@ A simple Node-based [web-application](https://github.com/transistorsoft/backgrou
 
 ![](https://dl.dropboxusercontent.com/u/2319755/cordova-background-geolocaiton/background-geolocation-console-grid.png)
 
-## Adding Geofences
+## :large_blue_diamond: Adding Geofences
 
 The app implements a **longtap** event on the map.  Simply **tap & hold** the map to initiate adding a geofence.
 

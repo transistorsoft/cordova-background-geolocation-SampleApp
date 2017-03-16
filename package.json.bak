@@ -1,0 +1,39 @@
+{
+  "name": "bg-geolocation",
+  "version": "2.1.0",
+  "description": "Background Geolocation Sample App",
+  "dependencies": {
+    "gulp": "^3.5.6",
+    "gulp-sass": "^1.3.3",
+    "gulp-concat": "^2.2.0",
+    "gulp-minify-css": "^0.3.0",
+    "gulp-rename": "^1.2.0"
+  },
+  "devDependencies": {
+    "bower": "^1.3.3",
+    "gulp-util": "^2.2.14",
+    "shelljs": "^0.3.0"
+  },
+  "scripts": {
+    "link.android": "rm platforms/android/src/android/libs/tslocationmanager.aar && ln -s ~/workspace/cordova/background-geolocation/cordova-background-geolocation/src/android/libs/tslocationmanager.aar platforms/android/src/android/libs/tslocationmanager.aar",
+    "link.ios": "rm -rf platforms/ios/BG\\ Geo/Plugins/com.transistorsoft.cordova.background-geolocation/TSLocationManager.framework && ln -s ~/workspace/cordova/background-geolocation/cordova-background-geolocation/src/ios/TSLocationManager.framework ./platforms/ios/BG\\ Geo/Plugins/com.transistorsoft.cordova.background-geolocation/TSLocationManager.framework",
+    "reset": "ionic plugin remove com.transistorsoft.cordova.background-geolocation && ionic plugin add ../cordova-background-geolocation",
+    "reset.ios": "npm run reset && npm run link.ios",
+    "reset.android": "npm run reset && ionic build android && npm run link.android",
+    "run.android": "npm run reset.android && ionic run android && npm run link.android",
+    "run.ios": "npm run reset.ios && ionic build ios && open -a Xcode platforms/ios/BG\\ Geo.xcodeproj"
+  },
+  "cordovaPlugins": [
+    "cordova-plugin-device",
+    "cordova-plugin-splashscreen",
+    "cordova-plugin-console",
+    {
+      "locator": "../cordova-background-geolocation",
+      "id": "com.transistorsoft.cordova.background-geolocation"
+    }
+  ],
+  "cordovaPlatforms": [
+    "android",
+    "ios"
+  ]
+}

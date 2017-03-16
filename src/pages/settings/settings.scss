@@ -1,0 +1,38 @@
+.settings-loading {
+	z-index: 1000;
+	border: 5px solid red;
+}
+page-settings {
+	button.button-round-ios {
+		border-radius: 6px;
+	}
+	ion-content.content-ios {
+		background-color: #eee;
+	}
+	ion-item.item-ios {
+		padding-left: 0;
+	}
+	ion-item ion-label {
+		padding-left: 10px;
+	}
+	ion-list.list-ios {
+		margin-bottom: 0;
+	}
+	ion-card.card-ios {
+		padding: 10px 10px 10px 10px;
+		margin: 0;
+		width: 100%;
+		border-radius: 0;
+		border-shadow: none;
+		border-bottom: 0.55px solid #c8c7cc;
+		button.button-ios {
+
+		}
+		ion-col {
+			padding-top: 0;
+			padding-left: 0;
+			padding: 0;
+			padding-bottom: 0;
+		}
+	}
+}

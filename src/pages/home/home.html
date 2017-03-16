@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-navbar color="gold" mode="ios">
+  	<ion-buttons start>
+  		<button ion-button (click)="onClickSettings()" style="font-size:2.3rem"><ion-icon name="arrow-dropup-circle"></ion-icon></button>
+  	</ion-buttons>
+    <ion-title mode="ios">
+      BG Geo
+    </ion-title>
+    <ion-buttons end>
+    	<ion-toggle [(ngModel)]="state.enabled" (ionChange)="onToggleEnabled()" color="secondary"></ion-toggle>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+	<div #map id="map"></div>
+</ion-content>
+
+<ion-footer>
+	<ion-toolbar mode="ios">
+		<ion-buttons start>
+			<button ion-button solid (click)="onClickGetCurrentPosition()" color="light" style="font-size:2.3rem">
+				<ion-icon name="md-navigate"></ion-icon>
+			</button>
+			<ion-icon [hidden]="!state.provider.gps" name="{{iconMap.provider_gps}}" color="default"></ion-icon>
+			<ion-icon [hidden]="!state.provider.network"name="{{iconMap.provider_network}}" color="default"></ion-icon>
+			<ion-icon [hidden]="state.provider.enabled" name="{{iconMap.provider_disabled}}" color="danger"></ion-icon>
+		</ion-buttons>
+		<ion-title>
+			<span class="label">Activity</span>&nbsp;
+			<ion-icon name="{{state.activityIcon}}"></ion-icon>
+			<span class="odometer">{{this.state.odometer}}km</span>
+		</ion-title>
+		<ion-buttons end>
+			<button ion-button solid [disabled]="!state.enabled" (click)="onClickChangePace()" style="width:40px" color="{{state.isMoving ? 'danger' : 'secondary'}}">
+				<ion-spinner [hidden]="!state.isChangingPace" name="dots" color="light"></ion-spinner>
+				<ion-icon [hidden]="state.isChangingPace" name="{{state.paceIcon}}"></ion-icon>
+			</button>
+		</ion-buttons>
+	</ion-toolbar>
+</ion-footer>
+

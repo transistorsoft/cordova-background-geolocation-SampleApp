@@ -1,0 +1,216 @@
+
+<ion-header>
+ <ion-navbar color="gold" mode="ios">
+ 	<ion-buttons start>
+ 		<button ion-button (click)="onClickClose()" style="font-size:2.3rem"><ion-icon name="arrow-dropdown-circle"></ion-icon></button>
+ 	</ion-buttons>
+ 	<ion-title>Settings</ion-title>
+	<ion-buttons end>
+    	<button outline ion-button (click)="onClickAbout()" color="dark">
+    		About
+    	</button>
+    </ion-buttons>
+ </ion-navbar>
+</ion-header>
+<ion-content>
+	<ion-list>
+		<ion-list-header><ion-icon name="navigate" color="primary"></ion-icon>&nbsp;Geolocation</ion-list-header>
+		<ion-card mode="ios">
+			<button ion-button full round [disabled]="isResettingOdometer" (click)="onClickResetOdometer()" color="default">Reset Odometer</button>
+		</ion-card>
+	  	<ion-item>
+	    	<ion-label color="primary">trackingMode</ion-label>
+	    	<ion-select [(ngModel)]="state.trackingMode" (ionChange)="onChangeValue('trackingMode')" multiple="false">
+	    		<ion-option *ngFor="let option of trackingModeOptions" value="{{option}}" selected="{{option == state.trackingMode}}">
+	    			{{option}}
+	    		</ion-option>
+	    	</ion-select>
+	  	</ion-item>
+
+	  	<ion-item>
+	    	<ion-label color="primary">desiredAccuracy</ion-label>
+	    	<ion-select [(ngModel)]="state.desiredAccuracy" (ionChange)="onChangeValue('desiredAccuracy')" multiple="false">
+	    		<ion-option *ngFor="let option of bgService.getOptionsForSetting('desiredAccuracy')" value="{{option}}" selected="{{option == state.desiredAccuracy}}">
+	    			{{option}}
+	    		</ion-option>
+	    	</ion-select>
+	  	</ion-item>
+
+	  	<ion-item>
+	    	<ion-label color="primary">distanceFilter</ion-label>
+	    	<ion-select [(ngModel)]="state.distanceFilter" (ionChange)="onChangeValue('distanceFilter')" multiple="false">
+	    		<ion-option *ngFor="let option of bgService.getOptionsForSetting('distanceFilter')" value="{{option}}" selected="{{option == state.distanceFilter}}">
+	    			{{option}} meters
+	    		</ion-option>
+	    	</ion-select>
+	  	</ion-item>
+
+	  	<ion-item>
+	  		<ion-label color="primary">disableElasticity</ion-label>
+	  		<ion-toggle [(ngModel)]="state.disableElasticity" (ionChange)="onChangeValue('disableElasticity')" color="secondary"></ion-toggle>
+	  	</ion-item>
+
+	  	<ion-item>
+	    	<ion-label color="primary">geofenceProximityRadius</ion-label>
+	    	<ion-select [(ngModel)]="state.geofenceProximityRadius" (ionChange)="onChangeValue('geofenceProximityRadius')" multiple="false">
+	    		<ion-option *ngFor="let option of bgService.getOptionsForSetting('geofenceProximityRadius')" value="{{option}}" selected="{{option == state.geofenceProximityRadius}}">
+	    			{{option/1000}}km
+	    		</ion-option>
+	    	</ion-select>
+	  	</ion-item>
+
+	  	<ion-list-header><ion-icon name="walk" color="primary"></ion-icon>&nbsp;Activity Recognition</ion-list-header>
+		<ion-item>
+	    	<ion-label color="primary">activityRecognitionInterval</ion-label>
+	    	<ion-select [(ngModel)]="state.activityRecognitionInterval" (ionChange)="onChangeValue('activityRecognitionInterval')" multiple="false">
+	    		<ion-option *ngFor="let option of bgService.getOptionsForSetting('activityRecognitionInterval')" value=	"{{option}}" selected="{{option == state.activityRecognitionInterval}}">{{option}}ms
+	    		</ion-option>
+	    	</ion-select>
+	  	</ion-item>
+
+	  	<ion-item>
+	    	<ion-label color="primary">stopTimeout</ion-label>
+	    	<ion-select [(ngModel)]="state.stopTimeout" (ionChange)="onChangeValue('stopTimeout')" multiple="false">
+	    		<ion-option *ngFor="let option of bgService.getOptionsForSetting('stopTimeout')" value=	"{{option}}" selected="{{option == state.stopTimeout}}">
+	    			{{option}} minutes
+	    		</ion-option>
+	    	</ion-select>
+	  	</ion-item>
+
+	  	<ion-item>
+	    	<ion-label color="primary">stopDetectionDelay</ion-label>
+	    	<ion-select [(ngModel)]="state.stopDetectionDelay" (ionChange)="onChangeValue('stopDetectionDelay')" multiple="false">
+	    		<ion-option *ngFor="let option of bgService.getOptionsForSetting('stopDetectionDelay')" value=	"{{option}}" selected="{{option == state.stopDetectionDelay}}">{{option}} minutes
+	    		</ion-option>
+	    	</ion-select>
+	  	</ion-item>
+
+	  	<ion-item>
+		  	<ion-label color="primary">disableStopDetection</ion-label>
+	  		<ion-toggle [(ngModel)]="state.disableStopDetection" (ionChange)="onChangeValue('disableStopDetection')" color="secondary"></ion-toggle>
+	  	</ion-item>
+
+	  	<ion-list-header>
+	  		<ion-icon name="cloud-upload" color="primary"></ion-icon>&nbsp;HTTP &amp; Persistence
+	  	</ion-list-header>
+
+	  	<ion-card mode="ios">
+	  		<button ion-button full round [disabled]="isSyncing" (click)="onClickSync()" color="danger">
+	  			<ion-spinner [hidden]="!isSyncing" name="dots" color="light"></ion-spinner>
+	  			<span [hidden]="isSyncing">Sync</span>
+	  		</button>
+	  		<ion-item>
+	  			<ion-input [(ngModel)]="state.url" (blur)="onUpdateUrl()" type="url" placeholder="http://your.server.com/endpoint"></ion-input>
+	  		</ion-item>
+	  	</ion-card>
+
+	  	<ion-item>
+	  		<ion-label color="primary">autoSync</ion-label>
+	  		<ion-toggle [(ngModel)]="state.autoSync" (ionChange)="onChangeValue('autoSync')" color="secondary"></ion-toggle>
+	  	</ion-item>
+
+	  	<ion-item>
+	  		<ion-label color="primary">autoSyncThreshold</ion-label>
+	 		<ion-select [(ngModel)]="state.autoSyncThreshold" (ionChange)="onChangeValue('autoSyncThreshold')" multiple="false">
+    			<ion-option *ngFor="let option of bgService.getOptionsForSetting('autoSyncThreshold')" value="{{option}}" selected="{{option == state.autoSyncThreshold}}">
+    				{{option}} records
+    			</ion-option>
+    		</ion-select>
+    	</ion-item>
+
+	  	<ion-item>
+		  	<ion-label color="primary">batchSync</ion-label>
+	  		<ion-toggle [(ngModel)]="state.batchSync" (ionChange)="onChangeValue('batchSync')" color="secondary"></ion-toggle>
+	  	</ion-item>
+
+	  	<ion-item>
+	  		<ion-label color="primary">method</ion-label>
+	 		<ion-select [(ngModel)]="state.method" (ionChange)="onChangeValue('method')" multiple="false">
+    			<ion-option *ngFor="let option of bgService.getOptionsForSetting('method')" value="{{option}}" selected="{{option == state.method}}">
+    				{{option}}
+    			</ion-option>
+    		</ion-select>
+    	</ion-item>
+
+	  	<ion-list-header>
+	  		<ion-icon name="cog" color="primary"></ion-icon>&nbsp;Application</ion-list-header>
+
+	  	<ion-item>
+	  		<ion-label color="primary">stopOnTerminate</ion-label>
+	  		<ion-toggle [(ngModel)]="state.stopOnTerminate" (ionChange)="onChangeValue('stopOnTerminate')" color="secondary"></ion-toggle>
+	  	</ion-item>
+
+	  	<ion-item>
+	  		<ion-label color="primary">startOnBoot</ion-label>
+	  		<ion-toggle [(ngModel)]="state.startOnBoot" (ionChange)="onChangeValue('startOnBoot')" color="secondary"></ion-toggle>
+	  	</ion-item>
+
+	  	<ion-item>
+	  		<ion-label color="primary">foregroundService</ion-label>
+	  		<ion-toggle [(ngModel)]="state.foregroundService" (ionChange)="onChangeValue('foregroundService')" color="secondary"></ion-toggle>
+	  	</ion-item>
+
+	  	<ion-item>
+	  		<ion-label color="primary">preventSuspend</ion-label>
+	  		<ion-toggle [(ngModel)]="state.preventSuspend" (ionChange)="onChangeValue('preventSuspend')" color="secondary"></ion-toggle>
+	  	</ion-item>
+
+	  	<ion-item>
+	  		<ion-label color="primary">heartbeatInterval</ion-label>
+	 		<ion-select [(ngModel)]="state.heartbeatInterval" (ionChange)="onChangeValue('heartbeatInterval')" multiple="false">
+    			<ion-option *ngFor="let option of bgService.getOptionsForSetting('heartbeatInterval')" value="{{option}}" selected="{{option == state.heartbeatInterval}}">
+    				{{option}} seconds
+    			</ion-option>
+    		</ion-select>
+    	</ion-item>
+
+	  	<ion-list-header><ion-icon name="bug" color="primary"></ion-icon>&nbsp;Logging &amp; Debug</ion-list-header>
+	  	<ion-card mode="ios">
+	  		<button ion-button full round (click)="onClickEmailLogs()" color="default">Email Logs</button>
+	  		<ion-item>
+	  			<ion-input [(ngModel)]="email" (blur)="onUpdateEmail()" placeholder="your@email.com" type="email"></ion-input>
+	  		</ion-item>
+	  	</ion-card>
+
+	  	<ion-item>
+	  		<ion-label color="primary">logLevel</ion-label>
+	 		<ion-select [(ngModel)]="state.logLevel" (ionChange)="onChangeValue('logLevel')" multiple="false">
+    			<ion-option *ngFor="let option of logLevelOptions" value="{{option}}" selected="{{option == state.logLevel}}">
+    				{{option}}
+    			</ion-option>
+    		</ion-select>
+    	</ion-item>
+	  	<ion-item>
+	  		<ion-label color="primary">Sounds &amp; Notification</ion-label>
+	  		<ion-toggle [(ngModel)]="state.debug" (ionChange)="onChangeValue('debug')" color="secondary"></ion-toggle>
+	  	</ion-item>
+
+	  	<ion-list-header><ion-icon name="radio-button-on" color="primary"></ion-icon>&nbsp;Geofencing (City Drive)</ion-list-header>
+	  	<ion-card mode="ios">
+			<ion-row>
+				<ion-col align-self-stretch style="padding-right:5px;">
+  					<button ion-button full round color="danger" (click)="onClickRemoveGeofences()">Clear</button>
+				</ion-col>
+				<ion-col align-self-stretch style="padding-left: 5px;">
+  					<button ion-button full round color="primary" (click)="onClickLoadGeofences()">
+  						<ion-spinner [hidden]="!isAddingGeofences" name="dots" color="light"></ion-spinner>
+  						<span [hidden]="isAddingGeofences">Load</span>
+  					</button>
+				</ion-col>
+			</ion-row>
+		</ion-card>
+	  	<ion-item>
+	  		<ion-label color="primary">notifyOnEntry</ion-label>
+	  		<ion-toggle [(ngModel)]="geofenceOptions.notifyOnEntry" (ionChange)="onChangeValue('notifyOnEntry')" color="secondary"></ion-toggle>
+	  	</ion-item>
+	  	<ion-item>
+	  		<ion-label color="primary">notifyOnExit</ion-label>
+	  		<ion-toggle [(ngModel)]="geofenceOptions.notifyOnExit" (ionChange)="onChangeValue('notifyOnExit')" color="secondary"></ion-toggle>
+	  	</ion-item>
+	  	<ion-item>
+	  		<ion-label color="primary">notifyOnDwell</ion-label>
+	  		<ion-toggle [(ngModel)]="geofenceOptions.notifyOnDwell" (ionChange)="onChangeValue('notifyOnDwell')" color="secondary"></ion-toggle>
+	  	</ion-item>
+	</ion-list>
+
+</ion-content>
