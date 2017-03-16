@@ -15,7 +15,7 @@ Edit settings and observe the behavour of **Background Geolocation** changing in
 
 ### Step 1: Start by cloning this repo
 
-```basch
+```bash
 $ git clone https://github.com/transistorsoft/cordova-background-geolocation-SampleApp.git
 $ git checkout ionic1
 ```
