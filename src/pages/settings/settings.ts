@@ -6,7 +6,6 @@ import {
   LoadingController
 } from "ionic-angular";
 
-import {Storage} from '@ionic/storage'
 import {BGService} from '../../lib/BGService';
 import {AboutPage} from '../about/about';
 
@@ -22,6 +21,7 @@ const LOG_LEVEL_OPTIONS = ['OFF', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'VERBOSE'
 })
 
 export class SettingsPage {
+  storage: any;
   alert: any;
   state: any;
   basicTab: any;
@@ -49,8 +49,7 @@ export class SettingsPage {
     private viewCtrl: ViewController,
     private modalCtrl: ModalController,
     private loadingCtrl: LoadingController,
-    private zone: NgZone,
-    private storage: Storage) {
+    private zone: NgZone) {
 
     // We do a BackgroundGeolocation#getState each time Settings screen is shown.
     this.trackingModeOptions = TRACKING_MODE_OPTIONS;
@@ -144,13 +143,11 @@ export class SettingsPage {
 
   ionViewDidLoad() {
     // Load email address for email log
-    this.storage.get('settings:email').then((value) => {
-      if (value) {
-        this.zone.run(() => {
-          this.email = value;
-        });
-      }
-    });
+    let storage = (<any>window).localStorage;
+    var email = storage.getItem('settings:email');
+    if (email) {
+      this.email = email;
+    }
   }
 
   onClickClose() {
@@ -171,18 +168,16 @@ export class SettingsPage {
         case 'trackingMode':
           this.setTrackingMode(value);
           break;
+        case 'geofenceProximityRadius':
+          this.bgService.playSound('ADD_GEOFENCE');
+          break;
       }
       this.bgService.set(name, value);
     }
   }
 
   setTrackingMode(mode) {
-    var bgGeo = this.bgService.getPlugin();
-    if (mode === 'location') {
-      bgGeo.start();
-    } else {
-      bgGeo.startGeofences();
-    }
+    this.bgService.start(mode);
   }
 
   onClickResetOdometer() {
@@ -228,7 +223,8 @@ export class SettingsPage {
 
   onUpdateEmail() {
     this.bgService.playSound('BUTTON_CLICK');
-    this.storage.set('settings:email', this.email);
+    let storage = (<any>window).localStorage;
+    storage.setItem('settings:email', this.email);
   }
 
   onClickEmailLogs() {
