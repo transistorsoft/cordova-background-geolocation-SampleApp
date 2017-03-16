@@ -420,9 +420,9 @@ export class HomePage {
       this.zone.run(() => {
         // Convert meters -> km -> round nearest hundredth -> fix float xxx.x
         this.state.odometer = parseFloat((Math.round((location.odometer/1000)*10)/10).toString()).toFixed(1);
-        bgGeo.finish(taskId);
       });
     }
+    bgGeo.finish(taskId);
   }
 
   onMotionChange(isMoving:boolean, location:any, taskId:any) {
@@ -437,8 +437,8 @@ export class HomePage {
       this.state.paceIcon = this.iconMap['pace_' + isMoving];
       this.state.isChangingPace = false;
       this.state.isMoving = isMoving;
-      bgGeo.finish(taskId);
     });
+    bgGeo.finish(taskId);
   }
 
   onActivityChange(activityName:string) {
