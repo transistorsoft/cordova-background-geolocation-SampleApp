@@ -20,57 +20,17 @@ Edit settings and observe the behavour of **Background Geolocation** changing in
 $ git clone https://github.com/transistorsoft/cordova-background-geolocation-SampleApp.git
 ```
 
-### Step 2:  Required plugins
 
-Now we must install the application's required plugins.  Copy/paste the following one-liner (Cordova 5-style) into your console to install all the required plugins.
-
-```
-$ cordova plugin add cordova-plugin-device cordova-plugin-console cordova-plugin-splashscreen
-```
-
-If you're using **PhoneGap Build**, add the following plugins to your `config.xml` instead:
-```xml
-  <preference name="android-build-tool" value="gradle" />
-
-  <plugin name="cordova-background-geolocation-lt" />
-  <plugin name="cordova-plugin-console" />
-  <plugin name="cordova-plugin-device" />
-  <plugin name="cordova-plugin-splashscreen" />
-```
-
-### Step 3: Install `cordova-background-geolocation` plugin.  
-
-Install **one** of the following:
-
-   **A. [Premium Version](https://github.com/transistorsoft/cordova-background-geolocation.git) (requires paid license)**
-
-```
-$ cordova plugin add https://github.com/transistorsoft/cordova-background-geolocation.git
-```
-
-   **B. [Free Version](https://github.com/transistorsoft/cordova-background-geolocation-lt)** (Free version can be built for Android but will only work with **this** sample app)
-
-```
-$ cordova plugin add cordova-background-geolocation-lt
-```
-
-Or for **PhoneGap Build**:
-```
-  <plugin name="cordova-background-geolocation-lt" />
-```
-
-### Step 4: Build
+### Step 2: Build
 
 ```
 $ cordova platform add ios
-$ cordova build ios
+$ cordova run ios --emulator
 
 $ cordova platform add android
-$ cordova build android
 $ cordova run android
 ```
 
-#### Step 5: Boot the **iOS** Simulator
 
 The quickest way to see the plugin in-action is to boot the **iOS** simulator and *simulate location*
 
