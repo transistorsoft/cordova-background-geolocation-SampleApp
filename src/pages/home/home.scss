@@ -1,0 +1,30 @@
+.ios, .md { 
+	page-home {
+	  	#map {
+	    	width: 100%;
+	    	height: 100%;
+	  	}
+	  	ion-footer {
+	  		// Tweak layout of activity, odometer elements in bottom toolbar
+	  		ion-title {
+	  			span.label {
+	  				text-align: right;
+	  				margin-right: 3px;
+	  			}
+	  			span {
+	  				font-size: 1.5rem;
+	  				font-weight: normal;
+	  				margin-bottom: 5px;
+	  			}
+	  			ion-icon {
+	  				margin-left: -5px;
+
+	  			}
+	  			span.odometer {
+	  				width: 60px;
+	  				text-align: left;
+	  			}
+	  		}
+	  	}
+	}
+}
