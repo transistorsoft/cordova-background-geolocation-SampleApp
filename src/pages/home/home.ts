@@ -298,7 +298,7 @@ export class HomePage {
   }
 
   onClickResetOdometer() {
-    this.state.odometer = 0;
+    this.state.odometer = '0.0';
     this.bgService.playSound('BUTTON_CLICK');
     let bgGeo = this.bgService.getPlugin();
     this.isResettingOdometer = true;
