@@ -3,8 +3,8 @@
   <ion-nav-buttons side="left">
     <a class="button button-clear button-positive" ng-click="onClickSettings()">Settings</a>
   </ion-nav-buttons>
-  
-  <ion-nav-buttons side="right"> 
+
+  <ion-nav-buttons side="right">
     <label class="toggle toggle-balanced">
        <input type="checkbox" ng-click="onToggleEnabled()" ng-model="state.enabled">
        <div class="track">
@@ -39,15 +39,7 @@
           <button class="button icon {{state.startButtonIcon}}" ng-disabled="!state.enabled" ng-click="onClickChangePace()" style="width:50px"></button>
         </div>
       </div>
-  
-    <!-- 
-    
-    <div style="-webkit-flex-direction:row;display:-webkit-flex;-webkit-flex:1">
-      
-    </div>
-    <div class="buttons pull-right">
-      
-    </div>
-    -->
+
+
   </ion-footer-bar>
 </ion-view>

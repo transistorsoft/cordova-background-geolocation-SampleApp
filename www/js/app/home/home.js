@@ -301,6 +301,10 @@ angular.module('starter.Home', [])
       "location_extra_foo": "extra location data"
     };
 
+    config.headers = {
+      'Authorization': 'Bearer foobar'
+    };
+    
     bgGeo.on('geofenceschange', onGeofencesChange);
     bgGeo.on('location', onLocation, onLocationError);
     bgGeo.on('motionchange', onMotionChange);
