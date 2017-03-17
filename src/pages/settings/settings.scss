@@ -17,6 +17,10 @@ page-settings {
 	}
 	ion-list.list-ios {
 		margin-bottom: 0;
+
+		ion-list-header.list-header-ios {
+			margin-top: 1rem;
+		}
 	}
 	ion-card.card-ios {
 		padding: 10px 10px 10px 10px;

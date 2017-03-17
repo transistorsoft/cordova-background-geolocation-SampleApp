@@ -9,6 +9,7 @@ import {
   NavController,
   Platform,
   ModalController,
+  ToastController
 } from 'ionic-angular';
 
 import {SettingsPage} from '../settings/settings';
@@ -20,17 +21,14 @@ declare var google;
 
 // Colors
 const COLORS = {
-  fill_color_blue: "#2677FF",
-  stroke_color_blue: "#2677FF",
-  stroke_color_white: "#fff",
-  fill_color_green: "11b700",
-  stroke_color_green: "11b700",
-  stroke_color_dark_green: "0d6104",
-  fill_color_red: "c80000",
-  stroke_color_red: "aa0000",
-  fill_color_grey: "#404040",
-  stroke_color_grey: "#404040",
-  fill_color_light_blue: "#3366cc"
+  white: "#fff",
+  blue: "#2677FF",
+  light_blue: "#3366cc",
+  green: "#11b700",
+  dark_green: "#0d6104",
+  grey: "#404040",
+  red: "#c80000",
+  dark_red: "#aa0000"
 }
 // Icons
 const ICON_MAP = {
@@ -49,10 +47,21 @@ const ICON_MAP = {
   provider_disabled: "warning"
 };
 
+// Messages
+const MESSAGE = {
+  reset_odometer_success: 'Reset odometer success',
+  reset_odometer_failure: 'Failed to reset odometer: {result}',
+  sync_success: 'Sync success ({result} records)',
+  sync_failure: 'Sync error: {result}',
+  destroy_locations_success: 'Destroy locations success ({result} records)',
+  destroy_locations_failure: 'Destroy locations error: {result}'
+}
+
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
 })
+
 export class HomePage {
 
   @ViewChild('map') mapElement: ElementRef;
@@ -86,15 +95,19 @@ export class HomePage {
   locationMarkers: any;
   geofenceMarkers: any;
   lastDirectionChangeLocation: any;
-  isSyncing: boolean;
-  isResettingOdometer: boolean;
+
+  // FAB Menu
   isFabOpen: boolean;
+  isSyncing: boolean;
+  isDestroyingLocations: boolean;
+  isResettingOdometer: boolean;
 
   constructor(
     public navCtrl: NavController,
     public platform: Platform,
     public bgService:BGService,
     public zone:NgZone,
+    private toastCtrl: ToastController,
     public modalController: ModalController) {
 
     this.bgService.on('change', this.onBackgroundGeolocationSettingsChanged.bind(this));    
@@ -167,9 +180,9 @@ export class HomePage {
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
         scale: 12,
-        fillColor: COLORS.fill_color_blue,
+        fillColor: COLORS.blue,
         fillOpacity: 1,
-        strokeColor: COLORS.stroke_color_white,
+        strokeColor: COLORS.white,
         strokeOpacity: 1,
         strokeWeight: 6
       }
@@ -178,15 +191,15 @@ export class HomePage {
     this.locationAccuracyCircle = new google.maps.Circle({
       map: this.map,
       zIndex: 9,
-      fillColor: COLORS.fill_color_light_blue,
+      fillColor: COLORS.light_blue,
       fillOpacity: 0.4,
       strokeOpacity: 0
     });
     // Stationary Geofence
     this.stationaryRadiusCircle = new google.maps.Circle({
       zIndex: 0,
-      fillColor: COLORS.fill_color_red,
-      strokeColor: COLORS.stroke_color_red,
+      fillColor: COLORS.red,
+      strokeColor: COLORS.dark_red,
       strokeWeight: 2,
       fillOpacity: 0.2,
       strokeOpacity: 0.5,
@@ -197,7 +210,7 @@ export class HomePage {
       map: this.map,
       zIndex: 1,
       geodesic: true,
-      strokeColor: COLORS.stroke_color_blue,
+      strokeColor: COLORS.blue,
       strokeOpacity: 0.7,
       strokeWeight: 5
     });
@@ -208,9 +221,9 @@ export class HomePage {
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
         scale: 100,
-        fillColor: COLORS.fill_color_green,
+        fillColor: COLORS.green,
         fillOpacity: 0.2,
-        strokeColor: COLORS.stroke_color_green,
+        strokeColor: COLORS.green,
         strokeWeight: 2,
         strokeOpacity: 0.5
       }
@@ -244,7 +257,7 @@ export class HomePage {
           this.state.trackingMode = (state.trackingMode === 1 || state.trackingMode === 'location') ? 'location' : 'geofence';
           this.state.paceIcon = this.iconMap['pace_' + config.isMoving];
         });
-        console.log('- Conigure success: ', state);
+        console.log('[js] Confgure success');
       });
     });
   }
@@ -271,26 +284,47 @@ export class HomePage {
     this.bgService.playSound('BUTTON_CLICK');
     this.isSyncing = true;
 
-    function onComplete() {
+    function onComplete(message, result) {
+      this.toast(message, result);
       this.zone.run(() => { this.isSyncing = false; })
     };
 
     let bgGeo = this.bgService.getPlugin();
-    bgGeo.sync((rs, taskId) => {
-      this.bgService.playSound('MESSAGE_SENT');
-      bgGeo.finish(taskId);
-      onComplete.call(this);
-    }, function(error) {
-      onComplete.call(this);
+    bgGeo.getCount((count) => {
+      bgGeo.sync((rs, taskId) => {
+        this.bgService.playSound('MESSAGE_SENT');
+        bgGeo.finish(taskId);
+        onComplete.call(this, MESSAGE.sync_success, count);
+      }, function(error) {
+        onComplete.call(this, MESSAGE.sync_failure, error);
+      });
     });
   }
 
+  onClickDestroyLocations() {
+    this.bgService.playSound('BUTTON_CLICK');
+    this.isDestroyingLocations = true;
+
+    function onComplete(message, result) {
+      this.toast(message, result);
+      this.zone.run(() => { this.isDestroyingLocations = false; })
+    };
+
+    let bgGeo = this.bgService.getPlugin();
+    bgGeo.getCount((count) => {
+      bgGeo.destroyLocations((res) => {
+        onComplete.call(this, MESSAGE.destroy_locations_success, count);
+      }, function(error) {
+        onComplete.call(this, MESSAGE.destroy_locations_failure, error);
+      });
+    })
+  }
   onClickEmailLogs() {
     this.bgService.playSound('BUTTON_CLICK');
     let storage = (<any>window).localStorage;
     var email = storage.getItem('settings:email');
     if (!email) {
-      alert('Please enter an email address in the Settings screen');
+      this.toast('Please enter an email address in the Settings screen');
       return;
     }
     var bgGeo = this.bgService.getPlugin();
@@ -302,14 +336,16 @@ export class HomePage {
     this.bgService.playSound('BUTTON_CLICK');
     let bgGeo = this.bgService.getPlugin();
     this.isResettingOdometer = true;
-    function onComplete() {
+
+    function onComplete(message, result?) {
+      this.toast(message, result);
       this.zone.run(() => { this.isResettingOdometer = false; })
     };
 
     bgGeo.resetOdometer((location) => {
-      onComplete.call(this);
+      onComplete.call(this, MESSAGE.reset_odometer_success);
     }, (error) => {
-      onComplete.call(this);
+      onComplete.call(this, MESSAGE.reset_odometer_failure, error);
     });
   }
 
@@ -391,7 +427,7 @@ export class HomePage {
   // BgService listeners
   //
   onBackgroundGeolocationSettingsChanged(name:string, value:any) {
-    console.log('Home received background-geolocation settingschanged event: ', name, value);
+    console.log('Home settingschanged: ', name, value);
     switch(name) {
       case 'geofenceProximityRadius':
         this.state.geofenceProximityRadius = value;
@@ -413,7 +449,7 @@ export class HomePage {
   // Background Geolocation event-listeners
   //
   onLocation(location:any, taskId:any) {
-    console.log('- Location: ', location);
+    console.log('[js] location: ', location);
     let bgGeo = this.bgService.getPlugin();
     this.setCenter(location);
     if (!location.sample) {
@@ -490,9 +526,9 @@ export class HomePage {
     // Change the color of activated geofence to light-grey.
     circle.activated = true;
     circle.setOptions({
-      fillColor: COLORS.fill_color_grey,
+      fillColor: COLORS.grey,
       fillOpacity: 0.2,
-      strokeColor: COLORS.stroke_color_grey,
+      strokeColor: COLORS.grey,
       strokeOpacity: 0.4
     });
   }
@@ -544,16 +580,16 @@ export class HomePage {
 
     if (location.event === 'geofence') {
       if (location.geofence.action.toLowerCase() === 'enter') {
-        fillColor = COLORS.fill_color_green;
-        strokeColor = COLORS.stroke_color_dark_green;
+        fillColor = COLORS.green;
+        strokeColor = COLORS.dark_green;
       } else {
-        fillColor = COLORS.fill_color_red;
-        strokeColor = COLORS.stroke_color_red;
+        fillColor = COLORS.red;
+        strokeColor = COLORS.dark_red;
       }
       zIndex = 2;
     } else {
-      fillColor = COLORS.fill_color_blue;
-      strokeColor = COLORS.stroke_color_white;
+      fillColor = COLORS.white;
+      strokeColor = COLORS.blue;
       // Render an arrow marker if heading changes by 10 degrees or every 5 points.
       var deltaHeading = Math.abs(location.coords.heading - this.lastDirectionChangeLocation.coords.heading);
       if (deltaHeading >= 10 || !(this.locationMarkers.length % 5)) {
@@ -574,7 +610,7 @@ export class HomePage {
         fillColor: fillColor,
         fillOpacity: 1,
         strokeColor: strokeColor,
-        strokeWeight: 1,
+        strokeWeight: 2,
         strokeOpacity: 0.7
       },
       map: this.map,
@@ -587,9 +623,9 @@ export class HomePage {
     var geofence = new google.maps.Circle({
       identifier: params.identifier,
       zIndex: 100,
-      fillColor: COLORS.fill_color_green,
+      fillColor: COLORS.green,
       fillOpacity: 0.2,
-      strokeColor: COLORS.stroke_color_green,
+      strokeColor: COLORS.green,
       strokeWeight: 2,
       strokeOpacity: 0.5,
       params: params,
@@ -613,9 +649,9 @@ export class HomePage {
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
         scale: 12,
-        fillColor: COLORS.fill_color_red,
+        fillColor: COLORS.red,
         fillOpacity: 0.2,
-        strokeColor: COLORS.stroke_color_red,
+        strokeColor: COLORS.red,
         strokeWeight: 1,
         strokeOpacity: 0.5
       }
@@ -626,8 +662,6 @@ export class HomePage {
     var coords = location.coords;
     var radius = this.bgService.isLocationTrackingMode() ? 200 : (this.state.geofenceProximityRadius / 2);
     var center = new google.maps.LatLng(coords.latitude, coords.longitude);
-
-    console.log('**** showStationaryCircle: ', radius, center);
 
     this.stationaryRadiusCircle.setRadius(radius);
     this.stationaryRadiusCircle.setCenter(center);
@@ -670,5 +704,15 @@ export class HomePage {
     // Clear blue route PolyLine
     this.polyline.setMap(null);
     this.polyline.setPath([]);
+  }
+
+  toast(message, result?, duration?) {
+    if (typeof(result) !== undefined) {
+      message = message.replace("\{result\}", result)
+    }
+    this.toastCtrl.create({
+      message: message,
+      duration: duration || 3000
+    }).present();
   }
 }
