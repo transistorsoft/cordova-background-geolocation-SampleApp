@@ -21,6 +21,8 @@ const LOG_LEVEL_OPTIONS = ['OFF', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'VERBOSE'
 })
 
 export class SettingsPage {
+  isLoaded: boolean;
+  loader: any;
   storage: any;
   alert: any;
   state: any;
@@ -51,6 +53,11 @@ export class SettingsPage {
     private loadingCtrl: LoadingController,
     private zone: NgZone) {
 
+    this.isLoaded = false;
+    this.loader = this.loadingCtrl.create({
+      content: "Loading..."
+    });
+
     // We do a BackgroundGeolocation#getState each time Settings screen is shown.
     this.trackingModeOptions = TRACKING_MODE_OPTIONS;
     this.logLevelOptions = LOG_LEVEL_OPTIONS;
@@ -66,6 +73,7 @@ export class SettingsPage {
       }
     };
 
+
     this.isSyncing = false;
     this.isAddingGeofences = false;
     this.isResettingOdometer = false;
@@ -80,8 +88,10 @@ export class SettingsPage {
       // Activity Recognition
       activityRecognitionInterval: 10000,
       stopTimeout: 5,
+      //  iOS
       stopDetectionDelay: 0,
       disableStopDetection: false,
+      disableMotionActivityUpdates: false,
       // HTTP & Persistence
       url: '',
       autoSync: false,
@@ -100,44 +110,20 @@ export class SettingsPage {
       debug: true
     }
 
-    let loader = this.loadingCtrl.create({
-      content: "Loading..."
-    });
-    // Weirdness with LoadingController now showing because SettingsPage lives in a Modal.  Oh well...
-    setTimeout(() => {
-      loader.present();
-    });
+    let settings = this.bgService.getSettings();
 
     this.bgService.getState((state) => {
-      // Geolocation
+      settings.forEach((setting) => {
+        this.state[setting.name] = state[setting.name];
+      });
       this.state.trackingMode = (state.trackingMode === 1 || state.trackingMode === 'location') ? 'location' : 'geofence';
-      this.state.desiredAccuracy = state.desiredAccuracy;
-      this.state.distanceFilter = state.distanceFilter;
-      this.state.disableElasticity = state.disableElasticity;
-      this.state.geofenceProximityRadius = state.geofenceProximityRadius;
-      // Activity Recognition
-      this.state.activityRecognitionInterval = state.activityRecognitionInterval;
-      this.state.stopTimeout = state.stopTimeout;
-      this.state.stopDetectionDelay = state.stopDetectionDelay;
-      this.state.disableStopDetection = state.disableStopDetection;
-      // HTTP & Persistence
-      this.state.url = state.url;
-      this.state.autoSync = state.autoSync;
-      this.state.autoSyncThreshold = state.autoSyncThreshold;
-      this.state.batchSync = state.batchSync;
-      this.state.method = state.method;
-      // Application
-      this.state.stopOnTerminate = state.stopOnTerminate;
-      this.state.startOnBoot = state.startOnBoot;
-      this.state.foregroundService = state.foregroundService;
-      this.state.preventSuspend = state.preventSuspend;
-      this.state.heartbeatInterval = state.heartbeatInterval;
-      // Logging & Debug
-      this.state.logLevel = this._decodeLogLevel(state.logLevel);
-      this.state.logMaxDays = state.logMaxDays;
-      this.state.debug = state.debug;
+      this.state.logLevel = this.decodeLogLevel(state.logLevel);
+      if (this.state.triggerActivities) {
+        this.state.triggerActivities = this.decodeTriggerActivities(this.state.triggerActivities);
+      }
       // Hide the Loading...
-      loader.dismiss();
+      this.isLoaded = true;
+      this.loader.dismiss();
     });
   }
 
@@ -147,6 +133,11 @@ export class SettingsPage {
     var email = storage.getItem('settings:email');
     if (email) {
       this.email = email;
+    }
+  }
+  ionViewWillEnter() {
+    if (!this.isLoaded) {
+      this.loader.present();
     }
   }
 
@@ -163,13 +154,16 @@ export class SettingsPage {
     if (typeof(value) !== 'undefined') {
       switch (name) {
         case 'logLevel':
-          value = this._translateLogLevel(value);
+          value = this.encodeLogLevel(value);
           break;
         case 'trackingMode':
           this.setTrackingMode(value);
           break;
         case 'geofenceProximityRadius':
           this.bgService.playSound('ADD_GEOFENCE');
+          break;
+        case 'triggerActivities':
+          value = this.encodeTriggerActivities(value);
           break;
       }
       this.bgService.set(name, value);
@@ -305,7 +299,7 @@ export class SettingsPage {
     }).present();
   }
 
-  _decodeLogLevel(value) {
+  decodeLogLevel(value) {
     switch(value) {
       case 0:
         value = 'OFF';
@@ -328,7 +322,7 @@ export class SettingsPage {
     }
     return value;
   }
-  _translateLogLevel(value) {
+  encodeLogLevel(value) {
     switch(value) {
       case 'OFF':
         value = 0;
@@ -349,6 +343,12 @@ export class SettingsPage {
         value = 5;
     }
     return value;
+  }
+  decodeTriggerActivities(value) {
+    return value.split(',');
+  }
+  encodeTriggerActivities(value) {
+    return value.join(',');
   }
 
 }
