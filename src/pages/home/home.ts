@@ -27,7 +27,7 @@ const COLORS = {
   blue: "#2677FF",
   light_blue: "#3366cc",
   polyline_color: "#4E25AE",
-  green: "16BE42", //#11b700",
+  green: "#16BE42", //#11b700",
   dark_green: "#0d6104",
   grey: "#404040",
   red: "#FE381E", //#c80000",
