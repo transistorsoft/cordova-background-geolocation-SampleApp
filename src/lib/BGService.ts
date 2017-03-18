@@ -112,10 +112,11 @@ export class BGService {
     this.storage = (<any>window).localStorage;
     // We fetch put Device.uuid into localStorage to determine if this is first-boot of app.
     this.uuid = this.storage.getItem('device:uuid');
-    platform.ready().then(this._init.bind(this));
+
+    platform.ready().then(this.init.bind(this));
   }
 
-  _init() {
+  private init() {
     this.deviceInfo = {
       model: Device.model,
       platform: Device.platform,
@@ -198,7 +199,7 @@ export class BGService {
     console.log('BGService#set ', name, value);
 
     var setting = this.settings.map[name];
-    if (!setting || (this.state[name] === value)) {
+    if (!setting) {
       // No change:  Ignore
       console.info('ignored');
       return;
@@ -211,6 +212,9 @@ export class BGService {
       case 'boolean':
         value = (typeof(value) === 'string') ? (value === 'true') : value;
         break;
+    }
+    if (this.state[name] === value) {
+      return;
     }
     this.playSound('BUTTON_CLICK');
     // Update state
