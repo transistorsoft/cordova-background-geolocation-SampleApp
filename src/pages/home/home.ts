@@ -9,6 +9,7 @@ import {
   NavController,
   Platform,
   ModalController,
+  AlertController,
   ToastController
 } from 'ionic-angular';
 
@@ -21,14 +22,16 @@ declare var google;
 
 // Colors
 const COLORS = {
+  gold: '#fedd1e',
   white: "#fff",
   blue: "#2677FF",
   light_blue: "#3366cc",
-  green: "#11b700",
+  polyline_color: "#4E25AE",
+  green: "16BE42", //#11b700",
   dark_green: "#0d6104",
   grey: "#404040",
-  red: "#c80000",
-  dark_red: "#aa0000"
+  red: "#FE381E", //#c80000",
+  dark_red: "#A71300"
 }
 // Icons
 const ICON_MAP = {
@@ -103,12 +106,13 @@ export class HomePage {
   isResettingOdometer: boolean;
 
   constructor(
-    public navCtrl: NavController,
-    public platform: Platform,
-    public bgService:BGService,
-    public zone:NgZone,
+    private navCtrl: NavController,
+    private platform: Platform,
+    private bgService:BGService,
+    private zone:NgZone,
+    private alertCtrl: AlertController,
     private toastCtrl: ToastController,
-    public modalController: ModalController) {
+    private modalController: ModalController) {
 
     this.bgService.on('change', this.onBackgroundGeolocationSettingsChanged.bind(this));    
     this.bgService.on('start', this.onBackgroundGeolocationStarted.bind(this));
@@ -199,10 +203,10 @@ export class HomePage {
     this.stationaryRadiusCircle = new google.maps.Circle({
       zIndex: 0,
       fillColor: COLORS.red,
-      strokeColor: COLORS.dark_red,
+      strokeColor: COLORS.red,
       strokeWeight: 2,
-      fillOpacity: 0.2,
-      strokeOpacity: 0.5,
+      fillOpacity: 0.3,
+      strokeOpacity: 0.7,
       map: this.map
     });
     // Route polyline
@@ -210,8 +214,8 @@ export class HomePage {
       map: this.map,
       zIndex: 1,
       geodesic: true,
-      strokeColor: COLORS.blue,
-      strokeOpacity: 0.7,
+      strokeColor: COLORS.polyline_color,
+      strokeOpacity: 0.8,
       strokeWeight: 5
     });
     // Popup geofence cursor for adding geofences via LongPress
@@ -303,7 +307,6 @@ export class HomePage {
 
   onClickDestroyLocations() {
     this.bgService.playSound('BUTTON_CLICK');
-    this.isDestroyingLocations = true;
 
     function onComplete(message, result) {
       this.toast(message, result);
@@ -312,13 +315,24 @@ export class HomePage {
 
     let bgGeo = this.bgService.getPlugin();
     bgGeo.getCount((count) => {
-      bgGeo.destroyLocations((res) => {
-        onComplete.call(this, MESSAGE.destroy_locations_success, count);
-      }, function(error) {
-        onComplete.call(this, MESSAGE.destroy_locations_failure, error);
+      if (!count) {
+        this.toast('There are no locations to destroy');
+        return;
+      }
+      // Confirm destroy
+      let message = 'Destroy ' + count + ' location' + ((count>1) ? 's' : '') + '?'
+      this.confirm('Confirm delete', message, () => {
+        // Good to go...
+        this.isDestroyingLocations = true;
+        bgGeo.destroyLocations((res) => {
+          onComplete.call(this, MESSAGE.destroy_locations_success, count);
+        }, function(error) {
+          onComplete.call(this, MESSAGE.destroy_locations_failure, error);
+        });
       });
-    })
+    });
   }
+
   onClickEmailLogs() {
     this.bgService.playSound('BUTTON_CLICK');
     let storage = (<any>window).localStorage;
@@ -572,6 +586,7 @@ export class HomePage {
     var scale = 5;
     var zIndex = 1;
     var anchor;
+    var strokeWeight = 2;
     var fillColor, strokeColor;
 
     if (!this.lastDirectionChangeLocation) {
@@ -581,20 +596,18 @@ export class HomePage {
     if (location.event === 'geofence') {
       if (location.geofence.action.toLowerCase() === 'enter') {
         fillColor = COLORS.green;
-        strokeColor = COLORS.dark_green;
       } else {
         fillColor = COLORS.red;
-        strokeColor = COLORS.dark_red;
       }
       zIndex = 2;
     } else {
-      fillColor = COLORS.white;
-      strokeColor = COLORS.blue;
+      fillColor = COLORS.gold;
       // Render an arrow marker if heading changes by 10 degrees or every 5 points.
       var deltaHeading = Math.abs(location.coords.heading - this.lastDirectionChangeLocation.coords.heading);
       if (deltaHeading >= 10 || !(this.locationMarkers.length % 5)) {
         icon = google.maps.SymbolPath.FORWARD_CLOSED_ARROW;
         scale = 3;
+        strokeWeight = 1;
         anchor = new google.maps.Point(0, 2.6);
         this.lastDirectionChangeLocation = location;
       }
@@ -609,9 +622,9 @@ export class HomePage {
         anchor: anchor,
         fillColor: fillColor,
         fillOpacity: 1,
-        strokeColor: strokeColor,
-        strokeWeight: 2,
-        strokeOpacity: 0.7
+        strokeColor: COLORS.polyline_color,
+        strokeWeight: strokeWeight,
+        strokeOpacity: 0.8
       },
       map: this.map,
       position: new google.maps.LatLng(location.coords.latitude, location.coords.longitude)
@@ -650,10 +663,10 @@ export class HomePage {
         path: google.maps.SymbolPath.CIRCLE,
         scale: 12,
         fillColor: COLORS.red,
-        fillOpacity: 0.2,
+        fillOpacity: 0.3,
         strokeColor: COLORS.red,
         strokeWeight: 1,
-        strokeOpacity: 0.5
+        strokeOpacity: 0.7
       }
     });
   }
@@ -704,6 +717,28 @@ export class HomePage {
     // Clear blue route PolyLine
     this.polyline.setMap(null);
     this.polyline.setPath([]);
+  }
+
+  alert(title, message) {
+
+  }
+
+  confirm(title, message, callback) {
+    let alert = this.alertCtrl.create({
+      title: title,
+      message: message,
+      buttons: [{
+        text: 'Cancel',
+        role: 'cancel',
+        handler: () => {
+            alert.dismiss();
+        }
+      }, {
+        text: 'Confirm',
+        handler: callback
+      }]
+    });
+    alert.present();
   }
 
   toast(message, result?, duration?) {

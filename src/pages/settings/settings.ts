@@ -73,45 +73,12 @@ export class SettingsPage {
       }
     };
 
-
     this.isSyncing = false;
     this.isAddingGeofences = false;
     this.isResettingOdometer = false;
 
-    this.state = {
-      // Geolocation
-      trackingMode: 'location',
-      desiredAccuracy: 0,
-      distanceFilter: 0,
-      disableElasticity: false,
-      geofenceProximityRadius: 1000,
-      // Activity Recognition
-      activityRecognitionInterval: 10000,
-      stopTimeout: 5,
-      //  iOS
-      stopDetectionDelay: 0,
-      disableStopDetection: false,
-      disableMotionActivityUpdates: false,
-      // HTTP & Persistence
-      url: '',
-      autoSync: false,
-      autoSyncThreshold: 0,
-      batchSync: false,
-      method: 'POST',
-      // Application
-      stopOnTerminate: true,
-      startOnBoot: false,
-      foregroundService: false,
-      preventSuspend: false,
-      heartbeatInterval: 60,
-      // Logging & Debug
-      logLevel: 'VERBOSE',
-      logMaxDays: 7,
-      debug: true
-    }
-
     let settings = this.bgService.getSettings();
-
+    this.state = {};
     this.bgService.getState((state) => {
       settings.forEach((setting) => {
         this.state[setting.name] = state[setting.name];
