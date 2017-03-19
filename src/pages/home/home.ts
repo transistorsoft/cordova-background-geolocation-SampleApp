@@ -16,6 +16,7 @@ import {
 import {SettingsPage} from '../settings/settings';
 import {GeofencePage} from '../geofence/geofence';
 import {BGService} from '../../lib/BGService';
+import {SettingsService} from '../../lib/SettingsService';
 import {LongPress} from '../../lib/LongPress';
 
 declare var google;
@@ -92,12 +93,16 @@ export class HomePage {
 
   currentLocationMarker: any;
   locationAccuracyCircle:  any;
+  geofenceHitMarkers: any;
   polyline: any;
   stationaryRadiusCircle: any;
   geofenceCursor: any;
   locationMarkers: any;
   geofenceMarkers: any;
   lastDirectionChangeLocation: any;
+
+  // Geofence Hits
+  geofenceHits: any;
 
   // FAB Menu
   isFabOpen: boolean;
@@ -109,6 +114,7 @@ export class HomePage {
     private navCtrl: NavController,
     private platform: Platform,
     private bgService:BGService,
+    private settingsService:SettingsService,
     private zone:NgZone,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController,
@@ -117,11 +123,15 @@ export class HomePage {
     this.bgService.on('change', this.onBackgroundGeolocationSettingsChanged.bind(this));    
     this.bgService.on('start', this.onBackgroundGeolocationStarted.bind(this));
 
+    this.settingsService.on('change', this.onSettingsChanged.bind(this));
+
     this.isFabOpen = false;
     this.isSyncing = false;
     this.isResettingOdometer = false;
 
     this.iconMap = ICON_MAP;
+
+    this.geofenceHits = [];
 
     // Initial state
     this.state = {
@@ -155,6 +165,7 @@ export class HomePage {
   configureMap(){
     this.locationMarkers = [];
     this.geofenceMarkers = [];
+    this.geofenceHitMarkers = [];
 
     let latLng = new google.maps.LatLng(-34.9290, 138.6010);
 
@@ -211,12 +222,12 @@ export class HomePage {
     });
     // Route polyline
     this.polyline = new google.maps.Polyline({
-      map: this.map,
+      map: (this.settingsService.state.mapHidePolyline) ? null : this.map,
       zIndex: 1,
       geodesic: true,
       strokeColor: COLORS.polyline_color,
-      strokeOpacity: 0.8,
-      strokeWeight: 5
+      strokeOpacity: 0.6,
+      strokeWeight: 6
     });
     // Popup geofence cursor for adding geofences via LongPress
     this.geofenceCursor = new google.maps.Marker({
@@ -438,6 +449,31 @@ export class HomePage {
   }
 
   ////
+  // SettingsService listeners
+  //
+  onSettingsChanged(name:string, value:any) {
+    let map = null;
+    switch(name) {
+      case 'mapHideMarkers':
+        map = (value === true) ? null : this.map;
+        this.locationMarkers.forEach((marker) => {
+          marker.setMap(map);
+        });
+        break;
+      case 'mapHidePolyline':
+        map = (value === true) ? null : this.map;
+        this.polyline.setMap(map);
+        break;
+      case 'mapShowGeofenceHits':
+        map = (value === true) ? this.map : null;
+        this.geofenceHitMarkers.forEach((marker) => {
+          marker.setMap(map);
+        });
+        break;
+    }
+  }
+
+  ////
   // BgService listeners
   //
   onBackgroundGeolocationSettingsChanged(name:string, value:any) {
@@ -529,13 +565,104 @@ export class HomePage {
 
   onGeofence(event:any) {
     console.log('[js] geofence: ', event);
+
     var circle = this.geofenceMarkers.find((marker) => {
       return marker.identifier === event.identifier;
     });
-    if (!circle) { return; }
 
-    var marker = this.buildLocationMarker(event.location);
-    this.locationMarkers.push(marker);
+    if (!circle) { return; }
+    var map = (this.settingsService.state.mapShowGeofenceHits) ? this.map : null;
+
+    let location = event.location;
+    let geofence = this.geofenceHits[event.identifier];
+    if (!geofence) {
+      geofence = {
+        circle: new google.maps.Circle({
+          zIndex: 100,
+          fillOpacity: 0,
+          strokeColor: COLORS.red,
+          strokeWeight: 3,
+          strokeOpacity: 1,
+          radius: circle.getRadius(),
+          center: circle.getCenter(),
+          map: map
+        }),
+        events: []
+      };
+      this.geofenceHits[event.identifier] = geofence;
+      this.geofenceHitMarkers.push(geofence.circle);
+    }
+
+    var color, heading;
+    if (event.action === 'ENTER') {
+      color = COLORS.red;
+    } else {
+      color = COLORS.red;
+    }
+
+    let circleLatLng = geofence.circle.getCenter();
+    let locationLatLng = new google.maps.LatLng(location.coords.latitude, location.coords.longitude);
+    let distance = google.maps.geometry.spherical.computeDistanceBetween (circleLatLng, locationLatLng);
+
+    // Push event
+    geofence.events.push({
+      action: event.action,
+      location: event.location,
+      distance: distance
+    });
+
+    var heading = google.maps.geometry.spherical.computeHeading(circleLatLng, locationLatLng);
+    let circleEdgeLatLng = google.maps.geometry.spherical.computeOffset(circleLatLng, geofence.circle.getRadius(), heading);
+
+    geofence.events.push({
+      location: event.location,
+      action: event.action,
+      distance: distance
+    });
+
+    var geofenceEdgeMarker = new google.maps.Marker({
+      zIndex: 1000,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 7,
+        fillColor: (event.action === 'ENTER') ? COLORS.green : COLORS.red,
+        fillOpacity: 0.7,
+        strokeColor: "#000",
+        strokeWeight: 2,
+        strokeOpacity: 1
+      },
+      map: map,
+      position: circleEdgeLatLng
+    });
+    this.geofenceHitMarkers.push(geofenceEdgeMarker);
+
+    var hitMarker = new google.maps.Marker({
+      zIndex: 1000,
+      icon: {
+        path: (event.action === 'EXIT') ? google.maps.SymbolPath.FORWARD_OPEN_ARROW : google.maps.SymbolPath.BACKWARD_OPEN_ARROW,
+        rotation: heading,
+        scale: 3,
+        fillColor: COLORS.red,
+        fillOpacity: 0,
+        strokeColor: '#000',
+        strokeWeight: 2,
+        strokeOpacity: 1
+      },
+      map: map,
+      position: locationLatLng
+    });
+    this.geofenceHitMarkers.push(hitMarker);
+
+    var polyline = new google.maps.Polyline({
+      map: map,
+      zIndex: 1001,
+      geodesic: true,
+      strokeColor: '#000',
+      strokeOpacity: 1,
+      strokeWeight: 3,
+      path: [circleEdgeLatLng, locationLatLng]
+    });
+    this.geofenceHitMarkers.push(polyline);
 
     // Change the color of activated geofence to light-grey.
     circle.activated = true;
@@ -576,7 +703,9 @@ export class HomePage {
     }
     // Add breadcrumb to current Polyline path.
     this.polyline.getPath().push(latlng);
-    this.polyline.setMap(this.map);
+    if (!this.settingsService.state.mapHidePolyline) {
+      this.polyline.setMap(this.map);
+    }
     this.lastLocation = location;
   }
 
@@ -586,31 +715,22 @@ export class HomePage {
     var scale = 5;
     var zIndex = 1;
     var anchor;
-    var strokeWeight = 2;
+    var strokeWeight = 3;
     var fillColor, strokeColor;
 
     if (!this.lastDirectionChangeLocation) {
       this.lastDirectionChangeLocation = location;
     }
 
-    if (location.event === 'geofence') {
-      if (location.geofence.action.toLowerCase() === 'enter') {
-        fillColor = COLORS.green;
-      } else {
-        fillColor = COLORS.red;
-      }
-      zIndex = 2;
-    } else {
-      fillColor = COLORS.gold;
-      // Render an arrow marker if heading changes by 10 degrees or every 5 points.
-      var deltaHeading = Math.abs(location.coords.heading - this.lastDirectionChangeLocation.coords.heading);
-      if (deltaHeading >= 10 || !(this.locationMarkers.length % 5)) {
-        icon = google.maps.SymbolPath.FORWARD_CLOSED_ARROW;
-        scale = 3;
-        strokeWeight = 1;
-        anchor = new google.maps.Point(0, 2.6);
-        this.lastDirectionChangeLocation = location;
-      }
+    fillColor = COLORS.green;
+    // Render an arrow marker if heading changes by 10 degrees or every 5 points.
+    var deltaHeading = Math.abs(location.coords.heading - this.lastDirectionChangeLocation.coords.heading);
+    if (deltaHeading >= 10 || !(this.locationMarkers.length % 5)) {
+      icon = google.maps.SymbolPath.FORWARD_CLOSED_ARROW;
+      scale = 3;
+      strokeWeight = 2;
+      anchor = new google.maps.Point(0, 2.6);
+      this.lastDirectionChangeLocation = location;
     }
 
     return new google.maps.Marker({
@@ -624,9 +744,9 @@ export class HomePage {
         fillOpacity: 1,
         strokeColor: COLORS.polyline_color,
         strokeWeight: strokeWeight,
-        strokeOpacity: 0.8
+        strokeOpacity: 0.6
       },
-      map: this.map,
+      map: (!this.settingsService.state.mapHideMarkers) ? this.map : null,
       position: new google.maps.LatLng(location.coords.latitude, location.coords.longitude)
     });
   }
@@ -697,18 +817,19 @@ export class HomePage {
 
   clearMarkers() {
     // Clear location-markers.
-    var marker;
-    for (var n=0,len=this.locationMarkers.length;n<len;n++) {
-      marker = this.locationMarkers[n];
+    this.locationMarkers.forEach((marker) => {
       marker.setMap(null);
-    }
+    });
     this.locationMarkers = [];
 
-    // Clear geofence markers.
-    for (var n=0,len=this.geofenceMarkers.length;n<len;n++) {
-      marker = this.geofenceMarkers[n];
+    // Clear geofence hit markers
+    this.geofenceHitMarkers.forEach((marker) => {
       marker.setMap(null);
-    }
+    })
+    // Clear geofence markers.
+    this.geofenceMarkers.forEach((marker) => {
+      marker.setMap(null);
+    });
     this.geofenceMarkers = [];
 
     // Clear red stationaryRadius marker
