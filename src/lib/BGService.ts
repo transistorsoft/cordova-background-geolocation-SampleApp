@@ -5,8 +5,6 @@ import {
 import {Injectable} from "@angular/core";
 import {Device} from 'ionic-native';
 
-const EMPTY_FN = function(){};
-
 /**
 * The collection of available BackgroundGeolocation settings
 */

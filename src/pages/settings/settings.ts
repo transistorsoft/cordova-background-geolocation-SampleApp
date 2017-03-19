@@ -7,6 +7,8 @@ import {
 } from "ionic-angular";
 
 import {BGService} from '../../lib/BGService';
+import {SettingsService} from '../../lib/SettingsService';
+
 import {AboutPage} from '../about/about';
 
 const TRACKING_MODE_OPTIONS = [
@@ -37,8 +39,9 @@ export class SettingsPage {
   heartbeatIntervalOptions: any;
   logLevelOptions: any;
   logMaxDaysOptions: any;
-  geofenceOptions: any;
-
+  settings: any;
+  //geofenceOptions: any;
+  //mapOptions: any;
   email: string;
   isSyncing: boolean;
   isEmailingLog: boolean;
@@ -47,6 +50,7 @@ export class SettingsPage {
 
   constructor(
     private bgService: BGService,
+    private settingsService: SettingsService,
     private alertCtrl: AlertController,
     private viewCtrl: ViewController,
     private modalCtrl: ModalController,
@@ -61,18 +65,7 @@ export class SettingsPage {
     // We do a BackgroundGeolocation#getState each time Settings screen is shown.
     this.trackingModeOptions = TRACKING_MODE_OPTIONS;
     this.logLevelOptions = LOG_LEVEL_OPTIONS;
-
-    this.geofenceOptions = {
-      notifyOnEntry: true,
-      notifyOnExit: false,
-      notifyOnDwell: false,
-      loiteringDelay: 0,
-      radius: 200,
-      extras: {
-        geofence_extra_foo: 'bar'
-      }
-    };
-
+    
     this.isSyncing = false;
     this.isAddingGeofences = false;
     this.isResettingOdometer = false;
@@ -118,6 +111,8 @@ export class SettingsPage {
 
   onChangeValue(name) {
     var value = this.state[name];
+    console.info('onChangeValue: ', name, value);
+
     if (typeof(value) !== 'undefined') {
       switch (name) {
         case 'logLevel':
@@ -132,9 +127,20 @@ export class SettingsPage {
         case 'triggerActivities':
           value = this.encodeTriggerActivities(value);
           break;
+        case 'hideMarkers':
+          break;
+        case 'hidePolyline':
+          break;
+        case 'showGeofenceHits':
+          break;
       }
       this.bgService.set(name, value);
     }
+  }
+
+  onChangeSetting(name) {
+    var value = this.settings[name];
+    this.settingsService.set(name, value);
   }
 
   setTrackingMode(mode) {
@@ -235,12 +241,12 @@ export class SettingsPage {
         identifier: 'city_drive_' + (n+1),
         latitude: parseFloat(latlng.lat),
         longitude: parseFloat(latlng.lng),
-        radius: this.geofenceOptions.radius,
-        notifyOnEntry: this.geofenceOptions.notifyOnEntry,
-        notifyOnExit: this.geofenceOptions.notifyOnExit,
-        notifyOnDwell: this.geofenceOptions.notifyOnDwell,
-        loiteringDelay: this.geofenceOptions.loiteringDelay,
-        extras: this.geofenceOptions.extras
+        radius: this.settingsService.state.geofenceRadius,
+        notifyOnEntry: this.settingsService.state.geofenceNotifyOnEntry,
+        notifyOnExit: this.settingsService.state.geofenceNotifyOnExit,
+        notifyOnDwell: this.settingsService.state.geofenceNotifyOnDwell,
+        loiteringDelay: this.settingsService.state.geofenceLoiteringDelay,
+        extras: {'geofence_extra': 'foo'}
       });
     }
 

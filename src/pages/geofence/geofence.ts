@@ -19,15 +19,15 @@ import {BGService} from '../../lib/BGService';
   templateUrl: 'geofence.html'
 })
 export class GeofencePage {
-  private identifier: string;
-  private radius: number;
+  public identifier: string;
+  public radius: number;
   private latitude: number;
   private longitude: number;
-  private notifyOnEntry: boolean;
-  private notifyOnExit: boolean;
-  private notifyOnDwell: boolean;
-  private loiteringDelay: number;
-  private radiusOptions: any;
+  public notifyOnEntry: boolean;
+  public notifyOnExit: boolean;
+  public notifyOnDwell: boolean;
+  public loiteringDelay: number;
+  public radiusOptions: any;
 
   constructor(
     private navCtrl: NavController,
@@ -40,6 +40,7 @@ export class GeofencePage {
     this.radius = 200;
     this.latitude = navParams.get('latitude');
     this.longitude = navParams.get('longitude');
+
     this.notifyOnEntry = true;
     this.notifyOnExit = false;
     this.notifyOnDwell = false;

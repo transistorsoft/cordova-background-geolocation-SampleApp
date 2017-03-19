@@ -29,17 +29,20 @@
 	  	</ion-item>
 
 	  	<ion-item>
-		    <ion-label>notifyOnEntry</ion-label>
+		    <ion-label color="primary">notifyOnEntry</ion-label>
 		    <ion-checkbox [(ngModel)]="notifyOnEntry"></ion-checkbox>
 		</ion-item>
+
 		<ion-item>
-		    <ion-label>notifyOnExit</ion-label>
+		    <ion-label color="primary">notifyOnExit</ion-label>
 		    <ion-checkbox [(ngModel)]="notifyOnExit"></ion-checkbox>
 		</ion-item>
+
 		<ion-item>
-		    <ion-label>notifyOnDwell</ion-label>
-		    <ion-checkbox [(ngModel)]="notifyDwell"></ion-checkbox>
+		    <ion-label color="primary">notifyOnDwell</ion-label>
+		    <ion-checkbox [(ngModel)]="notifyOnDwell"></ion-checkbox>
 		</ion-item>
+
 		<ion-item>
 			<ion-label color="primary">loiteringDelay(ms)</ion-label>
 	  		<ion-input [(ngModel)]="loiteringDelay" type="number" placeholder="Delay before DWELL"></ion-input>
