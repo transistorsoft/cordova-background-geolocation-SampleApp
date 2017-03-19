@@ -27,6 +27,7 @@ export class SettingsService {
   constructor(private events:Events) {
     this.storage = (<any>window).localStorage;
 
+    this.state = {};
     if (this.storage.hasOwnProperty('settings')) {
       this.loadState();
     } else {
