@@ -792,8 +792,7 @@ export class HomePage {
     });
     // Add 'click' listener to geofence so we can edit it.
     google.maps.event.addListener(geofence, 'click', () => {
-      //$scope.onShowGeofence(this.params);
-      alert('show geofence modal');
+      this.toast('Click geofence ' + geofence.identifier, null, 1000);
     });
     return geofence;
   }
