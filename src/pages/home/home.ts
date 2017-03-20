@@ -10,6 +10,7 @@ import {
   Platform,
   ModalController,
   AlertController,
+  LoadingController,
   ToastController
 } from 'ionic-angular';
 
@@ -27,12 +28,13 @@ const COLORS = {
   white: "#fff",
   blue: "#2677FF",
   light_blue: "#3366cc",
-  polyline_color: "#4E25AE",
-  green: "#16BE42", //#11b700",
-  dark_green: "#0d6104",
+  polyline_color: "#00B3FD",
+  green: "#16BE42",
+  dark_purple: "#2A0A73",
   grey: "#404040",
-  red: "#FE381E", //#c80000",
-  dark_red: "#A71300"
+  red: "#FE381E",
+  dark_red: "#A71300",
+  black: "#000"
 }
 // Icons
 const ICON_MAP = {
@@ -58,7 +60,9 @@ const MESSAGE = {
   sync_success: 'Sync success ({result} records)',
   sync_failure: 'Sync error: {result}',
   destroy_locations_success: 'Destroy locations success ({result} records)',
-  destroy_locations_failure: 'Destroy locations error: {result}'
+  destroy_locations_failure: 'Destroy locations error: {result}',
+  removing_markers: 'Removing markers...',
+  rendering_markers: 'Rendering markers...'
 }
 
 @Component({
@@ -105,10 +109,11 @@ export class HomePage {
   geofenceHits: any;
 
   // FAB Menu
-  isFabOpen: boolean;
+  isMainMenuOpen: boolean;
   isSyncing: boolean;
   isDestroyingLocations: boolean;
   isResettingOdometer: boolean;
+  isMapMenuOpen: boolean;
 
   constructor(
     private navCtrl: NavController,
@@ -118,6 +123,7 @@ export class HomePage {
     private zone:NgZone,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController,
+    private loadingCtrl: LoadingController,
     private modalController: ModalController) {
 
     this.bgService.on('change', this.onBackgroundGeolocationSettingsChanged.bind(this));    
@@ -125,7 +131,8 @@ export class HomePage {
 
     this.settingsService.on('change', this.onSettingsChanged.bind(this));
 
-    this.isFabOpen = false;
+    this.isMainMenuOpen = false;
+    this.isMapMenuOpen = false;
     this.isSyncing = false;
     this.isResettingOdometer = false;
 
@@ -174,7 +181,12 @@ export class HomePage {
       zoom: 15,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
       zoomControl: false,
-      mapTypeControl: false
+      mapTypeControl: false,
+      panControl: false,
+      rotateControl: false,
+      scaleControl: false,
+      streetViewControl: false,
+      disableDefaultUI: true
     };
     this.map = new google.maps.Map(this.mapElement.nativeElement, mapOptions);
     // Create LongPress event-handler
@@ -226,7 +238,7 @@ export class HomePage {
       zIndex: 1,
       geodesic: true,
       strokeColor: COLORS.polyline_color,
-      strokeOpacity: 0.6,
+      strokeOpacity: 0.7,
       strokeWeight: 6
     });
     // Popup geofence cursor for adding geofences via LongPress
@@ -280,9 +292,9 @@ export class HomePage {
   ////
   // UI event handlers
   //
-  onClickFab() {
-    this.isFabOpen = !this.isFabOpen;
-    if (this.isFabOpen) {
+  onClickMainMenu() {
+    this.isMainMenuOpen = !this.isMainMenuOpen;
+    if (this.isMainMenuOpen) {
       this.bgService.playSound('OPEN');
     } else {
       this.bgService.playSound('CLOSE');
@@ -297,7 +309,6 @@ export class HomePage {
 
   onClickSync() {
     this.bgService.playSound('BUTTON_CLICK');
-    this.isSyncing = true;
 
     function onComplete(message, result) {
       this.toast(message, result);
@@ -306,12 +317,16 @@ export class HomePage {
 
     let bgGeo = this.bgService.getPlugin();
     bgGeo.getCount((count) => {
-      bgGeo.sync((rs, taskId) => {
-        this.bgService.playSound('MESSAGE_SENT');
-        bgGeo.finish(taskId);
-        onComplete.call(this, MESSAGE.sync_success, count);
-      }, function(error) {
-        onComplete.call(this, MESSAGE.sync_failure, error);
+      let message = 'Sync ' + count + ' location' + ((count>1) ? 's' : '') + '?';
+      this.confirm('Confirm Sync', message, () => {
+        this.isSyncing = true;
+        bgGeo.sync((rs, taskId) => {
+          this.bgService.playSound('MESSAGE_SENT');
+          bgGeo.finish(taskId);
+          onComplete.call(this, MESSAGE.sync_success, count);
+        }, function(error) {
+          onComplete.call(this, MESSAGE.sync_failure, error);
+        });
       });
     });
   }
@@ -327,12 +342,12 @@ export class HomePage {
     let bgGeo = this.bgService.getPlugin();
     bgGeo.getCount((count) => {
       if (!count) {
-        this.toast('There are no locations to destroy');
+        this.toast('Locations database is empty');
         return;
       }
       // Confirm destroy
-      let message = 'Destroy ' + count + ' location' + ((count>1) ? 's' : '') + '?'
-      this.confirm('Confirm delete', message, () => {
+      let message = 'Destroy ' + count + ' location' + ((count>1) ? 's' : '') + '?';
+      this.confirm('Confirm Delete', message, () => {
         // Good to go...
         this.isDestroyingLocations = true;
         bgGeo.destroyLocations((res) => {
@@ -372,6 +387,18 @@ export class HomePage {
     }, (error) => {
       onComplete.call(this, MESSAGE.reset_odometer_failure, error);
     });
+  }
+
+  onClickMapMenu() {
+    this.isMapMenuOpen = !this.isMapMenuOpen;
+    let soundId = (this.isMapMenuOpen) ? 'OPEN' : 'CLOSE';
+    this.bgService.playSound(soundId);
+  }
+
+  onSelectMapOption(name) {
+     this.bgService.playSound('BUTTON_CLICK');
+     this.settingsService.state[name] = !this.settingsService.state[name];
+     this.settingsService.set(name, this.settingsService.state[name]);
   }
 
   onToggleEnabled() {
@@ -453,22 +480,31 @@ export class HomePage {
   //
   onSettingsChanged(name:string, value:any) {
     let map = null;
+
     switch(name) {
       case 'mapHideMarkers':
+        var loader = this.loadingCtrl.create({
+          content: (value) ? MESSAGE.removing_markers : MESSAGE.rendering_markers
+        });
+        loader.present();
         map = (value === true) ? null : this.map;
         this.locationMarkers.forEach((marker) => {
           marker.setMap(map);
         });
+        loader.dismiss();
+        this.toast((value) ? 'Hide location markers' : 'Show location markers', null, 1000);
         break;
       case 'mapHidePolyline':
         map = (value === true) ? null : this.map;
         this.polyline.setMap(map);
+        this.toast((value) ? 'Hide  polyline' : 'Show polyline', null, 1000);
         break;
       case 'mapShowGeofenceHits':
         map = (value === true) ? this.map : null;
         this.geofenceHitMarkers.forEach((marker) => {
           marker.setMap(map);
         });
+        this.toast((value) ? 'Show geofence hits' : 'Hide geofence hits', null, 1000);
         break;
     }
   }
@@ -580,10 +616,10 @@ export class HomePage {
         circle: new google.maps.Circle({
           zIndex: 100,
           fillOpacity: 0,
-          strokeColor: COLORS.red,
-          strokeWeight: 3,
+          strokeColor: COLORS.black,
+          strokeWeight: 1,
           strokeOpacity: 1,
-          radius: circle.getRadius(),
+          radius: circle.getRadius()+1,
           center: circle.getCenter(),
           map: map
         }),
@@ -624,11 +660,11 @@ export class HomePage {
       zIndex: 1000,
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
-        scale: 7,
+        scale: 5,
         fillColor: (event.action === 'ENTER') ? COLORS.green : COLORS.red,
         fillOpacity: 0.7,
-        strokeColor: "#000",
-        strokeWeight: 2,
+        strokeColor: COLORS.black,
+        strokeWeight: 1,
         strokeOpacity: 1
       },
       map: map,
@@ -636,31 +672,20 @@ export class HomePage {
     });
     this.geofenceHitMarkers.push(geofenceEdgeMarker);
 
-    var hitMarker = new google.maps.Marker({
-      zIndex: 1000,
-      icon: {
-        path: (event.action === 'EXIT') ? google.maps.SymbolPath.FORWARD_OPEN_ARROW : google.maps.SymbolPath.BACKWARD_OPEN_ARROW,
-        rotation: heading,
-        scale: 3,
-        fillColor: COLORS.red,
-        fillOpacity: 0,
-        strokeColor: '#000',
-        strokeWeight: 2,
-        strokeOpacity: 1
-      },
-      map: map,
-      position: locationLatLng
+    var locationMarker = this.buildLocationMarker(location, {
+      showHeading: true
     });
-    this.geofenceHitMarkers.push(hitMarker);
+    locationMarker.setMap(map);
+    this.geofenceHitMarkers.push(locationMarker);
 
     var polyline = new google.maps.Polyline({
       map: map,
-      zIndex: 1001,
+      zIndex: 1000,
       geodesic: true,
-      strokeColor: '#000',
+      strokeColor: COLORS.black,
       strokeOpacity: 1,
-      strokeWeight: 3,
-      path: [circleEdgeLatLng, locationLatLng]
+      strokeWeight: 1,
+      path: [circleEdgeLatLng, locationMarker.getPosition()]
     });
     this.geofenceHitMarkers.push(polyline);
 
@@ -710,25 +735,24 @@ export class HomePage {
   }
 
   // Build a bread-crumb location marker.
-  buildLocationMarker(location) {
+  buildLocationMarker(location, options?) {
+    options = options || {};
     var icon = google.maps.SymbolPath.CIRCLE;
     var scale = 5;
     var zIndex = 1;
     var anchor;
-    var strokeWeight = 3;
-    var fillColor, strokeColor;
+    var strokeWeight = 1;
 
     if (!this.lastDirectionChangeLocation) {
       this.lastDirectionChangeLocation = location;
     }
 
-    fillColor = COLORS.green;
     // Render an arrow marker if heading changes by 10 degrees or every 5 points.
     var deltaHeading = Math.abs(location.coords.heading - this.lastDirectionChangeLocation.coords.heading);
-    if (deltaHeading >= 10 || !(this.locationMarkers.length % 5)) {
+    if ((deltaHeading >= 15) || !(this.locationMarkers.length % 5) || options.showHeading) {
       icon = google.maps.SymbolPath.FORWARD_CLOSED_ARROW;
       scale = 3;
-      strokeWeight = 2;
+      strokeWeight = 1;
       anchor = new google.maps.Point(0, 2.6);
       this.lastDirectionChangeLocation = location;
     }
@@ -740,11 +764,11 @@ export class HomePage {
         rotation: location.coords.heading,
         scale: scale,
         anchor: anchor,
-        fillColor: fillColor,
+        fillColor: COLORS.polyline_color,
         fillOpacity: 1,
-        strokeColor: COLORS.polyline_color,
+        strokeColor: COLORS.black,
         strokeWeight: strokeWeight,
-        strokeOpacity: 0.6
+        strokeOpacity: 1
       },
       map: (!this.settingsService.state.mapHideMarkers) ? this.map : null,
       position: new google.maps.LatLng(location.coords.latitude, location.coords.longitude)
@@ -811,7 +835,6 @@ export class HomePage {
       lastMarker.setMap(null);
     }
     this.locationMarkers.push(stopZone);
-    this.polyline.getPath().push(latlng);
     this.stationaryRadiusCircle.setMap(null);
   }
 
