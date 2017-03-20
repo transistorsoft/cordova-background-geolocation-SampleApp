@@ -16,6 +16,8 @@ const SETTINGS = [
   {name: 'email', defaultValue: null}
 ];
 
+const GEOFENCE_RADIUS_OPTIONS = [50, 100, 150, 200, 500, 1000];
+
 @Injectable()
 
 export class SettingsService {
@@ -23,9 +25,12 @@ export class SettingsService {
   public state:any;
   private myState:any;
   private storage:any;
+  public geofenceRadiusOptions: any;
 
   constructor(private events:Events) {
     this.storage = (<any>window).localStorage;
+
+    this.geofenceRadiusOptions = GEOFENCE_RADIUS_OPTIONS;
 
     this.state = {};
     if (this.storage.hasOwnProperty('settings')) {
