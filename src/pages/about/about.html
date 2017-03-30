@@ -12,12 +12,20 @@
 		</ion-buttons>
 	</ion-toolbar>
 </ion-header>
-<ion-content padding>
-	<h5>Cordova BackgroundGeolocation</h5>
+<ion-content padding style="background-color: #fedd1e">
+	<h5>Cordova Background Geolocation</h5>
+	<p>The most sophisticated, battery-efficient background-geolocation and geofencing plugin for Cordova</p>
+	<ul>
+		<li>The plugin <em>knowns</em> when the device is <strong>moving</strong> &amp; <strong>stationary</strong>.  When the device is detected to be moving, the plugin will automatically start tracking.  It doesn't matter whether the app is in foreground or background.</li>
+		<li><strong>iOS</strong> typically requires movement of 200 meters beyond the last known location before tracking will engage.  <strong>Android</strong> is much more sensitive to triggering:  it will typically trigger tracking simply by walking a few meters.</li>
+		<li>Enter an url in the settings screen to upload data to your server.</li>
+		<li>Add geofences with long-press on map.</li>
+		<li>Test geofences in iOS simulator with City Drive then click "Load Geofences" in the Settings Screen.</li>
+	</ul>
 </ion-content>
 
 <ion-footer>
-	<ion-toolbar color="white">
+	<ion-toolbar color="gold">
 		<button block round ion-button (click)="onClickClose()" color="dark">Close</button>
 	</ion-toolbar>
 </ion-footer>

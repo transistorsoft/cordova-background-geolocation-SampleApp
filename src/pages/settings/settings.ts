@@ -45,6 +45,7 @@ export class SettingsPage {
   email: string;
   isSyncing: boolean;
   isEmailingLog: boolean;
+  isDestroyingLog: boolean;
   isAddingGeofences: boolean;
   isResettingOdometer: boolean;
 
@@ -69,6 +70,7 @@ export class SettingsPage {
     this.isSyncing = false;
     this.isAddingGeofences = false;
     this.isResettingOdometer = false;
+    this.isDestroyingLog = false;
 
     let settings = this.bgService.getSettings();
     this.state = {};
@@ -194,7 +196,7 @@ export class SettingsPage {
     storage.setItem('settings:email', this.email);
   }
 
-  onClickEmailLogs() {
+  onClickEmailLog() {
     this.bgService.playSound('BUTTON_CLICK');
 
     if (!this.email) {
@@ -213,6 +215,16 @@ export class SettingsPage {
     }, (error) => {
       onComplete.call(this);
       this.notify('Email error', error);
+    });
+  }
+
+  onClickDestroyLog() {
+    this.settingsService.confirm('Confirm Destroy', 'Destroy Logs?', () => {
+      this.isDestroyingLog = true;
+      this.bgService.getPlugin().destroyLog(() => {
+        this.isDestroyingLog = false;
+        this.settingsService.toast('Destroyed logs');
+      });
     });
   }
 

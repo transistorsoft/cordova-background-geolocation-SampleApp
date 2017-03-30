@@ -9,9 +9,7 @@ import {
   NavController,
   Platform,
   ModalController,
-  AlertController,
-  LoadingController,
-  ToastController
+  LoadingController
 } from 'ionic-angular';
 
 import {SettingsPage} from '../settings/settings';
@@ -121,8 +119,6 @@ export class HomePage {
     private bgService:BGService,
     private settingsService:SettingsService,
     private zone:NgZone,
-    private alertCtrl: AlertController,
-    private toastCtrl: ToastController,
     private loadingCtrl: LoadingController,
     private modalController: ModalController) {
 
@@ -227,7 +223,7 @@ export class HomePage {
       zIndex: 0,
       fillColor: COLORS.red,
       strokeColor: COLORS.red,
-      strokeWeight: 2,
+      strokeWeight: 1,
       fillOpacity: 0.3,
       strokeOpacity: 0.7,
       map: this.map
@@ -251,8 +247,8 @@ export class HomePage {
         fillColor: COLORS.green,
         fillOpacity: 0.2,
         strokeColor: COLORS.green,
-        strokeWeight: 2,
-        strokeOpacity: 0.5
+        strokeWeight: 1,
+        strokeOpacity: 0.7
       }
     });
   }
@@ -311,14 +307,14 @@ export class HomePage {
     this.bgService.playSound('BUTTON_CLICK');
 
     function onComplete(message, result) {
-      this.toast(message, result);
+      this.settingsService.toast(message, result);
       this.zone.run(() => { this.isSyncing = false; })
     };
 
     let bgGeo = this.bgService.getPlugin();
     bgGeo.getCount((count) => {
       let message = 'Sync ' + count + ' location' + ((count>1) ? 's' : '') + '?';
-      this.confirm('Confirm Sync', message, () => {
+      this.settingsService.confirm('Confirm Sync', message, () => {
         this.isSyncing = true;
         bgGeo.sync((rs, taskId) => {
           this.bgService.playSound('MESSAGE_SENT');
@@ -335,19 +331,19 @@ export class HomePage {
     this.bgService.playSound('BUTTON_CLICK');
 
     function onComplete(message, result) {
-      this.toast(message, result);
+      this.settingsService.toast(message, result);
       this.zone.run(() => { this.isDestroyingLocations = false; })
     };
 
     let bgGeo = this.bgService.getPlugin();
     bgGeo.getCount((count) => {
       if (!count) {
-        this.toast('Locations database is empty');
+        this.settingsService.toast('Locations database is empty');
         return;
       }
       // Confirm destroy
       let message = 'Destroy ' + count + ' location' + ((count>1) ? 's' : '') + '?';
-      this.confirm('Confirm Delete', message, () => {
+      this.settingsService.confirm('Confirm Delete', message, () => {
         // Good to go...
         this.isDestroyingLocations = true;
         bgGeo.destroyLocations((res) => {
@@ -364,7 +360,7 @@ export class HomePage {
     let storage = (<any>window).localStorage;
     var email = storage.getItem('settings:email');
     if (!email) {
-      this.toast('Please enter an email address in the Settings screen');
+      this.settingsService.toast('Please enter an email address in the Settings screen');
       return;
     }
     var bgGeo = this.bgService.getPlugin();
@@ -378,7 +374,7 @@ export class HomePage {
     this.isResettingOdometer = true;
 
     function onComplete(message, result?) {
-      this.toast(message, result);
+      this.settingsService.toast(message, result);
       this.zone.run(() => { this.isResettingOdometer = false; })
     };
 
@@ -492,19 +488,19 @@ export class HomePage {
           marker.setMap(map);
         });
         loader.dismiss();
-        this.toast((value) ? 'Hide location markers' : 'Show location markers', null, 1000);
+        this.settingsService.toast((value) ? 'Hide location markers' : 'Show location markers', null, 1000);
         break;
       case 'mapHidePolyline':
         map = (value === true) ? null : this.map;
         this.polyline.setMap(map);
-        this.toast((value) ? 'Hide  polyline' : 'Show polyline', null, 1000);
+        this.settingsService.toast((value) ? 'Hide  polyline' : 'Show polyline', null, 1000);
         break;
       case 'mapShowGeofenceHits':
         map = (value === true) ? this.map : null;
         this.geofenceHitMarkers.forEach((marker) => {
           marker.setMap(map);
         });
-        this.toast((value) ? 'Show geofence hits' : 'Hide geofence hits', null, 1000);
+        this.settingsService.toast((value) ? 'Show geofence hits' : 'Hide geofence hits', null, 1000);
         break;
     }
   }
@@ -632,6 +628,8 @@ export class HomePage {
     var color, heading;
     if (event.action === 'ENTER') {
       color = COLORS.red;
+    } else if (event.action === 'DWELL') {
+      color = COLORS.gold;
     } else {
       color = COLORS.red;
     }
@@ -661,7 +659,7 @@ export class HomePage {
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
         scale: 5,
-        fillColor: (event.action === 'ENTER') ? COLORS.green : COLORS.red,
+        fillColor: color,
         fillOpacity: 0.7,
         strokeColor: COLORS.black,
         strokeWeight: 1,
@@ -783,8 +781,8 @@ export class HomePage {
       fillColor: COLORS.green,
       fillOpacity: 0.2,
       strokeColor: COLORS.green,
-      strokeWeight: 2,
-      strokeOpacity: 0.5,
+      strokeWeight: 1,
+      strokeOpacity: 0.7,
       params: params,
       radius: parseInt(params.radius, 10),
       center: new google.maps.LatLng(params.latitude, params.longitude),
@@ -792,7 +790,7 @@ export class HomePage {
     });
     // Add 'click' listener to geofence so we can edit it.
     google.maps.event.addListener(geofence, 'click', () => {
-      this.toast('Click geofence ' + geofence.identifier, null, 1000);
+      this.settingsService.toast('Click geofence ' + geofence.identifier, null, 1000);
     });
     return geofence;
   }
@@ -864,33 +862,5 @@ export class HomePage {
 
   alert(title, message) {
 
-  }
-
-  confirm(title, message, callback) {
-    let alert = this.alertCtrl.create({
-      title: title,
-      message: message,
-      buttons: [{
-        text: 'Cancel',
-        role: 'cancel',
-        handler: () => {
-            alert.dismiss();
-        }
-      }, {
-        text: 'Confirm',
-        handler: callback
-      }]
-    });
-    alert.present();
-  }
-
-  toast(message, result?, duration?) {
-    if (typeof(result) !== undefined) {
-      message = message.replace("\{result\}", result)
-    }
-    this.toastCtrl.create({
-      message: message,
-      duration: duration || 3000
-    }).present();
   }
 }

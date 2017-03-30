@@ -6,12 +6,20 @@
 -->
 <ion-header>
 
-  <ion-navbar color="primary">
-    <ion-title>geofence</ion-title>
+  <ion-navbar color="gold">
+
+  	<ion-buttons start>
+ 		<button ion-button (click)="onClickCancel()">Cancel</button>
+ 	</ion-buttons>
+ 	<ion-title>Geofence</ion-title>
+	<ion-buttons end>
+    	<button outline ion-button (click)="onClickSubmit()" ion-text color="dark">
+    		Save
+    	</button>
+    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
-
 
 <ion-content padding>
 	<ion-list>
@@ -50,15 +58,4 @@
 	</ion-list>
 </ion-content>
 
-<ion-footer>
-	<ion-row>
-		<ion-col>
-			<button ion-button block round (click)="onClickCancel()" color="danger">
-				Cancel
-			</button>
-		</ion-col>
-		<ion-col>
-			<button ion-button block round  (click)="onClickSubmit()" color="primary">Submit</button>
-		</ion-col>
-	</ion-row>
-</ion-footer>
+

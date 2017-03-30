@@ -68,9 +68,9 @@
 			<ion-icon [hidden]="state.provider.enabled" name="{{iconMap.provider_disabled}}" color="danger"></ion-icon>
 		</ion-buttons>
 		<ion-title>
-			<span class="label" color="">Activity</span>&nbsp;
+			<span ion-text class="label" color="">Activity</span>&nbsp;
 			<ion-icon color="" name="{{state.activityIcon}}"></ion-icon>
-			<span class="odometer" color="">{{this.state.odometer}}km</span>
+			<span ion-text class="odometer" color="">{{this.state.odometer}}km</span>
 		</ion-title>
 		<ion-buttons end>
 			<button ion-button solid [disabled]="!state.enabled" (click)="onClickChangePace()" style="width:50px" color="{{state.isMoving ? 'danger' : 'secondary'}}">

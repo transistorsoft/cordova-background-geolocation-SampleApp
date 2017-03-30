@@ -174,6 +174,10 @@ export class BGService {
       this.storage.setItem('device:uuid', this.uuid);
 
       // Override a few defaults on first-boot so user can hear debug sounds.
+      this.state.foregroundService = true;
+      this.state.autoSync   = false;
+      this.state.stopOnTerminate = false;
+      this.state.startOnBoot = true;
       this.state.debug      = true;
       this.state.logLevel   = this.plugin.LOG_LEVEL_VERBOSE;
       this.state.params     = {device: this.deviceInfo};

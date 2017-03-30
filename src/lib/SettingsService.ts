@@ -1,5 +1,8 @@
 import {
-  Events
+  Events,
+  AlertController,
+  ToastController,
+  LoadingController
 } from 'ionic-angular';
 import {Injectable} from "@angular/core";
 
@@ -9,7 +12,7 @@ const SETTINGS = [
   {name: 'geofenceNotifyOnEntry', defaultValue: true},
   {name: 'geofenceNotifyOnExit', defaultValue: false},
   {name: 'geofenceNotifyOnDwell', defaultValue: false},
-  {name: 'geofenceLoiteringDelay', defaultValue: 0},
+  {name: 'geofenceLoiteringDelay', defaultValue: 30000},
   {name: 'mapHideMarkers', defaultValue: false},
   {name: 'mapHidePolyline', defaultValue: false},
   {name: 'mapShowGeofenceHits', defaultValue: false},
@@ -17,6 +20,7 @@ const SETTINGS = [
 ];
 
 const GEOFENCE_RADIUS_OPTIONS = [50, 100, 150, 200, 500, 1000];
+const GEOFENCE_LOITERING_DELAY_OPTIONS = [1*1000, 10*1000, 30*1000, 60*1000, 5*60*1000];
 
 @Injectable()
 
@@ -26,11 +30,18 @@ export class SettingsService {
   private myState:any;
   private storage:any;
   public geofenceRadiusOptions: any;
+  public geofenceLoiteringDelayOptions: any;
 
-  constructor(private events:Events) {
+  constructor(
+    private events:Events,
+    private alertCtrl: AlertController,
+    private toastCtrl: ToastController,
+    private loadingCtrl: LoadingController
+  ) {
     this.storage = (<any>window).localStorage;
 
     this.geofenceRadiusOptions = GEOFENCE_RADIUS_OPTIONS;
+    this.geofenceLoiteringDelayOptions = GEOFENCE_LOITERING_DELAY_OPTIONS;
 
     this.state = {};
     if (this.storage.hasOwnProperty('settings')) {
@@ -76,6 +87,34 @@ export class SettingsService {
     }
   }
 
+  toast(message, result?, duration?) {
+    if (typeof(result) !== undefined) {
+      message = message.replace("\{result\}", result)
+    }
+    this.toastCtrl.create({
+      message: message,
+      duration: duration || 3000
+    }).present();
+  }
+
+  confirm(title, message, callback) {
+    let alert = this.alertCtrl.create({
+      title: title,
+      message: message,
+      buttons: [{
+        text: 'Cancel',
+        role: 'cancel',
+        handler: () => {
+            alert.dismiss();
+        }
+      }, {
+        text: 'Confirm',
+        handler: callback
+      }]
+    });
+    alert.present();
+  }
+
   /**
   * Subscribe to BGService events
   */
@@ -85,14 +124,14 @@ export class SettingsService {
 
   private loadState() {
     this.state = JSON.parse(this.storage.getItem('settings'));
-    let inValid = false;
+    let invalid = false;
     SETTINGS.forEach((setting) => {
       if (!this.state.hasOwnProperty(setting.name)) {
         this.state[setting.name] = setting.defaultValue;
-        inValid = true;
+        invalid = true;
       }
     });
-    if (!inValid) { this.saveState(); }
+    if (!invalid) { this.saveState(); }
 
     this.myState = Object.assign({}, this.state);
   }

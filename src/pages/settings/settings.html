@@ -6,7 +6,7 @@
  	</ion-buttons>
  	<ion-title>Settings</ion-title>
 	<ion-buttons end>
-    	<button outline ion-button (click)="onClickAbout()" color="dark">
+    	<button outline ion-button (click)="onClickAbout()" ion-text color="dark">
     		About
     	</button>
     </ion-buttons>
@@ -16,7 +16,7 @@
 	<ion-list>
 		<ion-list-header mode="ios"><ion-icon name="navigate" color="primary"></ion-icon>&nbsp;Geolocation</ion-list-header>
 		<ion-card mode="ios">
-			<button ion-button full round [disabled]="isResettingOdometer" (click)="onClickResetOdometer()" color="default">Reset Odometer</button>
+			<button ion-button full round [disabled]="isResettingOdometer" (click)="onClickResetOdometer()" ion-text color="default">Reset Odometer</button>
 		</ion-card>
 	  	<ion-item>
 	    	<ion-label color="primary">trackingMode</ion-label>
@@ -89,7 +89,14 @@
 
 	  	<ion-list-header mode="ios"><ion-icon name="bug" color="primary"></ion-icon>&nbsp;Logging &amp; Debug</ion-list-header>
 	  	<ion-card mode="ios">
-	  		<button ion-button full round (click)="onClickEmailLogs()" color="default">Email Logs</button>
+	  		<ion-row>
+				<ion-col align-self-stretch style="padding-right:5px;">
+  					<button ion-button full round color="danger" (click)="onClickDestroyLog()">Destroy log</button>
+				</ion-col>
+				<ion-col align-self-stretch style="padding-left: 5px;">
+					<button ion-button full round (click)="onClickEmailLog()" color="default">Email Log</button>
+				</ion-col>
+			</ion-row>
 	  		<ion-item>
 	  			<ion-input [(ngModel)]="email" (blur)="onUpdateEmail()" placeholder="your@email.com" type="email"></ion-input>
 	  		</ion-item>
@@ -142,6 +149,15 @@
 	  		<ion-label color="primary">notifyOnDwell</ion-label>
 	  		<ion-toggle [(ngModel)]="settingsService.state.geofenceNotifyOnDwell" (ionChange)="settingsService.onChange('geofenceNotifyOnDwell')" color="secondary"></ion-toggle>
 	  	</ion-item>
+	  	<ion-item>
+	  		<ion-label color="primary">loiteringDelay</ion-label>
+	  		<ion-select [(ngModel)]="settingsService.state.geofenceLoiteringDelay" (ionChange)="settingsService.onChange('geofenceLoiteringDelay')" multiple="false">
+    			<ion-option *ngFor="let option of settingsService.geofenceLoiteringDelayOptions" value="{{option}}" selected="{{option == settingsService.state.geofenceLoiteringDelay}}">
+    				{{option}}
+    			</ion-option>
+    		</ion-select>
+    	</ion-item>
+
 	  	<ion-list-header mode="ios"><ion-icon name="map" color="primary"></ion-icon>&nbsp;Map Options</ion-list-header>
 	  	<ion-item>
 	  		<ion-label color="primary">Hide location markers</ion-label>
