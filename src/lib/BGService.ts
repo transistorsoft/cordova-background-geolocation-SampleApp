@@ -82,12 +82,12 @@ const SOUND_MAP = {
     "LONG_PRESS_ACTIVATE": 27,
     "LONG_PRESS_CANCEL": 94,
     "ADD_GEOFENCE": 28,
-    "BUTTON_CLICK": 89,
+    "BUTTON_CLICK": 19,
     "MESSAGE_SENT": 90,
     "ERROR": 89,
-    "OPEN": 89,
-    "CLOSE": 89,
-    "FLOURISH": 89
+    "OPEN": 37,
+    "CLOSE": 94,
+    "FLOURISH": 37
   }
 };
 
