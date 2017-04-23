@@ -20,7 +20,7 @@ import {BGService} from '../../lib/BGService';
 })
 export class GeofencePage {
   public identifier: string;
-  public radius: number;
+  public radius: string;
   private latitude: number;
   private longitude: number;
   public notifyOnEntry: boolean;
@@ -37,7 +37,7 @@ export class GeofencePage {
     private bgService: BGService) {
 
     this.identifier = '';
-    this.radius = 200;
+    this.radius = '200';
     this.latitude = navParams.get('latitude');
     this.longitude = navParams.get('longitude');
 
@@ -58,16 +58,20 @@ export class GeofencePage {
 
   onClickSubmit() {
     let bgGeo = this.bgService.getPlugin();
-
+    let radius = parseInt(this.radius, 10);
     bgGeo.addGeofence({
       identifier: this.identifier,
-      radius: this.radius,
+      radius: radius,
       latitude: this.latitude,
       longitude: this.longitude,
       notifyOnEntry: this.notifyOnEntry,
       notifyOnExit: this.notifyOnExit,
       notifyOnDwell: this.notifyOnDwell,
-      loiteringDelay: this.loiteringDelay
+      loiteringDelay: this.loiteringDelay,
+      extras: {
+        radius: radius,
+        center: {latitude: this.latitude, longitude: this.longitude}
+      }
     }, (identifier) => {
       this.bgService.playSound('ADD_GEOFENCE');
       this.viewCtrl.dismiss();

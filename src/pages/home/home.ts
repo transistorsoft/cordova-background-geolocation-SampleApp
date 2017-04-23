@@ -229,13 +229,26 @@ export class HomePage {
       map: this.map
     });
     // Route polyline
+    // Route polyline
+    let seq = {
+      repeat: '30px',
+      icon: {
+        path: google.maps.SymbolPath.FORWARD_OPEN_ARROW,
+        scale: 1,
+        fillOpacity: 0,
+        strokeColor: COLORS.white,
+        strokeWeight: 1,
+        strokeOpacity: 1
+      }
+    };
     this.polyline = new google.maps.Polyline({
       map: (this.settingsService.state.mapHidePolyline) ? null : this.map,
       zIndex: 1,
       geodesic: true,
       strokeColor: COLORS.polyline_color,
       strokeOpacity: 0.7,
-      strokeWeight: 6
+      strokeWeight: 7,
+      icons: [seq]
     });
     // Popup geofence cursor for adding geofences via LongPress
     this.geofenceCursor = new google.maps.Marker({
@@ -271,7 +284,6 @@ export class HomePage {
     // Fetch current settings from BGService
     this.bgService.getState((config) => {
       // Configure
-      config.url = 'http://192.168.11.100:8080/locations';
       bgGeo.configure(config, (state) => {
         this.zone.run(() => {
           this.state.enabled = config.enabled;
@@ -372,6 +384,7 @@ export class HomePage {
     this.bgService.playSound('BUTTON_CLICK');
     let bgGeo = this.bgService.getPlugin();
     this.isResettingOdometer = true;
+    this.resetMarkers();
 
     function onComplete(message, result?) {
       this.settingsService.toast(message, result);
@@ -627,7 +640,7 @@ export class HomePage {
 
     var color, heading;
     if (event.action === 'ENTER') {
-      color = COLORS.red;
+      color = COLORS.green;
     } else if (event.action === 'DWELL') {
       color = COLORS.gold;
     } else {
@@ -736,7 +749,7 @@ export class HomePage {
   buildLocationMarker(location, options?) {
     options = options || {};
     var icon = google.maps.SymbolPath.CIRCLE;
-    var scale = 5;
+    var scale = 3;
     var zIndex = 1;
     var anchor;
     var strokeWeight = 1;
@@ -749,7 +762,7 @@ export class HomePage {
     var deltaHeading = Math.abs(location.coords.heading - this.lastDirectionChangeLocation.coords.heading);
     if ((deltaHeading >= 15) || !(this.locationMarkers.length % 5) || options.showHeading) {
       icon = google.maps.SymbolPath.FORWARD_CLOSED_ARROW;
-      scale = 3;
+      scale = 2;
       strokeWeight = 1;
       anchor = new google.maps.Point(0, 2.6);
       this.lastDirectionChangeLocation = location;
@@ -835,7 +848,7 @@ export class HomePage {
     this.stationaryRadiusCircle.setMap(null);
   }
 
-  clearMarkers() {
+  resetMarkers() {
     // Clear location-markers.
     this.locationMarkers.forEach((marker) => {
       marker.setMap(null);
@@ -846,7 +859,13 @@ export class HomePage {
     this.geofenceHitMarkers.forEach((marker) => {
       marker.setMap(null);
     })
-    // Clear geofence markers.
+
+    this.polyline.setPath([]);
+  }
+
+  clearMarkers() {
+    this.resetMarkers();
+
     this.geofenceMarkers.forEach((marker) => {
       marker.setMap(null);
     });

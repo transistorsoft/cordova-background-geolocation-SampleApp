@@ -120,7 +120,8 @@ export class BGService {
       platform: Device.platform,
       uuid: Device.uuid,
       version: Device.version,
-      manufacturer: Device.manufacturer
+      manufacturer: Device.manufacturer,
+      framework: 'Cordova'
     };
 
     ///
