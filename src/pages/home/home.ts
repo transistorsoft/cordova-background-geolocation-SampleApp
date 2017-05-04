@@ -412,9 +412,10 @@ export class HomePage {
 
   onToggleEnabled() {
     this.bgService.playSound('BUTTON_CLICK');
+
     let bgGeo = this.bgService.getPlugin();
     if (this.state.enabled) {
-      if (this.state.trackingMode === 'location') {
+      if (this.bgService.isLocationTrackingMode()) {
         bgGeo.start();
       } else {
         bgGeo.startGeofences();
@@ -436,6 +437,10 @@ export class HomePage {
     }, function(error) {
       console.warn('[js] getCurrentPosition FAILURE: ', error);
       alert('Location error: ' + error);
+    }, {
+      maximumAge: 1000,
+      desiredAccuracy: 10,
+      persist: true
     });
   }
 
@@ -731,12 +736,12 @@ export class HomePage {
     this.locationAccuracyCircle.setCenter(latlng);
     this.locationAccuracyCircle.setRadius(location.coords.accuracy);
 
-    if (this.lastLocation) {
-      this.locationMarkers.push(this.buildLocationMarker(location));
-    }
     if (location.sample === true) {
       return;
     }
+    if (this.lastLocation) {
+      this.locationMarkers.push(this.buildLocationMarker(location));
+    }    
     // Add breadcrumb to current Polyline path.
     this.polyline.getPath().push(latlng);
     if (!this.settingsService.state.mapHidePolyline) {
