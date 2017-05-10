@@ -242,7 +242,6 @@ export class BGService {
       this.events.publish('start', trackingMode, state);
     };
     this.state.trackingMode = trackingMode;
-    this.plugin.stop();
     if (trackingMode === 'location') {
       this.plugin.start(onStarted);
     } else {
