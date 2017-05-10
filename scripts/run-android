@@ -1,1 +1,1 @@
-ionic run android -l  --device
+ionic run android -l  --device --prod

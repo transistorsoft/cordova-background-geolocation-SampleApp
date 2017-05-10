@@ -439,8 +439,7 @@ export class HomePage {
       alert('Location error: ' + error);
     }, {
       maximumAge: 1000,
-      desiredAccuracy: 10,
-      persist: true
+      desiredAccuracy: 10
     });
   }
 
@@ -537,9 +536,6 @@ export class HomePage {
   }
 
   onBackgroundGeolocationStarted(trackingMode:string, state:any) {
-    this.clearMarkers();
-
-    //this.stationaryRadiusCircle.setRadius(value/2);
     this.zone.run(() => {
       this.state.enabled = state.enabled;
       this.state.isMoving = state.isMoving;
