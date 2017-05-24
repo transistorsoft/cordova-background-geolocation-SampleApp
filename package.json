@@ -21,7 +21,7 @@
         "@angular/platform-server": "2.4.8",
         "@ionic/storage": "^2.0.0",
         "cordova-android": "^6.2.3",
-        "cordova-background-geolocation-lt": "^2.7.0",
+        "cordova-background-geolocation-lt": "^2.7.1",
         "cordova-ios": "^4.4.0",
         "cordova-plugin-background-fetch": "^4.0.2",
         "cordova-plugin-cocoalumberjack": "0.0.4",
@@ -41,6 +41,8 @@
     },
     "devDependencies": {
         "@ionic/app-scripts": "1.1.4",
+        "@ionic/cli-plugin-cordova": "1.1.2",
+        "@ionic/cli-plugin-ionic-angular": "1.1.2",
         "typescript": "2.0.9"
     },
     "cordovaPlugins": [
