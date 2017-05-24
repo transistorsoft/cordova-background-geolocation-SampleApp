@@ -278,12 +278,16 @@ export class HomePage {
     bgGeo.on('geofence', this.onGeofence.bind(this));
     bgGeo.on('activitychange', this.onActivityChange.bind(this));
     bgGeo.on('providerchange', this.onProviderChange.bind(this));
-    bgGeo.on('geofenceschange', this.onGeofencesChange.bind(this))
+    bgGeo.on('geofenceschange', this.onGeofencesChange.bind(this));
+    bgGeo.on('schedule', this.onSchedule.bind(this));
     bgGeo.on('http', this.onHttpSuccess.bind(this), this.onHttpFailure.bind(this));
 
     // Fetch current settings from BGService
     this.bgService.getState((config) => {
       // Configure
+      
+      config.schedule = [];
+      
       bgGeo.configure(config, (state) => {
         this.zone.run(() => {
           this.state.enabled = config.enabled;
@@ -292,6 +296,9 @@ export class HomePage {
           this.state.trackingMode = (state.trackingMode === 1 || state.trackingMode === 'location') ? 'location' : 'geofence';
           this.state.paceIcon = this.iconMap['pace_' + config.isMoving];
         });
+        if (state.schedule.length > 0) {
+          bgGeo.startSchedule();
+        }
         console.log('[js] Confgure success');
       });
     });
@@ -589,6 +596,15 @@ export class HomePage {
   onGeofencesChange(event:any) {
     console.log('[js] geofenceschange: ', event);
 
+    // All geofences off
+    if (!event.on.length && !event.off.length) {
+      this.geofenceMarkers.forEach((circle) => {
+        circle.setMap(null);
+      });
+      this.geofenceMarkers = [];
+      return;
+    }
+
     // Filter out all "off" geofences.
     this.geofenceMarkers = this.geofenceMarkers.filter((circle) => {
       if (event.off.indexOf(circle.identifier) < 0) {
@@ -713,6 +729,10 @@ export class HomePage {
 
   onHttpSuccess(response) {
     console.log('[js] http success: ', response);
+  }
+
+  onSchedule(event) {
+    console.log('[js] schedule: ', event);
   }
 
   onHttpFailure(response) {
