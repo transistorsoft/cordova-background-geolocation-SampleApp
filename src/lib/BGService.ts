@@ -3,7 +3,8 @@ import {
   Events
 } from 'ionic-angular';
 import {Injectable} from "@angular/core";
-import {Device} from 'ionic-native';
+
+import { Device } from '@ionic-native/device';
 
 /**
 * The collection of available BackgroundGeolocation settings
@@ -105,7 +106,7 @@ export class BGService {
   private deviceInfo: any;
   private uuid:any;
 
-  constructor(private platform:Platform, private events: Events) {
+  constructor(private platform:Platform, private events: Events, private device:Device) {
     // We don't need cordova-sqlite-storage.
     this.storage = (<any>window).localStorage;
     // We fetch put Device.uuid into localStorage to determine if this is first-boot of app.
@@ -116,11 +117,11 @@ export class BGService {
 
   private init() {
     this.deviceInfo = {
-      model: Device.model,
-      platform: Device.platform,
-      uuid: Device.uuid,
-      version: Device.version,
-      manufacturer: Device.manufacturer,
+      model: this.device.model,
+      platform: this.device.platform,
+      uuid: this.device.uuid,
+      version: this.device.version,
+      manufacturer: this.device.manufacturer,
       framework: 'Cordova'
     };
 
@@ -130,7 +131,7 @@ export class BGService {
     this.plugin = (<any>window).BackgroundGeolocation;
 
     // Build a collection of available settings by platform for use on the Settings screen
-    var settings = [].concat(SETTINGS.common).concat(SETTINGS[Device.platform||'iOS']);
+    var settings = [].concat(SETTINGS.common).concat(SETTINGS[this.device.platform||'iOS']);
     this.settings = {
       list: settings,
       map: {}
@@ -171,7 +172,7 @@ export class BGService {
         return;
       }
       // FIRST BOOT OF APP!  Cache the device uuid so we know we've seen this device before.
-      this.uuid = Device.uuid;
+      this.uuid = this.device.uuid;
       this.storage.setItem('device:uuid', this.uuid);
 
       // Override a few defaults on first-boot so user can hear debug sounds.
@@ -275,7 +276,7 @@ export class BGService {
     var soundId = 0;
 
     if (typeof(name) === 'string') {
-      soundId = SOUND_MAP[Device.platform][name];
+      soundId = SOUND_MAP[this.device.platform][name];
     } else if (typeof(name) === 'number') {
       soundId = name;
     }

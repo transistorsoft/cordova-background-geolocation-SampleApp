@@ -275,6 +275,7 @@ export class HomePage {
     // Listen to events
     bgGeo.on('location', this.onLocation.bind(this));
     bgGeo.on('motionchange', this.onMotionChange.bind(this));
+    bgGeo.on('heartbeat', this.onHeartbeat.bind(this));
     bgGeo.on('geofence', this.onGeofence.bind(this));
     bgGeo.on('activitychange', this.onActivityChange.bind(this));
     bgGeo.on('providerchange', this.onProviderChange.bind(this));
@@ -284,9 +285,10 @@ export class HomePage {
 
     // Fetch current settings from BGService
     this.bgService.getState((config) => {
-      // Configure
-      
+      // Configure      
       config.schedule = [];
+      config.notificationLargeIcon = 'drawable/notification_large_icon';
+      config.stopOnStationary = false;
       
       bgGeo.configure(config, (state) => {
         this.zone.run(() => {
@@ -423,7 +425,11 @@ export class HomePage {
     let bgGeo = this.bgService.getPlugin();
     if (this.state.enabled) {
       if (this.bgService.isLocationTrackingMode()) {
-        bgGeo.start();
+        bgGeo.start(function() {
+          console.warn('[js] START SUCCESS');
+        }, function(error) {
+          console.error('[js] START FAILURE: ', error);
+        });
       } else {
         bgGeo.startGeofences();
       }
@@ -580,6 +586,10 @@ export class HomePage {
     bgGeo.finish(taskId);
   }
 
+  onHeartbeat(event:any) {
+    console.log('[js] heartbeat', event);
+  }
+
   onActivityChange(activityName:string) {
     this.zone.run(() => {
       this.state.activityName = activityName;
@@ -655,7 +665,7 @@ export class HomePage {
       this.geofenceHitMarkers.push(geofence.circle);
     }
 
-    var color, heading;
+    var color;
     if (event.action === 'ENTER') {
       color = COLORS.green;
     } else if (event.action === 'DWELL') {
@@ -675,7 +685,7 @@ export class HomePage {
       distance: distance
     });
 
-    var heading = google.maps.geometry.spherical.computeHeading(circleLatLng, locationLatLng);
+    let heading = google.maps.geometry.spherical.computeHeading(circleLatLng, locationLatLng);
     let circleEdgeLatLng = google.maps.geometry.spherical.computeOffset(circleLatLng, geofence.circle.getRadius(), heading);
 
     geofence.events.push({
