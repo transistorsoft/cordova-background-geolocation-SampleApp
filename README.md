@@ -28,7 +28,7 @@ $ git checkout ionic1
 
 ----------------------------------------------------------------------------
 
-### Step 2:  Building and Running the Ionic 2 App
+### Step 2:  Building and Running the Ionic 3 App
 
 ```bash
 $ npm install
