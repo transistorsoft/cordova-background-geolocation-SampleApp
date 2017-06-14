@@ -1,1 +1,1 @@
-ionic emulate ios -l -c -s --target "iPhone-6s, 10.3"
+ionic cordova emulate ios -l -c -s
