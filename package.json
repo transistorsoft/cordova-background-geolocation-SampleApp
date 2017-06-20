@@ -24,7 +24,7 @@
         "@ionic-native/status-bar": "3.10.2",
         "@ionic/storage": "2.0.1",
         "cordova-android": "^6.2.3",
-        "cordova-background-geolocation-lt": "^2.7.2",
+        "cordova-background-geolocation-lt": "^2.7.3",
         "cordova-ios": "^4.4.0",
         "cordova-plugin-background-fetch": "^4.0.2",
         "cordova-plugin-cocoalumberjack": "0.0.4",
@@ -75,7 +75,7 @@
             "ionic-plugin-keyboard": {},
             "cordova-plugin-console": {},
             "cordova-background-geolocation-lt": {
-                "LICENSE": "4bbb513c013111eae951647fd4f9e79f127fce6f7a00e9d327db9ea2a053a0df",
+                "LICENSE": "YOUR_LICENSE_HERE",
                 "BACKGROUND_MODE_LOCATION": "<string>location</string>",
                 "LOCATION_ALWAYS_USAGE_DESCRIPTION": "Background location-tracking is required",
                 "LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION": "Background location-tracking is required",

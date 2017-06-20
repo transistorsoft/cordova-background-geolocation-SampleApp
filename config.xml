@@ -34,7 +34,7 @@
         <splash density="port-xhdpi" src="resources/android/splash/drawable-port-xhdpi-screen.png" />
         <splash density="port-xxhdpi" src="resources/android/splash/drawable-port-xxhdpi-screen.png" />
         <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
-        <resource-file src="www/res/android/drawable-hdpi/notification_large_icon.png" target="res/drawable-hdpi/notification_large_icon.png" />
+        <resource-file src="src/res/android/drawable-hdpi/notification_large_icon.png" target="res/drawable-hdpi/notification_large_icon.png" />
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*" />
@@ -74,13 +74,6 @@
     <icon src="resources/ios/icon/icon-small@3x.png" />
     <engine name="android" spec="^6.2.3" />
     <engine name="ios" spec="^4.4.0" />
-    <plugin name="cordova-background-geolocation-lt" spec="^2.7.2">
-        <variable name="LICENSE" value="4bbb513c013111eae951647fd4f9e79f127fce6f7a00e9d327db9ea2a053a0df" />
-        <variable name="BACKGROUND_MODE_LOCATION" value="&lt;string&gt;location&lt;/string&gt;" />
-        <variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="Background location-tracking is required" />
-        <variable name="LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION" value="Background location-tracking is required" />
-        <variable name="MOTION_USAGE_DESCRIPTION" value="Using the accelerometer increases battery-efficiency by intelligently toggling location-tracking only when the device is detected to be moving" />
-    </plugin>
     <plugin name="cordova-plugin-cocoalumberjack" spec="0.0.4" />
     <plugin name="cordova-plugin-console" spec="^1.0.7" />
     <plugin name="cordova-plugin-device" spec="^1.1.6" />
@@ -88,4 +81,11 @@
     <plugin name="cordova-plugin-statusbar" spec="^2.2.3" />
     <plugin name="cordova-plugin-whitelist" spec="^1.3.2" />
     <plugin name="ionic-plugin-keyboard" spec="^2.2.1" />
+    <plugin name="cordova-background-geolocation-lt" spec="^2.7.3">
+        <variable name="LICENSE" value="YOUR_LICENSE_HERE" />
+        <variable name="BACKGROUND_MODE_LOCATION" value="&lt;string&gt;location&lt;/string&gt;" />
+        <variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="Background location-tracking is required" />
+        <variable name="LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION" value="Background location-tracking is required" />
+        <variable name="MOTION_USAGE_DESCRIPTION" value="Using the accelerometer increases battery-efficiency by intelligently toggling location-tracking only when the device is detected to be moving" />
+    </plugin>
 </widget>
