@@ -1,4 +1,4 @@
-# :large_blue_diamond: [Ionic 2] Cordova Background Geolocation &mdash; Demo
+# :large_blue_diamond: [Ionic 3] Cordova Background Geolocation &mdash; Demo
 
 :warning: For the Ionic 1 version, use the branch [ionic1](https://github.com/transistorsoft/cordova-background-geolocation-SampleApp/tree/ionic1)
 
@@ -28,7 +28,7 @@ $ git checkout ionic1
 
 ----------------------------------------------------------------------------
 
-### Step 2:  Building and Running the Ionic 2 App
+### Step 2:  Building and Running the Ionic 3 App
 
 ```bash
 $ npm install
