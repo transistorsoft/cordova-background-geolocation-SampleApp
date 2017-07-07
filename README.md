@@ -38,6 +38,8 @@ $ ionic run android --device
 
 $ ionic platform add ios
 $ ionic run ios --emulator
+// opens a web console which receives all your locations
+$ npm run open  
 ```
 
 The quickest way to see the plugin in-action is to boot the **iOS** simulator and *simulate location*

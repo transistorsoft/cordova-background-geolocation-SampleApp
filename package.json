@@ -8,7 +8,8 @@
     "build": "ionic-app-scripts build",
     "ionic:build": "ionic-app-scripts build",
     "ionic:serve": "ionic-app-scripts serve",
-    "open": "node scripts/openConsole.js"
+    "open": "node scripts/openConsole.js",
+    "postinstall": "node scripts/generateConsoleConfig.js"
   },
   "dependencies": {
     "@angular/common": "4.1.2",
