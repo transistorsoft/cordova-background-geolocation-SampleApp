@@ -1,95 +1,95 @@
 {
-  "name": "cordova-background-geolocation-demo-ionic2",
-  "author": "Transistor Software",
-  "homepage": "http://www.transistorsoft.com/shop/products/cordova-background-geolocation",
-  "private": true,
-  "scripts": {
-    "clean": "ionic-app-scripts clean",
-    "build": "ionic-app-scripts build",
-    "ionic:build": "ionic-app-scripts build",
-    "ionic:serve": "ionic-app-scripts serve",
-    "open": "node scripts/openConsole.js",
-    "postinstall": "node scripts/generateConsoleConfig.js"
-  },
-  "dependencies": {
-    "@angular/common": "4.1.2",
-    "@angular/compiler": "4.1.2",
-    "@angular/compiler-cli": "4.1.2",
-    "@angular/core": "4.1.2",
-    "@angular/forms": "4.1.2",
-    "@angular/http": "4.1.2",
-    "@angular/platform-browser": "4.1.2",
-    "@angular/platform-browser-dynamic": "4.1.2",
-    "@ionic-native/core": "3.10.2",
-    "@ionic-native/device": "^3.12.1",
-    "@ionic-native/splash-screen": "3.10.2",
-    "@ionic-native/status-bar": "3.10.2",
-    "@ionic/storage": "2.0.1",
-    "cordova-android": "^6.2.3",
-    "cordova-background-geolocation-lt": "file:///Users/zeus/Documents/cordova-background-geolocation-lt",
-    "cordova-ios": "^4.4.0",
-    "cordova-plugin-background-fetch": "^4.0.2",
-    "cordova-plugin-cocoalumberjack": "0.0.4",
-    "cordova-plugin-console": "^1.0.7",
-    "cordova-plugin-device": "^1.1.6",
-    "cordova-plugin-dialogs": "^1.3.3",
-    "cordova-plugin-splashscreen": "^4.0.3",
-    "cordova-plugin-statusbar": "^2.2.3",
-    "cordova-plugin-whitelist": "^1.3.2",
-    "ionic-angular": "3.3.0",
-    "ionic-plugin-keyboard": "^2.2.1",
-    "ionicons": "3.0.0",
-    "rxjs": "5.1.1",
-    "sw-toolbox": "3.6.0",
-    "zone.js": "0.8.11"
-  },
-  "devDependencies": {
-    "@ionic/app-scripts": "1.3.7",
-    "@ionic/cli-plugin-cordova": "1.4.0",
-    "@ionic/cli-plugin-ionic-angular": "1.3.1",
-    "ip": "^1.1.5",
-    "lodash": "^4.17.4",
-    "md5": "^2.2.1",
-    "opn": "^5.1.0",
-    "typescript": "2.3.3"
-  },
-  "cordovaPlugins": [
-    "cordova-plugin-splashscreen",
-    "cordova-plugin-whitelist",
-    "ionic-plugin-keyboard",
-    "cordova-plugin-statusbar",
-    "cordova-plugin-console",
-    "cordova-plugin-device",
-    "cordova-background-geolocation-lt"
-  ],
-  "cordovaPlatforms": [
-    "ios",
-    {
-      "platform": "ios",
-      "version": "",
-      "locator": "ios"
-    }
-  ],
-  "description": "Background Geolocation Sample App (Ionic 2)",
-  "cordova": {
-    "plugins": {
-      "cordova-plugin-splashscreen": {},
-      "cordova-plugin-cocoalumberjack": {},
-      "cordova-plugin-device": {},
-      "cordova-plugin-statusbar": {},
-      "cordova-plugin-whitelist": {},
-      "ionic-plugin-keyboard": {},
-      "cordova-plugin-console": {},
-      "cordova-background-geolocation-lt": {
-        "BACKGROUND_MODE_LOCATION": "<string>location</string>",
-        "LOCATION_ALWAYS_USAGE_DESCRIPTION": "Background location-tracking is required",
-        "LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION": "Background location-tracking is required",
-        "MOTION_USAGE_DESCRIPTION": "Using the accelerometer increases battery-efficiency by intelligently toggling location-tracking only when the device is detected to be moving"
-      }
+    "name": "cordova-background-geolocation-demo-ionic2",
+    "author": "Transistor Software",
+    "homepage": "http://www.transistorsoft.com/shop/products/cordova-background-geolocation",
+    "private": true,
+    "scripts": {
+        "clean": "ionic-app-scripts clean",
+        "build": "ionic-app-scripts build",
+        "ionic:build": "ionic-app-scripts build",
+        "ionic:serve": "ionic-app-scripts serve",
+        "open": "node scripts/openConsole.js",
+        "postinstall": "node scripts/generateConsoleConfig.js"
     },
-    "platforms": [
-      "android",
-      "ios"
-    ]
-  }
+    "dependencies": {
+        "@angular/common": "4.1.2",
+        "@angular/compiler": "4.1.2",
+        "@angular/compiler-cli": "4.1.2",
+        "@angular/core": "4.1.2",
+        "@angular/forms": "4.1.2",
+        "@angular/http": "4.1.2",
+        "@angular/platform-browser": "4.1.2",
+        "@angular/platform-browser-dynamic": "4.1.2",
+        "@ionic-native/core": "3.10.2",
+        "@ionic-native/device": "^3.12.1",
+        "@ionic-native/splash-screen": "3.10.2",
+        "@ionic-native/status-bar": "3.10.2",
+        "@ionic/storage": "2.0.1",
+        "cordova-android": "^6.2.3",
+        "cordova-background-geolocation-lt": "file:///Users/zeus/Documents/cordova-background-geolocation-lt",
+        "cordova-ios": "^4.4.0",
+        "cordova-plugin-background-fetch": "^4.0.2",
+        "cordova-plugin-cocoalumberjack": "0.0.4",
+        "cordova-plugin-console": "^1.0.7",
+        "cordova-plugin-device": "^1.1.6",
+        "cordova-plugin-dialogs": "^1.3.3",
+        "cordova-plugin-splashscreen": "^4.0.3",
+        "cordova-plugin-statusbar": "^2.2.3",
+        "cordova-plugin-whitelist": "^1.3.2",
+        "ionic-angular": "3.3.0",
+        "ionic-plugin-keyboard": "^2.2.1",
+        "ionicons": "3.0.0",
+        "rxjs": "5.1.1",
+        "sw-toolbox": "3.6.0",
+        "zone.js": "0.8.11"
+    },
+    "devDependencies": {
+        "@ionic/app-scripts": "1.3.7",
+        "@ionic/cli-plugin-cordova": "1.4.0",
+        "@ionic/cli-plugin-ionic-angular": "1.3.1",
+        "ip": "^1.1.5",
+        "lodash": "^4.17.4",
+        "md5": "^2.2.1",
+        "opn": "^5.1.0",
+        "typescript": "2.3.3"
+    },
+    "cordovaPlugins": [
+        "cordova-plugin-splashscreen",
+        "cordova-plugin-whitelist",
+        "ionic-plugin-keyboard",
+        "cordova-plugin-statusbar",
+        "cordova-plugin-console",
+        "cordova-plugin-device",
+        "cordova-background-geolocation-lt"
+    ],
+    "cordovaPlatforms": [
+        "ios",
+        {
+            "platform": "ios",
+            "version": "",
+            "locator": "ios"
+        }
+    ],
+    "description": "Background Geolocation Sample App (Ionic 2)",
+    "cordova": {
+        "plugins": {
+            "cordova-plugin-splashscreen": {},
+            "cordova-plugin-cocoalumberjack": {},
+            "cordova-plugin-device": {},
+            "cordova-plugin-statusbar": {},
+            "cordova-plugin-whitelist": {},
+            "ionic-plugin-keyboard": {},
+            "cordova-plugin-console": {},
+            "cordova-background-geolocation-lt": {
+                "BACKGROUND_MODE_LOCATION": "<string>location</string>",
+                "LOCATION_ALWAYS_USAGE_DESCRIPTION": "Background location-tracking is required",
+                "LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION": "Background location-tracking is required",
+                "MOTION_USAGE_DESCRIPTION": "Using the accelerometer increases battery-efficiency by intelligently toggling location-tracking only when the device is detected to be moving"
+            }
+        },
+        "platforms": [
+            "android",
+            "ios"
+        ]
+    }
 }
