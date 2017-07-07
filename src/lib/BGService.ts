@@ -6,6 +6,8 @@ import {Injectable} from "@angular/core";
 
 import { Device } from '@ionic-native/device';
 
+import { defaultLocationUrl, companyToken } from '../consoleConfig';
+
 /**
 * The collection of available BackgroundGeolocation settings
 */
@@ -177,13 +179,14 @@ export class BGService {
 
       // Override a few defaults on first-boot so user can hear debug sounds.
       this.state.foregroundService = true;
-      this.state.autoSync   = false;
+      this.state.autoSync   = true;
       this.state.heartbeatInterval = 60;
       this.state.stopOnTerminate = false;
       this.state.startOnBoot = true;
+      this.state.url = defaultLocationUrl;
       this.state.debug      = true;
       this.state.logLevel   = this.plugin.LOG_LEVEL_VERBOSE;
-      this.state.params     = {device: this.deviceInfo};
+      this.state.params     = { device: this.deviceInfo, company_token: companyToken };
       callback(this.state);
     });
   }
@@ -264,9 +267,9 @@ export class BGService {
 
   getOptionsForSetting(name) {
     var setting = this.settings.map[name];
-    if (!setting) { 
+    if (!setting) {
       console.warn('Unknown option: ', name);
-      return []; 
+      return [];
     } else {
       return setting.values;
     }
