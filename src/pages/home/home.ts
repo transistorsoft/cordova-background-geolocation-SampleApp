@@ -286,10 +286,9 @@ export class HomePage {
     // Fetch current settings from BGService
     this.bgService.getState((config) => {
       // Configure      
-      config.schedule = [];
+      config.schedule = [];      
       config.notificationLargeIcon = 'drawable/notification_large_icon';
-      config.stopOnStationary = false;
-      
+
       bgGeo.configure(config, (state) => {
         this.zone.run(() => {
           this.state.enabled = config.enabled;
@@ -601,6 +600,7 @@ export class HomePage {
   onProviderChange(provider:any) {
     this.zone.run(() => { this.state.provider = provider; });
     console.log('[js] providerchange: ', provider);
+
   }
 
   onGeofencesChange(event:any) {
