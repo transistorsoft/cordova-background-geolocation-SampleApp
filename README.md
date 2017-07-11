@@ -33,6 +33,8 @@ $ git checkout ionic1
 ```bash
 $ npm install
 
+$ npm install -g cordova ionic # you should have ionic and cordova installed
+
 $ ionic platform add android
 $ ionic run android --device
 
