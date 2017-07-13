@@ -33,11 +33,15 @@ $ git checkout ionic1
 ```bash
 $ npm install
 
+$ npm install -g cordova ionic # you should have ionic and cordova installed
+
 $ ionic platform add android
 $ ionic run android --device
 
 $ ionic platform add ios
 $ ionic run ios --emulator
+// opens a web console which receives all your locations
+$ npm run open  
 ```
 
 The quickest way to see the plugin in-action is to boot the **iOS** simulator and *simulate location*
