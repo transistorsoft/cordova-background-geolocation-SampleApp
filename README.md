@@ -6,8 +6,8 @@
 
 Fully-featured, [Ionic](http://ionicframework.com/)-based sample-application for [Cordova Background Geolocation](http://shop.transistorsoft.com/pages/cordova-background-geolocation-premium)
 
-![Home](https://www.dropbox.com/s/byaayezphkwn36h/home-framed-350.png?dl=1)
-![Settings](https://www.dropbox.com/s/8lvnpp0gowitagq/settings-framed-350.png?dl=1)
+![Home](https://dl.dropboxusercontent.com/s/byaayezphkwn36h/home-framed-350.png?dl=1)
+![Settings](https://dl.dropboxusercontent.com/s/8lvnpp0gowitagq/settings-framed-350.png?dl=1)
 
 Edit settings and observe the behavour of **Background Geolocation** changing in **real time**.
 
@@ -47,6 +47,18 @@ $ npm run open
 The quickest way to see the plugin in-action is to boot the **iOS** simulator and *simulate location*
 
 ![](https://dl.dropboxusercontent.com/u/2319755/cordova-background-geolocaiton/simulate-location.png)
+
+## :large_blue_diamond: Testing Server
+
+By default, the sample app posts locations to Transistor Software's test server (sandboxed to your MAC address).  You can view these locations by running:
+
+```bash
+$ npm run open
+```
+
+This will launch a browser window to view the test server:
+
+![](https://www.dropbox.com/s/1a4far51w70rjvj/Screenshot%202017-08-16%2011.34.43.png?dl=1)
 
 ## :large_blue_diamond: Debug Mode
 
