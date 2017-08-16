@@ -58,7 +58,7 @@ $ npm run open
 
 This will launch a browser window to view the test server:
 
-![](https://www.dropbox.com/s/1a4far51w70rjvj/Screenshot%202017-08-16%2011.34.43.png?dl=1)
+![](https://dl.dropboxusercontent.com/s/1a4far51w70rjvj/Screenshot%202017-08-16%2011.34.43.png?dl=1)
 
 ## :large_blue_diamond: Debug Mode
 
