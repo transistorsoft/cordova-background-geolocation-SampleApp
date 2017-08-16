@@ -273,20 +273,32 @@ export class HomePage {
     var bgGeo = this.bgService.getPlugin();
 
     // Listen to events
-    bgGeo.on('location', this.onLocation.bind(this));
-    bgGeo.on('motionchange', this.onMotionChange.bind(this));
-    bgGeo.on('heartbeat', this.onHeartbeat.bind(this));
-    bgGeo.on('geofence', this.onGeofence.bind(this));
-    bgGeo.on('activitychange', this.onActivityChange.bind(this));
-    bgGeo.on('providerchange', this.onProviderChange.bind(this));
-    bgGeo.on('geofenceschange', this.onGeofencesChange.bind(this));
-    bgGeo.on('schedule', this.onSchedule.bind(this));
-    bgGeo.on('http', this.onHttpSuccess.bind(this), this.onHttpFailure.bind(this));
+    this.onLocation = this.onLocation.bind(this);
+    this.onLocationError = this.onLocationError.bind(this);
+    this.onMotionChange = this.onMotionChange.bind(this);
+    this.onHeartbeat = this.onHeartbeat.bind(this);
+    this.onGeofence = this.onGeofence.bind(this);
+    this.onActivityChange = this.onActivityChange.bind(this);
+    this.onProviderChange = this.onProviderChange.bind(this);
+    this.onGeofencesChange = this.onGeofencesChange.bind(this);
+    this.onSchedule = this.onSchedule.bind(this);
+    this.onHttpSuccess = this.onHttpSuccess.bind(this);
+    this.onHttpFailure = this.onHttpFailure.bind(this);
 
+    bgGeo.on('location', this.onLocation, this.onLocationError);
+    bgGeo.on('motionchange', this.onMotionChange);
+    bgGeo.on('heartbeat', this.onHeartbeat);
+    bgGeo.on('geofence', this.onGeofence);
+    bgGeo.on('activitychange', this.onActivityChange);
+    bgGeo.on('providerchange', this.onProviderChange);
+    bgGeo.on('geofenceschange', this.onGeofencesChange);
+    bgGeo.on('schedule', this.onSchedule);
+    bgGeo.on('http', this.onHttpSuccess, this.onHttpFailure);
+    
     // Fetch current settings from BGService
     this.bgService.getState((config) => {
       // Configure      
-      config.schedule = [];      
+      config.schedule = [];
       config.notificationLargeIcon = 'drawable/notification_large_icon';
 
       bgGeo.configure(config, (state) => {
@@ -340,7 +352,7 @@ export class HomePage {
           this.bgService.playSound('MESSAGE_SENT');
           bgGeo.finish(taskId);
           onComplete.call(this, MESSAGE.sync_success, count);
-        }, function(error) {
+        }, (error) => {
           onComplete.call(this, MESSAGE.sync_failure, error);
         });
       });
@@ -384,7 +396,9 @@ export class HomePage {
       return;
     }
     var bgGeo = this.bgService.getPlugin();
-    bgGeo.emailLog(email);
+    bgGeo.emailLog(email, () => {
+      bgGeo.destroyLog();
+    });
   }
 
   onClickResetOdometer() {
@@ -428,7 +442,7 @@ export class HomePage {
           console.warn('[js] START SUCCESS');
         }, function(error) {
           console.error('[js] START FAILURE: ', error);
-        });
+        });        
       } else {
         bgGeo.startGeofences();
       }
@@ -443,12 +457,13 @@ export class HomePage {
   onClickGetCurrentPosition() {
     this.bgService.playSound('BUTTON_CLICK');
     let bgGeo = this.bgService.getPlugin();
+
     bgGeo.getCurrentPosition((location, taskId) => {
+      console.log('- getCurrentPosition sample: ', location.sample, location.uuid);
       console.log('[js] getCurrentPosition: ', location);
       bgGeo.finish(taskId);
     }, function(error) {
       console.warn('[js] getCurrentPosition FAILURE: ', error);
-      alert('Location error: ' + error);
     }, {
       maximumAge: 1000,
       desiredAccuracy: 10
@@ -569,6 +584,10 @@ export class HomePage {
     bgGeo.finish(taskId);
   }
 
+  onLocationError(error:any) {
+    console.warn('[js] location error: ', error);
+  }
+  
   onMotionChange(isMoving:boolean, location:any, taskId:any) {
     console.log('[js] motionchange: ', isMoving, location);
     let bgGeo = this.bgService.getPlugin();
@@ -589,12 +608,12 @@ export class HomePage {
     console.log('[js] heartbeat', event);
   }
 
-  onActivityChange(activityName:string) {
+  onActivityChange(event:any) {
     this.zone.run(() => {
-      this.state.activityName = activityName;
-      this.state.activityIcon = this.iconMap['activity_' + activityName];
+      this.state.activityName = event.activity;
+      this.state.activityIcon = this.iconMap['activity_' + event.activity];
     });
-    console.log('[js] activitychange: ', activityName);
+    console.log('[js] activitychange: ', event.activity, event.confidence);
   }
 
   onProviderChange(provider:any) {
@@ -638,6 +657,17 @@ export class HomePage {
   onGeofence(event:any) {
     console.log('[js] geofence: ', event);
 
+    // DEBUG:
+    // Stop tracking on ENTER
+    // Start tracking on EXIT
+    /*
+    if (event.action === 'EXIT') {
+      this.bgService.getPlugin().start();
+    } else if (event.action === 'ENTER') {
+      this.bgService.getPlugin().startGeofences();
+    }
+    */
+
     var circle = this.geofenceMarkers.find((marker) => {
       return marker.identifier === event.identifier;
     });
@@ -662,7 +692,7 @@ export class HomePage {
         events: []
       };
       this.geofenceHits[event.identifier] = geofence;
-      this.geofenceHitMarkers.push(geofence.circle);
+      this.geofenceHitMarkers.push(geofence.circle);      
     }
 
     var color;

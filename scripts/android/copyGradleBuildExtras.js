@@ -1,3 +1,7 @@
+console.log("****************************************************");
+console.log("* SampleApp scripts/android/copyGradleBuildExtras.js");
+console.log("****************************************************");
+
 var fs = require ('fs');
 var path = require('path');
 

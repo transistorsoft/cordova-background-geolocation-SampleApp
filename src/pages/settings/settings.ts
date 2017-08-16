@@ -16,6 +16,7 @@ const TRACKING_MODE_OPTIONS = [
   'geofence'
 ];
 const LOG_LEVEL_OPTIONS = ['OFF', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'VERBOSE'];
+const NOTIFICATION_PRIORITY_OPTIONS = ['DEFAULT', 'HIGH', 'LOW', 'MAX', 'MIN'];
 
 @Component({
   selector: 'page-settings',
@@ -39,6 +40,7 @@ export class SettingsPage {
   heartbeatIntervalOptions: any;
   logLevelOptions: any;
   logMaxDaysOptions: any;
+  notificationPriorityOptions: any;
   settings: any;
   //geofenceOptions: any;
   //mapOptions: any;
@@ -66,7 +68,8 @@ export class SettingsPage {
     // We do a BackgroundGeolocation#getState each time Settings screen is shown.
     this.trackingModeOptions = TRACKING_MODE_OPTIONS;
     this.logLevelOptions = LOG_LEVEL_OPTIONS;
-    
+    this.notificationPriorityOptions = NOTIFICATION_PRIORITY_OPTIONS;
+
     this.isSyncing = false;
     this.isAddingGeofences = false;
     this.isResettingOdometer = false;
@@ -80,6 +83,7 @@ export class SettingsPage {
       });
       this.state.trackingMode = (state.trackingMode === 1 || state.trackingMode === 'location') ? 'location' : 'geofence';
       this.state.logLevel = this.decodeLogLevel(state.logLevel);
+      this.state.notificationPriority = this.decodeNotficationPriority(state.notificationPriority);
       if (this.state.triggerActivities) {
         this.state.triggerActivities = this.decodeTriggerActivities(this.state.triggerActivities);
       }
@@ -119,6 +123,9 @@ export class SettingsPage {
       switch (name) {
         case 'logLevel':
           value = this.encodeLogLevel(value);
+          break;
+        case 'notificationPriority':
+          value = this.encodeNotficationPriority(value);
           break;
         case 'trackingMode':
           this.setTrackingMode(value);
@@ -284,6 +291,50 @@ export class SettingsPage {
     }).present();
   }
 
+  decodeNotficationPriority(value) {
+    switch(value) {
+      case 0:
+        value = 'DEFAULT';
+        break;
+      case 1:
+        value = 'HIGH';
+        break;
+      case -1:
+        value = 'LOW';
+        break;
+      case 2:
+        value = 'MAX';
+        break;
+      case -2:
+        value = 'MIN';
+        break;
+      default:
+        value = 0;
+    }
+    return value;
+  }
+
+  encodeNotficationPriority(value) {
+    switch(value) {
+      case 'DEFAULT':
+        value = 0;
+        break;
+      case 'HIGH':
+        value = 1;
+        break;
+      case 'LOW':
+        value = -1;
+        break;
+      case 'MAX':
+        value = 2;
+        break;
+      case 'MIN':
+        value = -2;
+        break;
+    }
+    return value;
+  }
+
   decodeLogLevel(value) {
     switch(value) {
       case 0:
@@ -325,6 +376,8 @@ export class SettingsPage {
         value = 4;
         break;
       case 'VERBOSE':
+        value = 5;
+      default:
         value = 5;
     }
     return value;
