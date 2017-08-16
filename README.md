@@ -1,7 +1,5 @@
 # :large_blue_diamond: [Ionic 3] Cordova Background Geolocation &mdash; Demo
 
-:warning: For the Ionic 1 version, use the branch [ionic1](https://github.com/transistorsoft/cordova-background-geolocation-SampleApp/tree/ionic1)
-
 [![Google Play](https://dl.dropboxusercontent.com/u/2319755/cordova-background-geolocaiton/google-play-icon.png)](https://play.google.com/store/apps/details?id=com.transistorsoft.backgroundgeolocation.ionic2)
 
 Fully-featured, [Ionic](http://ionicframework.com/)-based sample-application for [Cordova Background Geolocation](http://shop.transistorsoft.com/pages/cordova-background-geolocation-premium)
@@ -17,13 +15,6 @@ Edit settings and observe the behavour of **Background Geolocation** changing in
 
 ```bash
 $ git clone https://github.com/transistorsoft/cordova-background-geolocation-SampleApp.git
-```
-
-----------------------------------------------------------------------------
-:warning: For the **Ionic 1** version, use the tagged branch [ionic1](https://github.com/transistorsoft/cordova-background-geolocation-SampleApp/tree/ionic1) and [follow further setup steps](https://github.com/transistorsoft/cordova-background-geolocation-SampleApp/tree/ionic1#step-2--required-plugins) on the `README` there.
-
-```bash
-$ git checkout ionic1
 ```
 
 ----------------------------------------------------------------------------
