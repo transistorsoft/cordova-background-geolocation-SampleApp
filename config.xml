@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.transistorsoft.backgroundgeolocation.ionic2" version="2.7.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.transistorsoft.backgroundgeolocation.ionic2" version="2.8.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>BG Geo 2</name>
     <description>Cordova Background Geolocation Demo App (Ionic 2)</description>
     <author email="info@transistorsoft.com" href="http://www.transistorsoft.com/shop/products/cordova-background-geolocation">Transistor Software</author>
@@ -15,7 +15,7 @@
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
     <platform name="android">
-        <hook src="scripts/android/copyGradleBuildExtras.js" type="before_build" />
+        <hook src="scripts/android/copyGradleBuildExtras.js" type="before_prepare" />
         <allow-intent href="market:*" />
         <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
         <icon density="mdpi" src="resources/android/icon/drawable-mdpi-icon.png" />
@@ -75,17 +75,17 @@
     <icon src="resources/ios/icon/icon-small@3x.png" />
     <engine name="android" spec="^6.2.3" />
     <engine name="ios" spec="^4.4.0" />
-    <plugin name="cordova-plugin-console" spec="^1.0.7" />
-    <plugin name="cordova-plugin-splashscreen" spec="^4.0.3" />
-    <plugin name="cordova-plugin-statusbar" spec="^2.2.3" />
-    <plugin name="cordova-plugin-whitelist" spec="^1.3.2" />
-    <plugin name="ionic-plugin-keyboard" spec="^2.2.1" />
-    <plugin name="cordova-plugin-device" spec="^1.1.6" />
-    <plugin name="cordova-background-geolocation-lt" spec="^2.7.4">
+    <plugin name="cordova-background-geolocation-lt" spec="^2.8.0">
         <variable name="LICENSE" value="YOUR_LICENSE_KEY" />
         <variable name="BACKGROUND_MODE_LOCATION" value="&lt;string&gt;location&lt;/string&gt;" />
         <variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="Background location-tracking is required" />
         <variable name="LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION" value="Background location-tracking is required" />
         <variable name="MOTION_USAGE_DESCRIPTION" value="Using the accelerometer increases battery-efficiency by intelligently toggling location-tracking only when the device is detected to be moving" />
     </plugin>
+    <plugin name="cordova-plugin-console" spec="^1.0.7" />
+    <plugin name="cordova-plugin-device" spec="^1.1.6" />
+    <plugin name="cordova-plugin-splashscreen" spec="^4.0.3" />
+    <plugin name="cordova-plugin-statusbar" spec="^2.2.3" />
+    <plugin name="cordova-plugin-whitelist" spec="^1.3.2" />
+    <plugin name="ionic-plugin-keyboard" spec="^2.2.1" />
 </widget>

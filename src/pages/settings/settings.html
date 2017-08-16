@@ -87,6 +87,15 @@
 	    	</ion-select>
 	  	</ion-item>
 
+	  	<ion-item>
+	  		<ion-label color="primary">notificationPriority</ion-label>
+	 		<ion-select [(ngModel)]="state.notificationPriority" (ionChange)="onChangeValue('notificationPriority')" multiple="false">
+    			<ion-option *ngFor="let option of notificationPriorityOptions" value="{{option}}" selected="{{option == state.notificationPriority}}">
+    				{{option}}
+    			</ion-option>
+    		</ion-select>
+    	</ion-item>
+
 	  	<ion-list-header mode="ios"><ion-icon name="bug" color="primary"></ion-icon>&nbsp;Logging &amp; Debug</ion-list-header>
 	  	<ion-card mode="ios">
 	  		<ion-row>
@@ -110,6 +119,7 @@
     			</ion-option>
     		</ion-select>
     	</ion-item>
+
 	  	<ion-item>
 	  		<ion-label color="primary">Sounds &amp; Notification</ion-label>
 	  		<ion-toggle [(ngModel)]="state.debug" (ionChange)="onChangeValue('debug')" color="secondary"></ion-toggle>
