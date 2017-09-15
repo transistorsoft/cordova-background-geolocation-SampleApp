@@ -30,7 +30,6 @@
         "cordova-ios": "^4.4.0",
         "cordova-plugin-background-fetch": "^5.0.0",
         "cordova-plugin-cocoalumberjack": "0.0.4",
-        "cordova-plugin-console": "^1.0.7",
         "cordova-plugin-device": "^1.1.6",
         "cordova-plugin-splashscreen": "^4.0.3",
         "cordova-plugin-statusbar": "^2.2.3",
@@ -77,7 +76,6 @@
             "cordova-plugin-statusbar": {},
             "cordova-plugin-whitelist": {},
             "ionic-plugin-keyboard": {},
-            "cordova-plugin-console": {},
             "cordova-plugin-device": {},
             "cordova-background-geolocation-lt": {
                 "LICENSE": "YOUR_LICENSE_KEY",
