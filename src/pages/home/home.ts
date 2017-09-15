@@ -297,8 +297,8 @@ export class HomePage {
     
     // Fetch current settings from BGService
     this.bgService.getState((config) => {
-      // Configure      
       config.schedule = [];
+
       config.notificationLargeIcon = 'drawable/notification_large_icon';
 
       bgGeo.configure(config, (state) => {
