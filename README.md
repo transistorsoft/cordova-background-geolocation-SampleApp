@@ -26,10 +26,10 @@ $ npm install
 
 $ npm install -g cordova ionic # you should have ionic and cordova installed
 
-$ ionic cordova platform add android
+$ ionic cordova prepare android
 $ ionic cordova run android --device
 
-$ ionic cordova platform add ios
+$ ionic cordova prepare ios
 $ ionic cordova run ios --emulator
 // opens a web console which receives all your locations
 $ npm run open  
