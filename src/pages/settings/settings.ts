@@ -161,8 +161,9 @@ export class SettingsPage {
     var bgGeo = this.bgService.getPlugin();
     this.isResettingOdometer = true;
 
+    let zone = this.zone;
     function onComplete() {
-      this.zone.run(() => { this.isResettingOdometer = false;});
+      zone.run(() => { this.isResettingOdometer = false;});
     }
     bgGeo.resetOdometer((location) => {
       onComplete.call(this);
@@ -182,8 +183,9 @@ export class SettingsPage {
 
     var bgGeo = this.bgService.getPlugin();
 
+    let zone = this.zone;
     function onComplete() {
-      this.zone.run(() => { this.isSyncing = false; });
+      zone.run(() => { this.isSyncing = false; });
     };
 
     bgGeo.sync((rs, taskId) => {
@@ -213,8 +215,9 @@ export class SettingsPage {
 
     this.isEmailingLog = true;
 
+    let zone = this.zone;
     function onComplete() {
-      this.zone.run(() => { this.isEmailingLog = false; });
+      zone.run(() => { this.isEmailingLog = false; });
     }
 
     this.bgService.getPlugin().emailLog(this.email, () => {
@@ -269,8 +272,9 @@ export class SettingsPage {
       });
     }
 
+    let zone = this.zone;
     function onComplete() {
-      this.zone.run(() => { this.isAddingGeofences = false; })
+      zone.run(() => { this.isAddingGeofences = false; })
     };
 
     bgGeo.addGeofences(geofences, () => {

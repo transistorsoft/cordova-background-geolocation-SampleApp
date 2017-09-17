@@ -6,7 +6,6 @@ import {
 } from '@angular/core';
 
 import {
-  NavController,
   Platform,
   ModalController,
   LoadingController
@@ -114,7 +113,6 @@ export class HomePage {
   isMapMenuOpen: boolean;
 
   constructor(
-    private navCtrl: NavController,
     private platform: Platform,
     private bgService:BGService,
     private settingsService:SettingsService,
@@ -329,7 +327,6 @@ export class HomePage {
     }
   }
   onClickSettings() {
-    //this.navCtrl.push(SettingsPage);
     this.bgService.playSound('OPEN');
     let modal = this.modalController.create(SettingsPage, {});
     modal.present();
@@ -362,9 +359,12 @@ export class HomePage {
   onClickDestroyLocations() {
     this.bgService.playSound('BUTTON_CLICK');
 
+    let zone = this.zone;
+    let settingsService = this.settingsService;
+
     function onComplete(message, result) {
-      this.settingsService.toast(message, result);
-      this.zone.run(() => { this.isDestroyingLocations = false; })
+      settingsService.toast(message, result);
+      zone.run(() => { this.isDestroyingLocations = false; })
     };
 
     let bgGeo = this.bgService.getPlugin();
@@ -408,9 +408,12 @@ export class HomePage {
     this.isResettingOdometer = true;
     this.resetMarkers();
 
+    let zone = this.zone;
+    let settingsService = this.settingsService;
+
     function onComplete(message, result?) {
-      this.settingsService.toast(message, result);
-      this.zone.run(() => { this.isResettingOdometer = false; })
+      settingsService.toast(message, result);
+      zone.run(() => { this.isResettingOdometer = false; })
     };
 
     bgGeo.resetOdometer((location) => {
@@ -474,8 +477,9 @@ export class HomePage {
     if (!this.state.enabled) {
       return;
     }
+    let zone = this.zone;
     function onComplete() {
-      this.zone.run(() => { this.isChangingPace = false; })
+      zone.run(() => { this.isChangingPace = false; })
     }
     this.bgService.playSound('BUTTON_CLICK');
     let bgGeo = this.bgService.getPlugin();

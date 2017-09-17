@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import {
-  NavController,
-  ViewController,
-  NavParams
+  ViewController
 } from 'ionic-angular';
 
 import {BGService} from '../../lib/BGService';
@@ -18,7 +16,7 @@ import {BGService} from '../../lib/BGService';
 })
 export class AboutPage {
 
-  constructor(private navCtrl: NavController, private bgService: BGService, private viewCtrl: ViewController, private navParams: NavParams) {}
+  constructor(private bgService: BGService, private viewCtrl: ViewController) {}
 
   ionViewDidLoad() {
     this.bgService.playSound("FLOURISH");
