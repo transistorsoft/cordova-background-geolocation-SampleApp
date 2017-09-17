@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { 
-  NavController,
   ViewController,
   AlertController,
   NavParams
@@ -30,7 +29,6 @@ export class GeofencePage {
   public radiusOptions: any;
 
   constructor(
-    private navCtrl: NavController,
     private alertCtrl: AlertController,
     private navParams: NavParams,
     private viewCtrl: ViewController,
@@ -38,8 +36,8 @@ export class GeofencePage {
 
     this.identifier = '';
     this.radius = '200';
-    this.latitude = navParams.get('latitude');
-    this.longitude = navParams.get('longitude');
+    this.latitude = this.navParams.get('latitude');
+    this.longitude = this.navParams.get('longitude');
 
     this.notifyOnEntry = true;
     this.notifyOnExit = false;

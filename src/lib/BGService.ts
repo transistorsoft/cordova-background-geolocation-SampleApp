@@ -115,7 +115,7 @@ export class BGService {
     // We fetch put Device.uuid into localStorage to determine if this is first-boot of app.
     this.uuid = this.storage.getItem('device:uuid');
 
-    platform.ready().then(this.init.bind(this));
+    this.platform.ready().then(this.init.bind(this));
   }
 
   private init() {

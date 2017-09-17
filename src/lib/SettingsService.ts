@@ -1,8 +1,7 @@
 import {
   Events,
   AlertController,
-  ToastController,
-  LoadingController
+  ToastController
 } from 'ionic-angular';
 import {Injectable} from "@angular/core";
 
@@ -35,8 +34,7 @@ export class SettingsService {
   constructor(
     private events:Events,
     private alertCtrl: AlertController,
-    private toastCtrl: ToastController,
-    private loadingCtrl: LoadingController
+    private toastCtrl: ToastController
   ) {
     this.storage = (<any>window).localStorage;
 
