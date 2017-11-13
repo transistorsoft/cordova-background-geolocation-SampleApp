@@ -17,6 +17,7 @@ const SETTINGS = {
     {name: 'desiredAccuracy', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [-1, 0, 10, 100, 1000], defaultValue: 0 },
     {name: 'distanceFilter', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 10, 50, 100, 1000], defaultValue: 20 },
     {name: 'disableElasticity', group: 'geolocation', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'false'},
+    {name: 'elasticityMultiplier', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 1, 2, 3, 5, 10], defaultValue: 1},
     {name: 'geofenceProximityRadius', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [1000, 2500, 5000, 10000, 100000], defaultValue: 1000},
     {name: 'locationTimeout', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 5, 10, 30, 60], defaultValue: 60},
     // HTTP

@@ -19,6 +19,9 @@ import {LongPress} from '../../lib/LongPress';
 
 declare var google;
 
+const CONTAINER_BORDER_POWER_SAVE_OFF = 'none';
+const CONTAINER_BORDER_POWER_SAVE_ON = '7px solid red';
+
 // Colors
 const COLORS = {
   gold: '#fedd1e',
@@ -120,7 +123,7 @@ export class HomePage {
     private loadingCtrl: LoadingController,
     private modalController: ModalController) {
 
-    this.bgService.on('change', this.onBackgroundGeolocationSettingsChanged.bind(this));    
+    this.bgService.on('change', this.onBackgroundGeolocationSettingsChanged.bind(this));
     this.bgService.on('start', this.onBackgroundGeolocationStarted.bind(this));
 
     this.settingsService.on('change', this.onSettingsChanged.bind(this));
@@ -149,7 +152,8 @@ export class HomePage {
         network: true,
         enabled: true,
         status: -1
-      }
+      },
+      containerBorder: 'none'
     }
   }
 
@@ -282,6 +286,7 @@ export class HomePage {
     this.onSchedule = this.onSchedule.bind(this);
     this.onHttpSuccess = this.onHttpSuccess.bind(this);
     this.onHttpFailure = this.onHttpFailure.bind(this);
+    this.onPowerSaveChange = this.onPowerSaveChange.bind(this);
 
     bgGeo.on('location', this.onLocation, this.onLocationError);
     bgGeo.on('motionchange', this.onMotionChange);
@@ -292,12 +297,21 @@ export class HomePage {
     bgGeo.on('geofenceschange', this.onGeofencesChange);
     bgGeo.on('schedule', this.onSchedule);
     bgGeo.on('http', this.onHttpSuccess, this.onHttpFailure);
-    
+    bgGeo.on('powersavechange', this.onPowerSaveChange);
+
+
+    bgGeo.isPowerSaveMode((isPowerSaveMode) => {
+      this.state.containerBorder = (isPowerSaveMode) ? CONTAINER_BORDER_POWER_SAVE_ON : CONTAINER_BORDER_POWER_SAVE_OFF;
+    });
+
     // Fetch current settings from BGService
     this.bgService.getState((config) => {
-      config.schedule = [];
-
       config.notificationLargeIcon = 'drawable/notification_large_icon';
+      config.schedule = [];
+      ////
+      // Override config options here
+      // config.url = 'http://192.168.11.200:9000/locations';
+      //
 
       bgGeo.configure(config, (state) => {
         this.zone.run(() => {
@@ -390,7 +404,7 @@ export class HomePage {
   onClickEmailLogs() {
     this.bgService.playSound('BUTTON_CLICK');
     let storage = (<any>window).localStorage;
-    var email = storage.getItem('settings:email');
+    let email = storage.getItem('settings:email');
     if (!email) {
       this.settingsService.toast('Please enter an email address in the Settings screen');
       return;
@@ -445,7 +459,7 @@ export class HomePage {
           console.warn('[js] START SUCCESS');
         }, function(error) {
           console.error('[js] START FAILURE: ', error);
-        });        
+        });
       } else {
         bgGeo.startGeofences();
       }
@@ -591,7 +605,7 @@ export class HomePage {
   onLocationError(error:any) {
     console.warn('[js] location error: ', error);
   }
-  
+
   onMotionChange(isMoving:boolean, location:any, taskId:any) {
     console.log('[js] motionchange: ', isMoving, location);
     let bgGeo = this.bgService.getPlugin();
@@ -621,9 +635,18 @@ export class HomePage {
   }
 
   onProviderChange(provider:any) {
-    this.zone.run(() => { this.state.provider = provider; });
     console.log('[js] providerchange: ', provider);
+    let bgGeo = this.bgService.getPlugin();
 
+    switch(provider.status) {
+      case bgGeo.AUTHORIZATION_STATUS_DENIED:
+        break;
+      case bgGeo.AUTHORIZATION_STATUS_ALWAYS:
+        break;
+      case bgGeo.AUTHORIZATION_STATUS_WHEN_IN_USE:
+        break;
+    }
+    this.zone.run(() => { this.state.provider = provider; });
   }
 
   onGeofencesChange(event:any) {
@@ -696,7 +719,7 @@ export class HomePage {
         events: []
       };
       this.geofenceHits[event.identifier] = geofence;
-      this.geofenceHitMarkers.push(geofence.circle);      
+      this.geofenceHitMarkers.push(geofence.circle);
     }
 
     var color;
@@ -783,6 +806,13 @@ export class HomePage {
     console.log('[js] http FAILURE: ', response);
   }
 
+  onPowerSaveChange(isPowerSaveMode) {
+    console.log('[js powersavechange: ', isPowerSaveMode);
+    this.settingsService.toast('Power-save mode: ' + ((isPowerSaveMode) ? 'ON' : 'OFF'), null, 5000);
+    this.zone.run(() => {
+      this.state.containerBorder = (isPowerSaveMode) ? CONTAINER_BORDER_POWER_SAVE_ON : CONTAINER_BORDER_POWER_SAVE_OFF;
+    });
+  }
   setCenter(location) {
     this.updateCurrentLocationMarker(location);
     setTimeout(function() {
@@ -801,7 +831,7 @@ export class HomePage {
     }
     if (this.lastLocation) {
       this.locationMarkers.push(this.buildLocationMarker(location));
-    }    
+    }
     // Add breadcrumb to current Polyline path.
     this.polyline.getPath().push(latlng);
     if (!this.settingsService.state.mapHidePolyline) {

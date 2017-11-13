@@ -12,7 +12,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content>
+<ion-content [ngStyle]="{'border-left':state.containerBorder, 'border-right':state.containerBorder}">
 	<ion-fab top left edge #fab>
    		<button ion-fab color="gold" (click)="onClickMainMenu()">
         <ion-icon color="dark" name="arrow-dropdown-circle"></ion-icon>
@@ -53,7 +53,6 @@
     </button>
   </ion-fab-list>
 </ion-fab>
-
 	<div #map id="map"></div>
 </ion-content>
 
