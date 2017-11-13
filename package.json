@@ -25,10 +25,13 @@
         "@ionic-native/splash-screen": "3.12.1",
         "@ionic-native/status-bar": "3.12.1",
         "@ionic/storage": "2.0.1",
-        "cordova-android": "^6.2.3",
-        "cordova-background-geolocation-lt": "^2.8.4",
-        "cordova-ios": "^4.4.0",
-        "cordova-plugin-background-fetch": "^5.0.0",
+        "ajv": "^5.2.5",
+        "cordova": "^7.0.1",
+        "cordova-android": "^6.3.0",
+        "cordova-background-geolocation-lt": "^2.9.1",
+        "cordova-fabric-plugin": "^1.1.9",
+        "cordova-ios": "^4.5.3",
+        "cordova-plugin-background-fetch": "^5.1.1",
         "cordova-plugin-cocoalumberjack": "0.0.4",
         "cordova-plugin-device": "^1.1.6",
         "cordova-plugin-splashscreen": "^4.0.3",
@@ -38,15 +41,14 @@
         "ionic-plugin-keyboard": "^2.2.1",
         "ionicons": "3.0.0",
         "iso": "^5.2.0",
+        "please": "0.0.3",
         "rxjs": "5.4.0",
         "sw-toolbox": "3.6.0",
         "zone.js": "0.8.12"
     },
     "devDependencies": {
         "@ionic/app-scripts": "2.1.4",
-        "@ionic/cli-plugin-cordova": "1.6.2",
-        "@ionic/cli-plugin-ionic-angular": "1.4.1",
-        "ionic": "3.10.3",
+        "ionic": "3.18.0",
         "ip": "^1.1.5",
         "lodash": "^4.17.4",
         "md5": "^2.2.1",
@@ -80,10 +82,13 @@
             "cordova-plugin-device": {},
             "cordova-background-geolocation-lt": {
                 "LICENSE": "YOUR_LICENSE_KEY",
+                "GOOGLE_API_VERSION": "11.6.0",
+                "APPCOMPAT_VERSION": "26.1.0",
                 "BACKGROUND_MODE_LOCATION": "<string>location</string>",
+                "LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION": "[CHANGEME] Always use is required for constant background location-tracking",
                 "LOCATION_ALWAYS_USAGE_DESCRIPTION": "Background location-tracking is required",
-                "LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION": "Background location-tracking is required",
-                "MOTION_USAGE_DESCRIPTION": "Using the accelerometer increases battery-efficiency by intelligently toggling location-tracking only when the device is detected to be moving"
+                "LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION": "[CHANGEME] Background location-tracking is required",
+                "MOTION_USAGE_DESCRIPTION": "[CHANGEME] Using the accelerometer increases battery-efficiency by intelligently toggling location-tracking only when the device is detected to be moving"
             }
         },
         "platforms": [

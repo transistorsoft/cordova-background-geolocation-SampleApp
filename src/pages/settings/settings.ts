@@ -90,7 +90,7 @@ export class SettingsPage {
       // Hide the Loading...
       this.isLoaded = true;
       this.loader.dismiss();
-    });
+    });    
   }
 
   ionViewDidLoad() {
