@@ -83,7 +83,7 @@ export class HomePage {
         return;
       }
       // Prompt user to enter a unique identifier for tracker.transistorsoft.com
-      this.dialogs.prompt('Please enter a unique identifier (eg: Github username) so the plugin can post loctions to http://tracker.transistorsfot.com/{identifier}', 'Tracking Server Username').then((response) => {
+      this.dialogs.prompt('Please enter a unique identifier (eg: Github username) so the plugin can post loctions to http://tracker.transistorsoft.com/{identifier}', 'Tracking Server Username').then((response) => {
         if (response.buttonIndex === 1 && response.input1.length > 0) {
           username = response.input1;
           resolve(username);
