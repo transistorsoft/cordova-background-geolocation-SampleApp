@@ -26,26 +26,25 @@ body {
     -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
     -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
     background-color:#E4E4E4;
-    
+
     background-attachment:fixed;
     font-family:'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
     font-size:12px;
     height:100%;
     margin:0px;
-    padding:0px;    
+    padding:10px;
     width:100%;
 }
 
 /* Portrait layout (default) */
-.app {    
-    text-transform:uppercase;
+.app {
     position:absolute;             /* position in the center of the screen */
     left:50%;
     top:50%;
     height:50px;                   /* text area height */
     width:325px;                   /* text area width */
     text-align:center;
-    padding:180px 0px 0px 0px;     /* image height is 200px (bottom 20px are overlapped with text) */
+    padding:200px 0px 0px 0px;     /* image height is 200px (bottom 20px are overlapped with text) */
     margin:-115px 0px 0px -162px;  /* offset vertical: half of image height and text area height */
                                    /* offset horizontal: half of text area width */
 }
@@ -67,16 +66,22 @@ h1 {
     overflow:visible;
     padding:0px;
     text-align:center;
+    text-transform:uppercase;
 }
 
 button {
-    font-size: 24px;
+    font-size: 16px;
+    padding: 5px;
 }
 div.row {
     margin-bottom: 10px;
 }
-#btn-changePace {
+
+#btn-changePace, #btn-enable {
     color: #fff;
+}
+#btn-enable {
+    width: 75px;
 }
 .event {
     border-radius:4px;
@@ -99,25 +104,24 @@ div.row {
     border-color: black;
 }
 
-
 @keyframes fade {
     from { opacity: 1.0; }
     50% { opacity: 0.4; }
     to { opacity: 1.0; }
 }
- 
+
 @-webkit-keyframes fade {
     from { opacity: 1.0; }
     50% { opacity: 0.4; }
     to { opacity: 1.0; }
 }
- 
+
 .blink {
     animation:fade 3000ms infinite;
     -webkit-animation:fade 3000ms infinite;
 }
 
-@-webkit-keyframes demo {
+@-webkit-keyframes highlight {
     0% {
         background-color: Yellow;
         opacity:1;
@@ -143,5 +147,5 @@ div.row {
     -webkit-animation-duration: 900ms;
     -webkit-animation-iteration-count: 1;
     -webkit-animation-timing-function: ease-in-out;
-}  
+}
 

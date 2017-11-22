@@ -1,0 +1,79 @@
+<ion-header>
+  <ion-navbar mode="ios" color="gold">
+    <ion-title mode="ios">
+      BG Geolocation Demo
+    </ion-title>
+    <ion-buttons end>
+    	<ion-toggle [(ngModel)]="enabled" (ionChange)="onToggleEnabled()" style="display:block;"></ion-toggle>
+    </ion-buttons>
+  </ion-navbar>  
+</ion-header>
+
+<ion-content>
+	<ion-fab top left edge>    
+   		<button ion-fab color="gold" (click)="onClickMainMenu()">
+          <ion-icon color="dark" name="arrow-dropdown-circle"></ion-icon>
+      </button>
+   		<ion-fab-list side="bottom" style="width:250px">   			
+        <ion-item>
+          <button ion-button full round color="primary" (click)="onClickHome()"><ion-icon name="home"></ion-icon>&nbsp;Home</button>
+        </ion-item>
+     	  <ion-item>
+     			<button ion-button color="primary" (click)="onClickSync()"><ion-icon name="ios-cloud-upload"></ion-icon>&nbsp;Sync</button>
+     			<button ion-button color="danger" (click)="onClickDestroy()">Destroy</button>
+     		</ion-item>
+     		<ion-item>
+  				<ion-label>autoSync</ion-label>
+  				<ion-toggle [(ngModel)]="autoSync" (ionChange)="onSetConfig('autoSync')"></ion-toggle>
+        </ion-item>
+        <ion-item>
+  				<ion-label>distanceFilter</ion-label>
+  				<ion-input [(ngModel)]="distanceFilter" (blur)="onSetConfig('distanceFilter')" type="number"></ion-input>
+  		  </ion-item>
+  			<ion-item>
+    		  <ion-label>stopTimeout</ion-label>
+    			<ion-input [(ngModel)]="stopTimeout" (blur)="onSetConfig('stopTimeout')" type="number"></ion-input>
+  			</ion-item>
+  			<ion-item>
+    			<ion-label>stopOnTerminate</ion-label>
+    			<ion-toggle [(ngModel)]="stopOnTerminate" (ionChange)="onSetConfig('stopOnTerminate')"></ion-toggle>
+  			</ion-item>
+  			<ion-item>
+    			<ion-label>startOnBoot</ion-label>
+    			<ion-toggle [(ngModel)]="startOnBoot" (ionChange)="onSetConfig('startOnBoot')"></ion-toggle>
+  			</ion-item>
+  			<ion-item>
+    			<ion-label>debug</ion-label>
+    			<ion-toggle [(ngModel)]="debug" (ionChange)="onSetConfig('debug')"></ion-toggle>
+  			</ion-item>
+  			<ion-item>
+       		<button ion-button color="primary" (click)="onClickEmailLog()">Email Log</button>
+       		<button ion-button color="danger" (click)="onClickDestroyLog()">Destroy</button>
+       	</ion-item>        
+     	</ion-fab-list>
+    </ion-fab>
+
+	<!-- Google Map Element -->
+  <div #map id="map"></div>
+
+</ion-content>
+
+<ion-footer>	
+	<ion-toolbar mode="ios" color="gold">
+		<ion-buttons start>
+			<button ion-button solid (click)="onClickGetCurrentPosition()" color="primary" style="width:50px">
+				<ion-icon name="md-navigate" color=""></ion-icon>
+			</button>
+		</ion-buttons>
+		<ion-title>
+			<span [innerHTML]="motionActivity">Activity</span>&nbsp;&middot;&nbsp;<span [innerHTML]="odometer"></span>      
+		</ion-title>
+		<ion-buttons end>
+			<button ion-button solid (click)="onClickChangePace()" style="width:50px" color="{{isMoving ? 'danger' : 'secondary'}}">
+				<ion-icon name="{{isMoving ? 'pause' : 'play'}}"></ion-icon>
+			</button>
+		</ion-buttons>
+
+	</ion-toolbar>
+</ion-footer>
+
