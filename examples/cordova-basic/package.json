@@ -1,0 +1,38 @@
+{
+  "name": "com.transistorsoft.backgroundgeolocation.cordova",
+  "displayName": "BGGeo Cordova",
+  "version": "1.0.0",
+  "description": "A sample Apache Cordova application that responds to the deviceready event.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Apache Cordova Team",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "cordova-android": "^6.3.0",
+    "cordova-background-geolocation-lt": "file:///Users/chris/workspace/cordova/background-geolocation/cordova-background-geolocation-lt",
+    "cordova-ios": "^4.5.3",
+    "cordova-plugin-background-fetch": "^5.1.1",
+    "cordova-plugin-cocoalumberjack": "0.0.4",
+    "cordova-plugin-device": "^1.1.7",
+    "cordova-plugin-dialogs": "^1.3.4",
+    "cordova-plugin-whitelist": "^1.3.3"
+  },
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-whitelist": {},
+      "cordova-background-geolocation-lt": {
+        "LICENSE": "YOUR_LICENSE_KEY",
+        "GOOGLE_API_VERSION": "11.6.0",
+        "APPCOMPAT_VERSION": "26.1.0"
+      },
+      "cordova-plugin-device": {},
+      "cordova-plugin-dialogs": {}
+    },
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  }
+}

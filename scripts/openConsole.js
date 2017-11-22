@@ -1,4 +1,3 @@
-const companyToken = require('../src/consoleConfig').companyToken;
 const opn = require('opn');
-opn('http://tracker.transistorsoft.com#' + companyToken);
+opn('http://tracker.transistorsoft.com/your-username');
 process.exit();

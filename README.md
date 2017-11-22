@@ -1,13 +1,11 @@
 # :large_blue_diamond: [Ionic 3] Cordova Background Geolocation &mdash; Demo
 
-[![Google Play](https://dl.dropboxusercontent.com/u/2319755/cordova-background-geolocaiton/google-play-icon.png)](https://play.google.com/store/apps/details?id=com.transistorsoft.backgroundgeolocation.ionic2)
+[![Google Play](https://dl.dropboxusercontent.com/s/80rf906x0fheb26/google-play-icon.png?dl=1)](https://play.google.com/store/apps/details?id=com.transistorsoft.backgroundgeolocation.ionic2)
 
-Fully-featured, [Ionic](http://ionicframework.com/)-based sample-application for [Cordova Background Geolocation](http://shop.transistorsoft.com/pages/cordova-background-geolocation-premium)
+Fully-featured [Ionic](http://ionicframework.com/)-based sample-application for [Cordova Background Geolocation](http://shop.transistorsoft.com/pages/cordova-background-geolocation-premium)
 
 ![Home](https://dl.dropboxusercontent.com/s/byaayezphkwn36h/home-framed-350.png?dl=1)
 ![Settings](https://dl.dropboxusercontent.com/s/8lvnpp0gowitagq/settings-framed-350.png?dl=1)
-
-Edit settings and observe the behavour of **Background Geolocation** changing in **real time**.
 
 ## :large_blue_diamond: Installation
 
@@ -35,19 +33,27 @@ $ ionic cordova run ios --emulator
 $ npm run open  
 ```
 
-The quickest way to see the plugin in-action is to boot the **iOS** simulator and *simulate location*
+The quickest way to see the plugin in-action is to boot the **iOS** simulator and *simulate location* with *Freeway Drive*.
 
-![](https://dl.dropboxusercontent.com/u/2319755/cordova-background-geolocaiton/simulate-location.png)
+The demo is composed of three separate and indpendant sub-applications implemented as Ionic page-modules.
 
-## :large_blue_diamond: Testing Server
+- [Hello World](./src/pages/hello-world/hello-world.ts)
+- [Simple Map](./src/pages/simple-map/simple-map.ts)
+- [Advanced](./src/pages/advanced) with complex settings screen and geofencing.
 
-By default, the sample app posts locations to Transistor Software's test server (sandboxed to your MAC address).  You can view these locations by running:
+![](https://dl.dropboxusercontent.com/s/w87uylrgij9kd7r/ionic-demo-home.png?dl=1)
 
-```bash
-$ npm run open
-```
+## :large_blue_diamond: Tracking Server
 
-This will launch a browser window to view the test server:
+The demo app is configured to post locations to Transistor Software's demo server, which hosts a web-application for visualizing and filtering your tracking on a map.
+
+- After booting the app the first time, you'll be asked to enter a **unique** "Tracking Server Username" (eg: Github username) so the plugin can post locations to `tracker.transistorsoft.com`.  
+
+:warning: Make your username **unique** and known only to *you* &mdash; if every one uses *"test"*, you'll never find your device!)
+
+![](https://dl.dropboxusercontent.com/s/yhb311q5shxri36/ionic-demo-username.png?dl=1)
+
+- You can view the plugin's tracking history by visiting [http://tracker.transistorsoft.com/username](http://tracker.transistorsoft.com/username).
 
 ![](https://dl.dropboxusercontent.com/s/1a4far51w70rjvj/Screenshot%202017-08-16%2011.34.43.png?dl=1)
 
@@ -57,22 +63,22 @@ The plugin has a `debug` mode for field-testing.  The plugin will emit sounds du
 
 | Event | iOS | Android |
 |-------|-----|---------|
-| Exit stationary-region | Calendar event sound | n/a |
+| Exit stationary-region | Dee-do Dee-do...Dee-do Dee-do | n/a |
 | Location recorded | SMS-sent sound | "blip" |
 | Aggressive geolocation engaged | SIRI listening sound | "doodly-doo" |
-| Acquiring stationary location | "tick, tick, tick" | n/a |
+| Acquiring location | "tick, tick, tick" | dial-tone sound |
 | Stationary state | "bloom" | long "beeeeeeep" |
-| Geofence crossing | trumpets/fanfare | boop-boop-boop |
+| Geofence crossing | trumpets/fanfare | beep-beep-beep |
 
 **NOTE:**  In order for debug sounds to operate *when the app is in background*, you must enable the `Audio and Airplay` **Background Mode**.
 
-![](https://camo.githubusercontent.com/ad01117185eb13a237efcfa1eaf7e39346a967ed/68747470733a2f2f646c2e64726f70626f7875736572636f6e74656e742e636f6d2f752f323331393735352f636f72646f76612d6261636b67726f756e642d67656f6c6f636169746f6e2f656e61626c652d6261636b67726f756e642d617564696f2e706e67)
+![](https://dl.dropboxusercontent.com/s/fl7exx3g8whot9f/enable-background-audio.png?dl=1)
 
 ## :large_blue_diamond: Adding Geofences
 
-The app implements a **longtap** event on the map.  Simply **tap & hold** the map to initiate adding a geofence.
+The **Advanced** app implements a **longtap** event on the map.  Simply **tap & hold** the map to initiate adding a geofence.
 
-![Tap-hold to add geofence](https://dl.dropboxusercontent.com/u/2319755/cordova-background-geolocaiton/screenshot-iphone5-add-geofence-framed-README.png)
+![Tap-hold to add geofence](https://dl.dropboxusercontent.com/s/vpyc1fr66q4sixy/screenshot-add-geofence.png?dl=1)
 
 Enter an `identifier`, `radius`, `notifyOnExit`, `notifyOnEntry`.
 
