@@ -355,12 +355,20 @@ export class SimpleMapPage {
       // No change.  do nothing.
       return;
     }
+    // Careful to convert string -> number from <ion-input> fields.
+    switch(name) {
+      case 'distanceFilter':
+      case 'stopTimeout':
+        this[name] = parseInt(this[name], 10);
+        break;
+    }
     // Update state
     this.state[name] = this[name];
     let config = {};
     config[name] = this[name];
 
     // #setConfig
+
     this.bgGeo.setConfig(config, (state) => {
       this.toast(`#setConfig ${name}: ${this[name]}`);
     });
