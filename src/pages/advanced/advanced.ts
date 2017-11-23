@@ -104,7 +104,7 @@ export class AdvancedPage {
     private zone: NgZone,
     private platform: Platform,
     private bgService: BGService,
-    private settingsService: SettingsService,
+    public settingsService: SettingsService,
     private testService: TestService) {  
 
     this.bgService.on('change', this.onBackgroundGeolocationSettingsChanged.bind(this));
@@ -297,13 +297,14 @@ export class AdvancedPage {
     // Fetch current settings from BGService
     this.bgService.getState((config) => {
       config.notificationLargeIcon = 'drawable/notification_large_icon';
-      config.schedule = [];
+      
       ////
       // Override config options here
       // config.url = 'http://192.168.11.200:9000/locations';
       //
       config.locationTemplate = '';
-      //config.schedule = this.testService.generateSchedule(30*24, 1, 1, 1);
+      config.schedule = [];
+      //config.schedule = this.testService.generateSchedule(30*24, 1, 1, 1);      
 
       bgGeo.configure(config, (state) => {
         this.zone.run(() => {
@@ -612,6 +613,7 @@ export class AdvancedPage {
       this.showStationaryCircle(location);
     }
     this.zone.run(() => {
+      this.state.enabled = true;
       this.state.isChangingPace = false;
       this.state.isMoving = isMoving;
     });
