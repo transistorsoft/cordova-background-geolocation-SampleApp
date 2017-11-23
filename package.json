@@ -66,7 +66,17 @@
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-whitelist": {},
       "cordova-plugin-statusbar": {},
-      "cordova-plugin-background-fetch": {}
+      "cordova-plugin-background-fetch": {},
+      "cordova-background-geolocation-lt": {
+        "LICENSE": "YOUR_LICENSE_KEY",
+        "GOOGLE_API_VERSION": "11.6.0",
+        "APPCOMPAT_VERSION": "26.1.0",
+        "BACKGROUND_MODE_LOCATION": "<string>location</string>",
+        "LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION": "[CHANGEME] Always use is required for constant background location-tracking",
+        "LOCATION_ALWAYS_USAGE_DESCRIPTION": "Background location-tracking is required",
+        "LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION": "[CHANGEME] Background location-tracking is required",
+        "MOTION_USAGE_DESCRIPTION": "[CHANGEME] Using the accelerometer increases battery-efficiency by intelligently toggling location-tracking only when the device is detected to be moving"
+      }
     },
     "platforms": [
       "ios",
