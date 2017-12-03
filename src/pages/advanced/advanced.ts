@@ -10,9 +10,10 @@ import {
   Platform,
   NavController,
   NavParams,
-  ModalController,
-  LoadingController
+  ModalController
 } from 'ionic-angular';
+
+import { Dialogs } from '@ionic-native/dialogs';
 
 import {BGService} from './lib/BGService';
 import {TestService} from './lib/TestService';
@@ -94,28 +95,26 @@ export class AdvancedPage {
   isSyncing: boolean;
   isDestroyingLocations: boolean;
   isResettingOdometer: boolean;
+  isEmailingLog: boolean;
   isMapMenuOpen: boolean;
 
   constructor(
-    public navCtrl: NavController, 
+    public navCtrl: NavController,
     public navParams: NavParams,
-    private loadingCtrl: LoadingController,
     private modalController: ModalController,
+    private dialogs: Dialogs,
     private zone: NgZone,
     private platform: Platform,
     private bgService: BGService,
     public settingsService: SettingsService,
-    private testService: TestService) {  
+    private testService: TestService) {
 
-    this.bgService.on('change', this.onBackgroundGeolocationSettingsChanged.bind(this));
-    this.bgService.on('start', this.onBackgroundGeolocationStarted.bind(this));
-
-    this.settingsService.on('change', this.onSettingsChanged.bind(this));
-
+    // FAB Menu state.
     this.isMainMenuOpen = false;
     this.isMapMenuOpen = false;
     this.isSyncing = false;
     this.isResettingOdometer = false;
+    this.isEmailingLog = false;
 
     this.iconMap = ICON_MAP;
 
@@ -138,13 +137,6 @@ export class AdvancedPage {
       },
       containerBorder: 'none'
     }
-
-    this.platform.ready().then(this.onDeviceReady.bind(this));
-  }  
-
-  onDeviceReady() {
-    console.log('- bgServivce: ', this.bgService.getPlugin());
-
   }
 
   ionViewDidLoad(){
@@ -234,7 +226,7 @@ export class AdvancedPage {
       }
     };
     this.polyline = new google.maps.Polyline({
-      map: (this.settingsService.state.mapHidePolyline) ? null : this.map,
+      map: (this.settingsService.applicationState.mapHidePolyline) ? null : this.map,
       zIndex: 1,
       geodesic: true,
       strokeColor: COLORS.polyline_color,
@@ -289,7 +281,6 @@ export class AdvancedPage {
     bgGeo.on('http', this.onHttpSuccess, this.onHttpFailure);
     bgGeo.on('powersavechange', this.onPowerSaveChange);
 
-
     bgGeo.isPowerSaveMode((isPowerSaveMode) => {
       this.state.containerBorder = (isPowerSaveMode) ? CONTAINER_BORDER_POWER_SAVE_ON : CONTAINER_BORDER_POWER_SAVE_OFF;
     });
@@ -297,14 +288,14 @@ export class AdvancedPage {
     // Fetch current settings from BGService
     this.bgService.getState((config) => {
       config.notificationLargeIcon = 'drawable/notification_large_icon';
-      
+
       ////
       // Override config options here
       // config.url = 'http://192.168.11.200:9000/locations';
       //
       config.locationTemplate = '';
       config.schedule = [];
-      //config.schedule = this.testService.generateSchedule(30*24, 1, 1, 1);      
+      //config.schedule = this.testService.generateSchedule(30*24, 1, 1, 1);
 
       bgGeo.configure(config, (state) => {
         this.zone.run(() => {
@@ -401,12 +392,31 @@ export class AdvancedPage {
     let storage = (<any>window).localStorage;
     let email = storage.getItem('settings:email');
     if (!email) {
-      this.settingsService.toast('Please enter an email address in the Settings screen');
-      return;
+      // Prompt user to enter a unique identifier for tracker.transistorsoft.com
+      this.dialogs.prompt('Please enter your email address', 'Email Address').then((response) => {
+        if (response.buttonIndex === 1 && response.input1.length > 0) {
+          storage.setItem('settings:email', response.input1);
+          this.doEmailLog(response.input1);
+        } else {
+          return;
+        }
+      });
+    } else {
+      this.doEmailLog(email);
     }
-    var bgGeo = this.bgService.getPlugin();
+  }
+
+  doEmailLog(email) {
+    let bgGeo = this.bgService.getPlugin();
+
+    this.isEmailingLog = true;
+
     bgGeo.emailLog(email, () => {
-      bgGeo.destroyLog();
+      this.zone.run(() => {this.isEmailingLog = false; });
+      console.log('- email log success');
+    }, (error) => {
+      this.zone.run(() => {this.isEmailingLog = false; });
+      console.warn('- email log failed: ', error);
     });
   }
 
@@ -443,9 +453,30 @@ export class AdvancedPage {
   }
 
   onSelectMapOption(name) {
-     this.bgService.playSound('BUTTON_CLICK');
-     this.settingsService.state[name] = !this.settingsService.state[name];
-     this.settingsService.set(name, this.settingsService.state[name]);
+    this.bgService.playSound('BUTTON_CLICK');
+    // Invert the value
+    let enabled = !this.settingsService.applicationState[name];
+
+    // Save it:
+    this.settingsService.set(name, enabled);
+
+    // Apply it:
+    let map = (enabled) ? null : this.map;
+    switch(name) {
+      case 'mapHideMarkers':
+        this.locationMarkers.forEach((marker) => {
+          marker.setMap(map);
+        });
+        break;
+      case 'mapHidePolyline':
+        this.polyline.setMap(map);
+        break;
+      case 'mapHideGeofenceHits':
+        this.geofenceHitMarkers.forEach((marker) => {
+          marker.setMap(map);
+        });
+        break;
+     }
   }
 
   onToggleEnabled() {
@@ -532,63 +563,17 @@ export class AdvancedPage {
   }
 
   ////
-  // SettingsService listeners
-  //
-  onSettingsChanged(name:string, value:any) {
-    let map = null;
-
-    switch(name) {
-      case 'mapHideMarkers':
-        var loader = this.loadingCtrl.create({
-          content: (value) ? MESSAGE.removing_markers : MESSAGE.rendering_markers
-        });
-        loader.present();
-        map = (value === true) ? null : this.map;
-        this.locationMarkers.forEach((marker) => {
-          marker.setMap(map);
-        });
-        loader.dismiss();
-        this.settingsService.toast((value) ? 'Hide location markers' : 'Show location markers', null, 1000);
-        break;
-      case 'mapHidePolyline':
-        map = (value === true) ? null : this.map;
-        this.polyline.setMap(map);
-        this.settingsService.toast((value) ? 'Hide  polyline' : 'Show polyline', null, 1000);
-        break;
-      case 'mapShowGeofenceHits':
-        map = (value === true) ? this.map : null;
-        this.geofenceHitMarkers.forEach((marker) => {
-          marker.setMap(map);
-        });
-        this.settingsService.toast((value) ? 'Show geofence hits' : 'Hide geofence hits', null, 1000);
-        break;
-    }
-  }
-
-  ////
-  // BgService listeners
-  //
-  onBackgroundGeolocationSettingsChanged(name:string, value:any) {
-    console.log('Home settingschanged: ', name, value);
-    switch(name) {
-      case 'geofenceProximityRadius':
-        this.state.geofenceProximityRadius = value;
-        this.stationaryRadiusCircle.setRadius(value/2);
-        break;
-    }
-  }
-
-  onBackgroundGeolocationStarted(trackingMode:string, state:any) {
-    this.zone.run(() => {
-      this.state.enabled = state.enabled;
-      this.state.isMoving = state.isMoving;
-    });
-  }
-  ////
   // Background Geolocation event-listeners
   //
+  //
+  //
+  //
+
+  /**
+  * @event location
+  */
   onLocation(location:any, taskId:any) {
-    console.log('[js] location: ', location);
+    console.log('[event] location: ', location);
     let bgGeo = this.bgService.getPlugin();
     this.setCenter(location);
     if (!location.sample) {
@@ -599,13 +584,17 @@ export class AdvancedPage {
     }
     bgGeo.finish(taskId);
   }
-
+  /**
+  * @event location failure
+  */
   onLocationError(error:any) {
-    console.warn('[js] location error: ', error);
+    console.warn('[event] location error: ', error);
   }
-
+  /**
+  * @event motionchange
+  */
   onMotionChange(isMoving:boolean, location:any, taskId:any) {
-    console.log('[js] motionchange: ', isMoving, location);
+    console.log('[event] motionchange: ', isMoving, location);
     let bgGeo = this.bgService.getPlugin();
     if (isMoving) {
       this.hideStationaryCircle();
@@ -619,19 +608,25 @@ export class AdvancedPage {
     });
     bgGeo.finish(taskId);
   }
-
+  /**
+  * @event heartbeat
+  */
   onHeartbeat(event:any) {
-    console.log('[js] heartbeat', event);
+    console.log('[event] heartbeat', event);
   }
-
+  /**
+  * @event activitychange
+  */
   onActivityChange(event:any) {
     this.zone.run(() => {
       this.state.activityName = event.activity;
       this.state.activityIcon = this.iconMap['activity_' + event.activity];
     });
-    console.log('[js] activitychange: ', event.activity, event.confidence);
+    console.log('[event] activitychange: ', event.activity, event.confidence);
   }
-
+  /**
+  * @event providerchange
+  */
   onProviderChange(provider:any) {
     console.log('[js] providerchange: ', provider);
     let bgGeo = this.bgService.getPlugin();
@@ -646,9 +641,11 @@ export class AdvancedPage {
     }
     this.zone.run(() => { this.state.provider = provider; });
   }
-
+  /**
+  * @event geofenceschange
+  */
   onGeofencesChange(event:any) {
-    console.log('[js] geofenceschange: ', event);
+    console.log('[event] geofenceschange: ', event);
 
     // All geofences off
     if (!event.on.length && !event.off.length) {
@@ -676,29 +673,18 @@ export class AdvancedPage {
       if (circle) { return; }
       this.geofenceMarkers.push(this.buildGeofenceMarker(geofence));
     });
-
   }
-
+  /**
+  * @event geofence
+  */
   onGeofence(event:any) {
-    console.log('[js] geofence: ', event);
-
-    // DEBUG:
-    // Stop tracking on ENTER
-    // Start tracking on EXIT
-    /*
-    if (event.action === 'EXIT') {
-      this.bgService.getPlugin().start();
-    } else if (event.action === 'ENTER') {
-      this.bgService.getPlugin().startGeofences();
-    }
-    */
-
+    console.log('[event] geofence: ', event);
     var circle = this.geofenceMarkers.find((marker) => {
       return marker.identifier === event.identifier;
     });
 
     if (!circle) { return; }
-    var map = (this.settingsService.state.mapShowGeofenceHits) ? this.map : null;
+    var map = (this.settingsService.applicationState.mapHideGeofenceHits) ? null : this.map;
 
     let location = event.location;
     let geofence = this.geofenceHits[event.identifier];
@@ -791,23 +777,31 @@ export class AdvancedPage {
       strokeOpacity: 0.4
     });
   }
-
+  /**
+  * @event http
+  */
   onHttpSuccess(response) {
     console.log('[js] http success: ', response);
   }
-
+  /**
+  * @event http failure
+  */
+  onHttpFailure(response) {
+    console.log('[js] http FAILURE: ', response);
+  }
+  /**
+  * @event schedule
+  */
   onSchedule(state) {
     this.zone.run(() => {
       this.state.enabled = state.enabled;
     });
-    
+
     console.log('[js] schedule: ', state);
   }
-
-  onHttpFailure(response) {
-    console.log('[js] http FAILURE: ', response);
-  }
-
+  /**
+  * @event powersavechange
+  */
   onPowerSaveChange(isPowerSaveMode) {
     console.log('[js powersavechange: ', isPowerSaveMode);
     this.settingsService.toast('Power-save mode: ' + ((isPowerSaveMode) ? 'ON' : 'OFF'), null, 5000);
@@ -816,6 +810,11 @@ export class AdvancedPage {
     });
   }
 
+  ////
+  // Google map methods
+  //
+  //
+  //
   private setCenter(location) {
     this.updateCurrentLocationMarker(location);
     setTimeout(function() {
@@ -837,7 +836,7 @@ export class AdvancedPage {
     }
     // Add breadcrumb to current Polyline path.
     this.polyline.getPath().push(latlng);
-    if (!this.settingsService.state.mapHidePolyline) {
+    if (!this.state.mapHidePolyline) {
       this.polyline.setMap(this.map);
     }
     this.lastLocation = location;
@@ -879,7 +878,7 @@ export class AdvancedPage {
         strokeWeight: strokeWeight,
         strokeOpacity: 1
       },
-      map: (!this.settingsService.state.mapHideMarkers) ? this.map : null,
+      map: (!this.settingsService.applicationState.mapHideMarkers) ? this.map : null,
       position: new google.maps.LatLng(location.coords.latitude, location.coords.longitude)
     });
   }

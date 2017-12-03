@@ -8,11 +8,6 @@ import {
   LoadingController
 } from "ionic-angular";
 
-import {BGService} from '../../lib/BGService';
-import {SettingsService} from '../../lib/SettingsService';
-
-import {AboutPage} from '../about/about';
-
 const TRACKING_MODE_OPTIONS = [
   'location',
   'geofence'
@@ -27,8 +22,8 @@ const NOTIFICATION_PRIORITY_OPTIONS = ['DEFAULT', 'HIGH', 'LOW', 'MAX', 'MIN'];
 })
 
 export class SettingsPage {
-  settingsService: SettingsService;
-  bgService: BGService;
+  settingsService: any;
+  bgService: any;
   isLoaded: boolean;
   loader: any;
   storage: any;
@@ -67,7 +62,6 @@ export class SettingsPage {
     this.bgService = this.navParams.get('bgService');
     this.settingsService = this.navParams.get('settingsService');
 
-
     this.isLoaded = false;
     this.loader = this.loadingCtrl.create({
       content: "Loading..."
@@ -98,7 +92,9 @@ export class SettingsPage {
       // Hide the Loading...
       this.isLoaded = true;
       this.loader.dismiss();
-    });    
+    });
+
+
   }
 
   ionViewDidLoad() {
@@ -120,7 +116,9 @@ export class SettingsPage {
     this.viewCtrl.dismiss();
   }
   onClickAbout() {
-    this.modalCtrl.create(AboutPage).present();
+    this.modalCtrl.create('AboutPage', {
+      bgService: this.bgService,
+    }).present();
   }
 
   onChangeValue(name) {
@@ -144,20 +142,9 @@ export class SettingsPage {
         case 'triggerActivities':
           value = this.encodeTriggerActivities(value);
           break;
-        case 'hideMarkers':
-          break;
-        case 'hidePolyline':
-          break;
-        case 'showGeofenceHits':
-          break;
       }
       this.bgService.set(name, value);
     }
-  }
-
-  onChangeSetting(name) {
-    var value = this.settings[name];
-    this.settingsService.set(name, value);
   }
 
   setTrackingMode(mode) {
@@ -261,21 +248,22 @@ export class SettingsPage {
     this.bgService.playSound('BUTTON_CLICK');
     this.isAddingGeofences = true;
 
-    var bgGeo     = this.bgService.getPlugin();
-    var data      = this.bgService.getCityDriveData();
-    var geofences = [], latlng;
+    let bgGeo     = this.bgService.getPlugin();
+    let data      = this.bgService.getCityDriveData();
+    let geofences = [], latlng;
 
-    for (var n=0,len=data.length;n<len;n++) {
+    let applicationState = this.settingsService.getApplicationState();
+    for (let n=0,len=data.length;n<len;n++) {
       latlng = data[n];
       geofences.push({
         identifier: 'city_drive_' + (n+1),
         latitude: parseFloat(latlng.lat),
         longitude: parseFloat(latlng.lng),
-        radius: this.settingsService.state.geofenceRadius,
-        notifyOnEntry: this.settingsService.state.geofenceNotifyOnEntry,
-        notifyOnExit: this.settingsService.state.geofenceNotifyOnExit,
-        notifyOnDwell: this.settingsService.state.geofenceNotifyOnDwell,
-        loiteringDelay: this.settingsService.state.geofenceLoiteringDelay,
+        radius: applicationState.geofenceRadius,
+        notifyOnEntry: applicationState.geofenceNotifyOnEntry,
+        notifyOnExit: applicationState.geofenceNotifyOnExit,
+        notifyOnDwell: applicationState.geofenceNotifyOnDwell,
+        loiteringDelay: applicationState.geofenceLoiteringDelay,
         extras: {'geofence_extra': 'foo'}
       });
     }

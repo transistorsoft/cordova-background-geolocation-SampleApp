@@ -1,22 +1,26 @@
 import { Component } from '@angular/core';
 import {
+  IonicPage,
+  NavParams,
   ViewController
 } from 'ionic-angular';
 
-import {BGService} from '../../lib/BGService';
-/*
-  Generated class for the About page.
-
-  See http://ionicframework.com/docs/v2/components/#navigation for more info on
-  Ionic pages and navigation.
+/**
+* About page.
+*
 */
+
+@IonicPage()
 @Component({
   selector: 'page-about',
   templateUrl: 'about.html'
 })
 export class AboutPage {
+  private bgService: any;
 
-  constructor(private bgService: BGService, private viewCtrl: ViewController) {}
+  constructor(private viewCtrl: ViewController, private navParams: NavParams) {
+    this.bgService = this.navParams.get('bgService');
+  }
 
   ionViewDidLoad() {
     this.bgService.playSound("FLOURISH");
