@@ -26,7 +26,8 @@
      			<ion-icon [hidden]="isResettingOdometer" name="speedometer"></ion-icon>
      		</button>
      		<button ion-fab (click)="onClickEmailLogs()" color="gold">
-     			<ion-icon name="mail"></ion-icon>
+          <ion-spinner [hidden]="!isEmailingLog" name="circles" color="dark"></ion-spinner>
+     			<ion-icon [hidden]="isEmailingLog" name="mail"></ion-icon>
      		</button>
         <button ion-fab (click)="onClickSync()" color="gold">
           <ion-spinner [hidden]="!isSyncing" name="circles" color="dark"></ion-spinner>
@@ -45,14 +46,14 @@
   <ion-fab top right>
   <button ion-fab mini (click)="onClickMapMenu()" color="light"><ion-icon name="map"></ion-icon></button>
   <ion-fab-list side="left">
-    <button ion-fab (click)="onSelectMapOption('mapHideMarkers')" color="{{settingsService.state.mapHideMarkers ? 'light' : 'gold'}}">
-      <ion-icon name="pin" color="{{settingsService.state.mapHideMarkers ? 'dark-grey' : 'black'}}"></ion-icon>
+    <button ion-fab (click)="onSelectMapOption('mapHideMarkers')" color="{{settingsService.applicationState.mapHideMarkers ? 'light' : 'gold'}}">
+      <ion-icon name="pin" color="{{settingsService.applicationState.mapHideMarkers ? 'dark-grey' : 'black'}}"></ion-icon>
     </button>
-    <button ion-fab (click)="onSelectMapOption('mapHidePolyline')" color="{{settingsService.state.mapHidePolyline ? 'light' : 'gold'}}">
-      <ion-icon name="pulse" color="{{settingsService.state.mapHidePolyline ? 'dark-grey' : 'black'}}"></ion-icon>
+    <button ion-fab (click)="onSelectMapOption('mapHidePolyline')" color="{{settingsService.applicationState.mapHidePolyline ? 'light' : 'gold'}}">
+      <ion-icon name="pulse" color="{{settingsService.applicationState.mapHidePolyline ? 'dark-grey' : 'black'}}"></ion-icon>
     </button>
-    <button ion-fab (click)="onSelectMapOption('mapShowGeofenceHits')" color="{{!settingsService.state.mapShowGeofenceHits ? 'light' : 'gold'}}">
-      <ion-icon name="radio-button-off" color="{{settingsService.state.mapShowGeofenceHits ? 'black' : 'dark-grey'}}"></ion-icon>
+    <button ion-fab (click)="onSelectMapOption('mapHideGeofenceHits')" color="{{settingsService.applicationState.mapHideGeofenceHits ? 'light' : 'gold'}}">
+      <ion-icon name="radio-button-off" color="{{settingsService.applicationState.mapHideGeofenceHits ? 'dark-grey' : 'black'}}"></ion-icon>
     </button>
   </ion-fab-list>
 </ion-fab>

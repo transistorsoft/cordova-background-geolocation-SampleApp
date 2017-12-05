@@ -59,7 +59,7 @@
 	  			<span [hidden]="isSyncing">Sync</span>
 	  		</button>
 	  		<ion-item>
-	  			<ion-input [(ngModel)]="state.url" (blur)="onUpdateUrl()" type="url" placeholder="http://your.server.com/endpoint"></ion-input>
+	  			<ion-input [(ngModel)]="state.url" (ionBlur)="onUpdateUrl()" type="url" placeholder="http://your.server.com/endpoint"></ion-input>
 	  		</ion-item>
 	  	</ion-card>
 
@@ -141,51 +141,32 @@
 		</ion-card>
 		<ion-item>
 	  		<ion-label color="primary">radius</ion-label>
-	  		<ion-select [(ngModel)]="settingsService.state.geofenceRadius" (ionChange)="settingsService.onChange('geofenceRadius')" multiple="false">
-    			<ion-option *ngFor="let option of settingsService.geofenceRadiusOptions" value="{{option}}" selected="{{option == settingsService.state.geofenceRadius}}">
+	  		<ion-select [(ngModel)]="settingsService.applicationState.geofenceRadius" (ionChange)="settingsService.onChange('geofenceRadius')" multiple="false">
+    			<ion-option *ngFor="let option of settingsService.geofenceRadiusOptions" value="{{option}}" selected="{{option == settingsService.applicationState.geofenceRadius}}">
     				{{option}}
     			</ion-option>
     		</ion-select>
     	</ion-item>
 	  	<ion-item>
 	  		<ion-label color="primary">notifyOnEntry</ion-label>
-	  		<ion-toggle [(ngModel)]="settingsService.state.geofenceNotifyOnEntry" (ionChange)="settingsService.onChange('geofenceNotifyOnEntry')" color="secondary"></ion-toggle>
+	  		<ion-toggle [(ngModel)]="settingsService.applicationState.geofenceNotifyOnEntry" (ionChange)="settingsService.onChange('geofenceNotifyOnEntry')" color="secondary"></ion-toggle>
 	  	</ion-item>
 	  	<ion-item>
 	  		<ion-label color="primary">notifyOnExit</ion-label>
-	  		<ion-toggle [(ngModel)]="settingsService.state.geofenceNotifyOnExit" (ionChange)="settingsService.onChange('geofenceNotifyOnExit')" color="secondary"></ion-toggle>
+	  		<ion-toggle [(ngModel)]="settingsService.applicationState.geofenceNotifyOnExit" (ionChange)="settingsService.onChange('geofenceNotifyOnExit')" color="secondary"></ion-toggle>
 	  	</ion-item>
 	  	<ion-item>
 	  		<ion-label color="primary">notifyOnDwell</ion-label>
-	  		<ion-toggle [(ngModel)]="settingsService.state.geofenceNotifyOnDwell" (ionChange)="settingsService.onChange('geofenceNotifyOnDwell')" color="secondary"></ion-toggle>
+	  		<ion-toggle [(ngModel)]="settingsService.applicationState.geofenceNotifyOnDwell" (ionChange)="settingsService.onChange('geofenceNotifyOnDwell')" color="secondary"></ion-toggle>
 	  	</ion-item>
 	  	<ion-item>
 	  		<ion-label color="primary">loiteringDelay</ion-label>
-	  		<ion-select [(ngModel)]="settingsService.state.geofenceLoiteringDelay" (ionChange)="settingsService.onChange('geofenceLoiteringDelay')" multiple="false">
-    			<ion-option *ngFor="let option of settingsService.geofenceLoiteringDelayOptions" value="{{option}}" selected="{{option == settingsService.state.geofenceLoiteringDelay}}">
+	  		<ion-select [(ngModel)]="settingsService.applicationState.geofenceLoiteringDelay" (ionChange)="settingsService.onChange('geofenceLoiteringDelay')" multiple="false">
+    			<ion-option *ngFor="let option of settingsService.geofenceLoiteringDelayOptions" value="{{option}}" selected="{{option == settingsService.applicationState.geofenceLoiteringDelay}}">
     				{{option}}
     			</ion-option>
     		</ion-select>
     	</ion-item>
-
-	  	<ion-list-header mode="ios"><ion-icon name="map" color="primary"></ion-icon>&nbsp;Map Options</ion-list-header>
-	  	<ion-item>
-	  		<ion-label color="primary">Hide location markers</ion-label>
-	  		<ion-toggle [(ngModel)]="settingsService.state.mapHideMarkers" (ionChange)="settingsService.onChange('mapHideMarkers')" color="secondary"></ion-toggle>
-	  	</ion-item>
-
-	  	<ion-item>
-	  		<ion-label color="primary">Hide polyline</ion-label>
-	  		<ion-toggle [(ngModel)]="settingsService.state.mapHidePolyline" (ionChange)="settingsService.onChange('mapHidePolyline')" color="secondary"></ion-toggle>
-	  	</ion-item>
-
-	  	<ion-item>
-	  		<ion-label color="primary">Show geofence hit-markers</ion-label>
-	  		<ion-toggle [(ngModel)]="settingsService.state.mapShowGeofenceHits" (ionChange)="settingsService.onChange('mapShowGeofenceHits')" color="secondary"></ion-toggle>
-	  	</ion-item>
-
-
-
 	</ion-list>
 
 </ion-content>
