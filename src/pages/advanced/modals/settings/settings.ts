@@ -228,6 +228,7 @@ export class SettingsPage {
       this.isDestroyingLog = true;
       this.bgService.getPlugin().destroyLog(() => {
         this.isDestroyingLog = false;
+        this.bgService.playSound('MESSAGE_SENT');
         this.settingsService.toast('Destroyed logs');
       });
     });

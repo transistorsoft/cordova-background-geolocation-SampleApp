@@ -102,9 +102,7 @@ export class SettingsService {
       buttons: [{
         text: 'Cancel',
         role: 'cancel',
-        handler: () => {
-            alert.dismiss();
-        }
+        handler: () => {}
       }, {
         text: 'Confirm',
         handler: callback

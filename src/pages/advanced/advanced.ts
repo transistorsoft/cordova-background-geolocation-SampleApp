@@ -379,6 +379,7 @@ export class AdvancedPage {
         // Good to go...
         this.isDestroyingLocations = true;
         bgGeo.destroyLocations((res) => {
+          this.bgService.playSound('MESSAGE_SENT');
           onComplete.call(this, MESSAGE.destroy_locations_success, count);
         }, function(error) {
           onComplete.call(this, MESSAGE.destroy_locations_failure, error);
@@ -462,21 +463,26 @@ export class AdvancedPage {
 
     // Apply it:
     let map = (enabled) ? null : this.map;
+    let message = (enabled) ? 'Hide ' : 'Show ';
     switch(name) {
       case 'mapHideMarkers':
         this.locationMarkers.forEach((marker) => {
           marker.setMap(map);
         });
+        message += 'map markers';
         break;
       case 'mapHidePolyline':
         this.polyline.setMap(map);
+        message += 'polyline';
         break;
       case 'mapHideGeofenceHits':
         this.geofenceHitMarkers.forEach((marker) => {
           marker.setMap(map);
         });
+        message += 'geofence transitions';
         break;
      }
+     this.settingsService.toast(message, undefined, 1000);
   }
 
   onToggleEnabled() {
