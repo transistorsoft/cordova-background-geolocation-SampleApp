@@ -41,7 +41,7 @@
     "cordova-plugin-cocoalumberjack": "0.0.4",
     "cordova-plugin-device": "^1.1.7",
     "cordova-plugin-dialogs": "^1.3.4",
-    "cordova-plugin-ionic-webview": "git+https://github.com/ghenry22/cordova-plugin-ionic-webview.git#integratedFixes",
+    "cordova-plugin-ionic-webview": "https://github.com/ghenry22/cordova-plugin-ionic-webview.git#integratedFixes",
     "cordova-plugin-statusbar": "^2.3.0",
     "cordova-plugin-whitelist": "^1.3.3",
     "ionic-angular": "3.9.2",

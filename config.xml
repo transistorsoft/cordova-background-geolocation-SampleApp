@@ -97,5 +97,5 @@
         <variable name="LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION" value="[CHANGEME] Background location-tracking is required" />
         <variable name="MOTION_USAGE_DESCRIPTION" value="[CHANGEME] Using the accelerometer increases battery-efficiency by intelligently toggling location-tracking only when the device is detected to be moving" />
     </plugin>
-    <plugin name="cordova-plugin-ionic-webview" spec="git+https://github.com/ghenry22/cordova-plugin-ionic-webview.git#integratedFixes" />
+    <plugin name="cordova-plugin-ionic-webview" spec="https://github.com/ghenry22/cordova-plugin-ionic-webview.git#integratedFixes" />
 </widget>
