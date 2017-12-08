@@ -13,6 +13,9 @@ const TRACKER_HOST = 'http://tracker.transistorsoft.com/';
 // Default tracking server username if use doesn't provide one.
 const DEFAULT_USERNAME = "cordova-anonymous";
 
+// Only allow alpha-numeric usernames with '-' and '_'
+const USERNAME_VALIDATOR =  /^[a-zA-Z0-9_-]*$/;
+
 /**
  * The HomePage will prompt you for a username so the plugin can post locations to tracker.transistorsoft.com/locations/{username}
  *
@@ -48,7 +51,7 @@ export class HomePage {
     this.getUsername().then(this.doGetUsername.bind(this)).catch(() => {
       console.warn('Failed to get username.  We *really* do need a username.');
       // We really need a username.  Use DEFAULT_USERNAME
-      this.doGetUsername(DEFAULT_USERNAME);
+      this.onClickEditUsername();
     });
   }
 
@@ -62,9 +65,9 @@ export class HomePage {
     let localStorage = (<any>window).localStorage;
     let username = localStorage.getItem('username');
     localStorage.removeItem('username');
-    this.getUsername().then(this.doGetUsername.bind(this)).catch(() => {
-      console.warn('failed to get username');
+    this.getUsername(username).then(this.doGetUsername.bind(this)).catch(() => {      
       localStorage.setItem('username', username);
+      this.onClickEditUsername();
     });
   }
 
@@ -72,7 +75,8 @@ export class HomePage {
   * Prompt user for a unique identifier for posting to tracker.transistorsoft.com/{username}
   * @return {Promise}
   */
-  private getUsername() {
+  private getUsername(defaultValue) {
+    defaultValue = defaultValue || '';
     let localStorage = (<any>window).localStorage;
     let username = localStorage.getItem('username');
 
@@ -83,13 +87,19 @@ export class HomePage {
         return;
       }
       // Prompt user to enter a unique identifier for tracker.transistorsoft.com
-      this.dialogs.prompt('Please enter a unique identifier (eg: Github username) so the plugin can post loctions to http://tracker.transistorsoft.com/{identifier}', 'Tracking Server Username').then((response) => {
-        if (response.buttonIndex === 1 && response.input1.length > 0) {
-          username = response.input1;
-          resolve(username);
+      this.dialogs.prompt('Please enter a unique identifier (eg: Github username) so the plugin can post loctions to http://tracker.transistorsoft.com/{identifier}', 'Tracking Server Username', ['OK'], defaultValue).then((response) => {
+        let username = response.input1.replace(/\s+/, '');
+        if (!username.length) {
+          this.dialogs.alert("You must enter a username.  It can be any unique alpha-numeric identifier.", "Username required").then(() => {
+            reject();
+          });
+        } else if (!USERNAME_VALIDATOR.test(username)) {
+          this.dialogs.alert("Username must be alpha-numeric\n('-' and '_' are allowed)", "Invalid username").then(() => {
+            reject();
+          });
         } else {
-          reject();
-        }
+          resolve(username);
+        }       
       });
     });
   }
