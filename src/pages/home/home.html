@@ -40,7 +40,7 @@
   <ion-navbar color="light">
     <p style="padding:5px">
       These apps will post locations to Transistor Software's demo server.  You can view your tracking in the browser by visiting:</p>
-    <p style="text-align:center"><i>tracker.transistorsoft.com/<strong>username</strong></i></p>
+    <p style="text-align:center"><i>tracker.transistorsoft.com/<strong [innerHTML]="trackerUsername"></strong></i></p>
     <ion-item>
       <ion-label color="primary">Username:</ion-label>
       <ion-input [(ngModel)]="trackerUsername" readonly="true"></ion-input>
