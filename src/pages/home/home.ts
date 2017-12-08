@@ -75,7 +75,7 @@ export class HomePage {
   * Prompt user for a unique identifier for posting to tracker.transistorsoft.com/{username}
   * @return {Promise}
   */
-  private getUsername(defaultValue) {
+  private getUsername(defaultValue='') {
     defaultValue = defaultValue || '';
     let localStorage = (<any>window).localStorage;
     let username = localStorage.getItem('username');
