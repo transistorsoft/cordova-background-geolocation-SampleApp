@@ -83,11 +83,6 @@
         <splash height="2732" src="resources/ios/splash/Default@2x~universal~anyany.png" width="2732" />
     </platform>
     <allow-navigation href="http://192.168.11.220:8100" />
-    <allow-navigation href="http://localhost:8080/*" />
-    <feature name="CDVWKWebViewEngine">
-        <param name="ios-package" value="CDVWKWebViewEngine" />
-    </feature>
-    <preference name="CordovaWebViewEngine" value="CDVWKWebViewEngine" />
     <engine name="android" spec="^6.3.0" />
     <engine name="ios" spec="^4.5.4" />
     <plugin name="ionic-plugin-keyboard" spec="^2.2.1" />
@@ -97,7 +92,6 @@
     <plugin name="cordova-plugin-statusbar" spec="^2.3.0" />
     <plugin name="cordova-plugin-background-fetch" spec="^5.1.1" />
     <plugin name="cordova-plugin-splashscreen" spec="^4.1.0" />
-    <plugin name="cordova-plugin-ionic-webview" spec="git+https://github.com/ghenry22/cordova-plugin-ionic-webview.git#integratedFixes" />
     <plugin name="cordova-background-geolocation-lt" spec="^2.9.1">
         <variable name="LICENSE" value="YOUR_LICENSE_KEY" />
         <variable name="GOOGLE_API_VERSION" value="11.6.0" />
