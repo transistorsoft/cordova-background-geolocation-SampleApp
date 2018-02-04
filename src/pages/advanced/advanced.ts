@@ -293,8 +293,7 @@ export class AdvancedPage {
       // Override config options here
       // config.url = 'http://192.168.11.200:9000/locations';
       //
-      config.locationTemplate = '';
-      config.schedule = [];
+      //config.schedule = this.testService.generateSchedule(24, 1, 30, 30);
       //config.schedule = this.testService.generateSchedule(30*24, 1, 1, 1);
 
       bgGeo.configure(config, (state) => {
@@ -518,7 +517,10 @@ export class AdvancedPage {
       console.warn('[js] getCurrentPosition FAILURE: ', error);
     }, {
       maximumAge: 1000,
-      desiredAccuracy: 10
+      desiredAccuracy: 10,
+      extras: {
+        foo: 'bar'
+      }
     });
   }
 

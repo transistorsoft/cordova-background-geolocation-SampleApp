@@ -2,6 +2,7 @@ import { Component,  NgZone  } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import { Device } from '@ionic-native/device';
 
+
 // Url to post locations to
 const TRACKER_HOST = 'http://tracker.transistorsoft.com/locations/';
 
