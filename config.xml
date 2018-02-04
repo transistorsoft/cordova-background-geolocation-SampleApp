@@ -21,7 +21,15 @@
     <preference name="SplashScreenDelay" value="3000" />
     <platform name="android">
         <allow-intent href="market:*" />
-        <resource-file src="src/android/BackgroundGeolocationHeadlessTask.java" target="src/com/transistorsoft/cordova/bggeo/BackgroundGeolocationHeadlessTask.java" />
+        <!-- Custom Android Headless Task:  Uncomment to provide your own customized Java code for Headless Mode
+        See Wiki:  https://github.com/transistorsoft/cordova-background-geolocation-lt/wiki/Android-Headless-Mode
+        .
+        .
+        <resource-file src="src/android/BackgroundGeolocationHeadlessTask.java" target="src/com/transistorsoft/cordova/bggeo/BackgroundGeolocationHeadlessTask.java" />        
+        .
+        .
+        -->
+
         <resource-file src="src/res/android/drawable-hdpi/notification_large_icon.png" target="res/drawable-hdpi/notification_large_icon.png" />
         <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
         <icon density="mdpi" src="resources/android/icon/drawable-mdpi-icon.png" />
