@@ -51,9 +51,11 @@ export class HelloWorldPage {
     this.bgGeo.on('http', this.onHttpSuccess.bind(this), this.onHttpFailure.bind(this));
     this.bgGeo.on('providerchange', this.onProviderChange.bind(this));
     this.bgGeo.on('powersavechange', this.onPowerSaveChange.bind(this));
+    this.bgGeo.on('connectivitychange', this.onConnectivityChange.bind(this));
 
     // Step 2:  Configure the plugin
-    this.bgGeo.configure({
+    this.bgGeo.ready({
+      reset: true,
       debug: true,
       logLevel: this.bgGeo.LOG_LEVEL_VERBOSE,
       distanceFilter: 10,
@@ -180,7 +182,12 @@ export class HelloWorldPage {
       this.addEvent('powersavechange', new Date(), {isPowerSaveEnabled: isPowerSaveEnabled});
     });
   }
-
+  /**
+  * @event connectivitychange
+  */
+  onConnectivityChange(event) {
+    console.log('[event] connectivitychange connected? ', event.connected);
+  }
   /**
   * Add a record to ion-list
   * @param {String} event name
