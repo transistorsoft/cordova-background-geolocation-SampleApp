@@ -123,18 +123,42 @@ export class SimpleMapPage {
     this.bgGeo.on('providerchange', this.onProviderChange.bind(this));
     this.bgGeo.on('heartbeat', this.onHeartbeat.bind(this));
     this.bgGeo.on('powersavechange', this.onPowerSaveChange.bind(this));
-
+    this.bgGeo.on('connectivitychange', this.onConnectivityChange.bind(this));
     ////
-    // Step 2:  #configure the plugin
-    //       
-
-    // We can fetch the current state from the plugin and use this to update the UI State
-    // 
-    this.bgGeo.getState((state) => {
-      this.state = state;
-
-      if (!this.isFirstBoot()) {
-        // Set current plugin state upon our view.
+    // Step 2:  Initialize the plugin
+    //          
+    this.bgGeo.ready({
+      // Geolocation config
+      desiredAccuracy: 0,  // <-- highest possible accuracy
+      distanceFilter: this.distanceFilter,
+      // ActivityRecognition config
+      stopTimeout: this.stopTimeout,
+      // Application config
+      foregroundService: true,
+      stopOnTerminate: this.stopOnTerminate,
+      heartbeatInterval: 60,
+      // HTTP / Persistence config
+      url: url,
+      params: {
+        device: {
+          platform: this.device.platform,
+          version: this.device.version,
+          uuid: this.device.uuid,
+          cordova: this.device.cordova,
+          model: this.device.model,
+          manufacturer: this.device.manufacturer,
+          framework: 'Cordova'
+        }
+      },
+      autoSync: this.autoSync,
+      autoSyncThreshold: 0,
+      // Logging / Debug config
+      debug: this.debug,
+      logLevel: this.bgGeo.LOG_LEVEL_VERBOSE
+    }, (state) => {
+      console.log('- BackgroundGeolocation ready: ', state);
+      // Set current plugin state upon our view.
+      this.zone.run(() => {
         this.enabled         = state.enabled;
         this.isMoving        = state.isMoving;
         this.autoSync        = state.autoSync;
@@ -143,41 +167,8 @@ export class SimpleMapPage {
         this.stopOnTerminate = state.stopOnTerminate;
         this.startOnBoot     = state.startOnBoot;
         this.debug           = state.debug;
-      }
-
-      // Feel free to override or add any config options below
-      this.bgGeo.configure({
-        // Geolocation config
-        desiredAccuracy: 0,  // <-- highest possible accuracy
-        distanceFilter: this.distanceFilter,
-        // ActivityRecognition config
-        stopTimeout: this.stopTimeout,
-        // Application config
-        foregroundService: true,
-        stopOnTerminate: this.stopOnTerminate,
-        heartbeatInterval: 60,
-        // HTTP / Persistence config
-        url: url,
-        params: {
-          device: {
-            platform: this.device.platform,
-            version: this.device.version,
-            uuid: this.device.uuid,
-            cordova: this.device.cordova,
-            model: this.device.model,
-            manufacturer: this.device.manufacturer,
-            framework: 'Cordova'
-          }
-        },
-        autoSync: this.autoSync,
-        autoSyncThreshold: 0,
-        // Logging / Debug config
-        debug: this.debug,
-        logLevel: this.bgGeo.LOG_LEVEL_VERBOSE
-      }, (state) => {
-        console.log('- Configure success: ', state);        
-      });      
-    });    
+      });
+    });
   }
  
   /**
@@ -249,6 +240,10 @@ export class SimpleMapPage {
   onPowerSaveChange(isPowerSaveEnabled) {
     this.dialogs.alert('[event] powersavechnage, Power-save mode enabled? ' + isPowerSaveEnabled);
     console.log('[event] powersavechange, isPowerSaveEnabled: ', isPowerSaveEnabled);
+  }
+  onConnectivityChange(event) {
+    console.log('[event] connectivitychange, connected? ', event.connected);
+    this.toast('[event] connectivitychange: Network connected? ', event.connected);
   }
   /**
   * @event providerchange
@@ -559,22 +554,6 @@ export class SimpleMapPage {
         }
       });
     });
-  }
-
-  /**
-  * Return true of this is the first time this app has booted.  We store the device.uuid into localStorage
-  * as a flag that the app has booted before.
-  * @return {Boolean}
-  */
-  private isFirstBoot() {
-    let localStorage = (<any>window).localStorage;
-    let isFirstBoot = true;
-    if (localStorage.getItem('device.uuid')) {
-      isFirstBoot = false;
-    } else {
-      localStorage.setItem('device.uuid', this.device.uuid);
-    }
-    return isFirstBoot;
   }
 
   /**
