@@ -254,6 +254,7 @@ export class SettingsPage {
     let geofences = [], latlng;
 
     let applicationState = this.settingsService.getApplicationState();
+
     for (let n=0,len=data.length;n<len;n++) {
       latlng = data[n];
       geofences.push({
@@ -273,6 +274,7 @@ export class SettingsPage {
     function onComplete() {
       zone.run(() => { this.isAddingGeofences = false; })
     };
+
 
     bgGeo.addGeofences(geofences, () => {
       onComplete.call(this);

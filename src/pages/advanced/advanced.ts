@@ -138,16 +138,17 @@ export class AdvancedPage {
         status: -1
       },
       containerBorder: 'none'
-    }
+    };
   }
 
   ionViewDidLoad(){
     this.platform.ready().then(() => {
       this.configureMap();
       this.configureBackgroundGeolocation();
+      this.configureBackgroundFetch();
     });
   }
- 
+
   /**
   * Configure Google Maps
   */
@@ -299,11 +300,12 @@ export class AdvancedPage {
     this.state.containerBorder = (await bgGeo.isPowerSaveMode()) ? CONTAINER_BORDER_POWER_SAVE_ON : CONTAINER_BORDER_POWER_SAVE_OFF;
 
     let username = localStorage.getItem('username');
-    
+
     // With the plugin's #ready method, the supplied config object will only be applied with the first
     // boot of your application.  The plugin persists the configuration you apply to it.  Each boot thereafter,
     // the plugin will automatically apply the last known configuration.
     bgGeo.ready({
+      reset: false,
       debug: true,
       logLevel: bgGeo.LOG_LEVEL_VERBOSE,
       distanceFilter: 10,
@@ -321,9 +323,10 @@ export class AdvancedPage {
           manufacturer: this.device.manufacturer,
           framework: 'Cordova'
         }
-      }
-    }).then((state) => {      
-      // Store the plugin state onto ourself for convenience.      
+      },
+      maxDaysToPersist: 7
+    }).then((state) => {
+      // Store the plugin state onto ourself for convenience.
       console.log('- BackgroundGeolocation is ready: ', state);
       this.zone.run(() => {
         this.state.enabled = state.enabled;
@@ -339,6 +342,22 @@ export class AdvancedPage {
     });
   }
 
+  configureBackgroundFetch() {
+    let BackgroundFetch = (<any>window).BackgroundFetch;
+
+    BackgroundFetch.configure(() => {
+      console.log('[BackgroundFetch] - Received fetch event');
+      BackgroundFetch.finish();
+    }, (error) => {
+      console.warn('BackgroundFetch error: ', error);
+    }, {
+      minimumFetchInterval: 15, // <-- default is 15
+      stopOnTerminate: false,   // <-- Android only
+      startOnBoot: true,
+      enableHeadless: false
+    });
+
+  }
   ////
   // UI event handlers
   //
@@ -401,7 +420,7 @@ export class AdvancedPage {
     if (!count) {
       this.settingsService.toast('Locations database is empty');
       return;
-    }    
+    }
     // Confirm destroy
     let message = 'Destroy ' + count + ' location' + ((count>1) ? 's' : '') + '?';
     this.settingsService.confirm('Confirm Delete', message, () => {
@@ -539,16 +558,19 @@ export class AdvancedPage {
     let bgGeo = this.bgService.getPlugin();
 
     bgGeo.getCurrentPosition({
-      maximumAge: 1000,
-      desiredAccuracy: 10,
+      maximumAge: 0,
+      desiredAccuracy: 100,
+      samples: 1,
+      persist: false,
+      timeout: 0,
       extras: {
         foo: 'bar'
       }
-    }).then(location => {      
+    }).then(location => {
       console.log('[js] getCurrentPosition: ', location);
     }).catch(error => {
       console.warn('[js] getCurrentPosition FAILURE: ', error);
-    });
+    });    
   }
 
   onClickChangePace() {
@@ -564,7 +586,7 @@ export class AdvancedPage {
 
     this.state.isChangingPace = true;
     this.state.isMoving = !this.state.isMoving;
-    bgGeo.changePace(this.state.isMoving).then(onComplete).catch(onComplete);    
+    bgGeo.changePace(this.state.isMoving).then(onComplete).catch(onComplete);
   }
 
   ////
@@ -657,7 +679,7 @@ export class AdvancedPage {
   onProviderChange(provider:any) {
     console.log('[event] - providerchange: ', provider);
     let bgGeo = this.bgService.getPlugin();
-    this.settingsService.toast('providerchange: ' + JSON.stringify(provider));
+
     switch(provider.status) {
       case bgGeo.AUTHORIZATION_STATUS_DENIED:
         break;
@@ -666,6 +688,7 @@ export class AdvancedPage {
       case bgGeo.AUTHORIZATION_STATUS_WHEN_IN_USE:
         break;
     }
+
     this.zone.run(() => { this.state.provider = provider; });
   }
   /**
@@ -673,7 +696,6 @@ export class AdvancedPage {
   */
   onGeofencesChange(event:any) {
     console.log('[event] - geofenceschange: ', event);
-
     // All geofences off
     if (!event.on.length && !event.off.length) {
       this.geofenceMarkers.forEach((circle) => {
@@ -700,6 +722,7 @@ export class AdvancedPage {
       if (circle) { return; }
       this.geofenceMarkers.push(this.buildGeofenceMarker(geofence));
     });
+
   }
   /**
   * @event geofence
