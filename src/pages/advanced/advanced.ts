@@ -152,7 +152,12 @@ export class AdvancedPage {
   /**
   * Configure Google Maps
   */
-  configureMap(){
+  configureMap() {
+    // Handle case where app booted without network accesss (google maps lib fails to load)
+    if (typeof(google) !== 'object') {
+      console.warn('- map not loaded');
+      return;
+    }
     this.locationMarkers = [];
     this.geofenceMarkers = [];
     this.geofenceHitMarkers = [];
@@ -561,8 +566,8 @@ export class AdvancedPage {
       maximumAge: 0,
       desiredAccuracy: 100,
       samples: 1,
-      persist: false,
-      timeout: 0,
+      persist: true,
+      timeout: 30,
       extras: {
         foo: 'bar'
       }
