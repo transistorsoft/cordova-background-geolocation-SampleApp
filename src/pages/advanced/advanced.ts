@@ -315,9 +315,11 @@ export class AdvancedPage {
       logLevel: bgGeo.LOG_LEVEL_VERBOSE,
       distanceFilter: 10,
       stopTimeout: 1,
+      maxDaysToPersist: 14,
       stopOnTerminate: false,
       startOnBoot: true,
       foregroundService: true,
+      enableHeadless: true,
       url: 'http://tracker.transistorsoft.com/locations/' + username,
       params: {
         device: {
@@ -328,8 +330,7 @@ export class AdvancedPage {
           manufacturer: this.device.manufacturer,
           framework: 'Cordova'
         }
-      },
-      maxDaysToPersist: 7
+      }
     }).then((state) => {
       // Store the plugin state onto ourself for convenience.
       console.log('- BackgroundGeolocation is ready: ', state);
@@ -358,10 +359,9 @@ export class AdvancedPage {
     }, {
       minimumFetchInterval: 15, // <-- default is 15
       stopOnTerminate: false,   // <-- Android only
-      startOnBoot: true,
-      enableHeadless: false
+      startOnBoot: false,
+      enableHeadless: true
     });
-
   }
   ////
   // UI event handlers
