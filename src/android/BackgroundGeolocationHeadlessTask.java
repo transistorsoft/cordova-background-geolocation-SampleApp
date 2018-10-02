@@ -1,15 +1,19 @@
 package com.transistorsoft.cordova.bggeo;
 
-import android.app.ActivityManager;
-import android.content.Context;
-import android.os.Bundle;
-
+import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONObject;
 
 import com.transistorsoft.locationmanager.adapter.BackgroundGeolocation;
+import com.transistorsoft.locationmanager.event.ActivityChangeEvent;
+import com.transistorsoft.locationmanager.event.GeofenceEvent;
+import com.transistorsoft.locationmanager.event.HeadlessEvent;
+import com.transistorsoft.locationmanager.event.HeartbeatEvent;
+import com.transistorsoft.locationmanager.event.MotionChangeEvent;
+import com.transistorsoft.locationmanager.event.LocationProviderChangeEvent;
+import com.transistorsoft.locationmanager.http.HttpResponse;
+import com.transistorsoft.locationmanager.location.TSLocation;
 import com.transistorsoft.locationmanager.logger.TSLog;
 
-import java.util.List;
 
 /**
  * BackgroundGeolocationHeadlessTask
@@ -22,12 +26,39 @@ import java.util.List;
  * - execute BackgroundGeolocation API methods (eg: #getCurrentPosition, #setConfig, #addGeofence, #stop, etc -- you can execute ANY method of the Javascript API)
  */
 
-public class BackgroundGeolocationHeadlessTask extends HeadlessTask implements HeadlessTask.Receiver {
+public class BackgroundGeolocationHeadlessTask  {
 
-    @Override
-    public void onReceive(Context context, String event, JSONObject params) {
-        TSLog.logger.debug("BackgroundGeolocationHeadlessTask: " + event);
-        BackgroundGeolocation bgGeo = BackgroundGeolocation.getInstance(context);
-        finish();
+    @Subscribe
+    public void onHeadlessTask(HeadlessEvent event) {
+        String name = event.getName();
+        TSLog.logger.debug("\uD83D\uDC80  event: " + event.getName());
+        TSLog.logger.debug("- event: " + event.getEvent());
+
+        if (name.equals(BackgroundGeolocation.EVENT_TERMINATE)) {
+            JSONObject state = event.getTerminateEvent();
+        } else if (name.equals(BackgroundGeolocation.EVENT_LOCATION)) {
+            TSLocation location = event.getLocationEvent();
+        } else if (name.equals(BackgroundGeolocation.EVENT_MOTIONCHANGE)) {
+            MotionChangeEvent motionChangeEvent = event.getMotionChangeEvent();
+            TSLocation location = motionChangeEvent.getLocation();
+        } else if (name.equals(BackgroundGeolocation.EVENT_HTTP)) {
+            HttpResponse response = event.getHttpEvent();
+        } else if (name.equals(BackgroundGeolocation.EVENT_PROVIDERCHANGE)) {
+            LocationProviderChangeEvent providerChange = event.getProviderChangeEvent();
+        } else if (name.equals(BackgroundGeolocation.EVENT_PROVIDERCHANGE)) {
+            LocationProviderChangeEvent providerChange = event.getProviderChangeEvent();
+        } else if (name.equals(BackgroundGeolocation.EVENT_ACTIVITYCHANGE)) {
+            ActivityChangeEvent activityChange = event.getActivityChangeEvent();
+        } else if (name.equals(BackgroundGeolocation.EVENT_SCHEDULE)) {
+            JSONObject state = event.getScheduleEvent();
+        } else if (name.equals(BackgroundGeolocation.EVENT_BOOT)) {
+            JSONObject state = event.getBootEvent();
+        } else if (name.equals(BackgroundGeolocation.EVENT_GEOFENCE)) {
+            GeofenceEvent geofenceEvent = event.getGeofenceEvent();
+        } else if (name.equals(BackgroundGeolocation.EVENT_HEARTBEAT)) {
+            HeartbeatEvent heartbeatEvent = event.getHeartbeatEvent();
+        } else {
+            TSLog.logger.warn(TSLog.warn("Unknown Headless Event: " + name));
+        }
     }
 }

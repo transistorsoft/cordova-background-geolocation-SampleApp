@@ -55,7 +55,6 @@ export class HelloWorldPage {
 
     // Step 2:  Configure the plugin
     this.bgGeo.ready({
-      reset: true,
       debug: true,
       logLevel: this.bgGeo.LOG_LEVEL_VERBOSE,
       distanceFilter: 10,
@@ -69,7 +68,7 @@ export class HelloWorldPage {
         device: {  // <-- required for tracker.transistorsoft.com
           platform: this.device.platform,
           version: this.device.version,
-          uuid: this.device.uuid,
+          uuid: (this.device.model + '-' + this.device.version).replace(/[\s\.,]/g, '-'),
           cordova: this.device.cordova,
           model: this.device.model,
           manufacturer: this.device.manufacturer,

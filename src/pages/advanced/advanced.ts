@@ -301,7 +301,7 @@ export class AdvancedPage {
     bgGeo.on('powersavechange', this.onPowerSaveChange);
     bgGeo.on('connectivitychange', this.onConnectivityChange);
     bgGeo.on('enabledchange', this.onEnabledChange);
-    
+
     this.state.containerBorder = (await bgGeo.isPowerSaveMode()) ? CONTAINER_BORDER_POWER_SAVE_ON : CONTAINER_BORDER_POWER_SAVE_OFF;
 
     let username = localStorage.getItem('username');
@@ -310,7 +310,6 @@ export class AdvancedPage {
     // boot of your application.  The plugin persists the configuration you apply to it.  Each boot thereafter,
     // the plugin will automatically apply the last known configuration.
     bgGeo.ready({
-      reset: false,
       debug: true,
       logLevel: bgGeo.LOG_LEVEL_VERBOSE,
       distanceFilter: 10,
@@ -325,7 +324,7 @@ export class AdvancedPage {
         device: {
           model: this.device.model,
           platform: this.device.platform,
-          uuid: this.device.uuid,
+          uuid: (this.device.model + '-' + this.device.version).replace(/[\s\.,]/g, '-'),
           version: this.device.version,
           manufacturer: this.device.manufacturer,
           framework: 'Cordova'
@@ -575,7 +574,7 @@ export class AdvancedPage {
       console.log('[js] getCurrentPosition: ', location);
     }).catch(error => {
       console.warn('[js] getCurrentPosition FAILURE: ', error);
-    });    
+    });
   }
 
   onClickChangePace() {
