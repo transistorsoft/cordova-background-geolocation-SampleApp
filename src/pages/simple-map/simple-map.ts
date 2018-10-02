@@ -1,12 +1,12 @@
-import { 
+import {
   Component,
   ViewChild,
   ElementRef,
-  NgZone 
+  NgZone
 } from '@angular/core';
 
 import {
-  IonicPage, 
+  IonicPage,
   NavController,
   NavParams,
   ToastController,
@@ -42,7 +42,7 @@ export class SimpleMapPage {
 
   // Background Geolocation State
   state: any;
-  enabled: boolean;  
+  enabled: boolean;
   isMoving: boolean;
   distanceFilter: number;
   stopTimeout: number;
@@ -63,7 +63,7 @@ export class SimpleMapPage {
   currentLocationMarker: any;
   lastLocation: any;
   stationaryRadiusCircle: any;
-  polyline: any;  
+  polyline: any;
 
   constructor(
     public navCtrl: NavController,
@@ -71,8 +71,8 @@ export class SimpleMapPage {
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
     private loadingCtrl: LoadingController,
-    private zone:NgZone, 
-    private platform:Platform, 
+    private zone:NgZone,
+    private platform:Platform,
     private device:Device,
     private dialogs:Dialogs
   ) {
@@ -115,7 +115,7 @@ export class SimpleMapPage {
 
     ////
     // Step 1:  listen to events
-    //    
+    //
     this.bgGeo.on('location', this.onLocation.bind(this));
     this.bgGeo.on('motionchange', this.onMotionChange.bind(this));
     this.bgGeo.on('activitychange', this.onActivityChange.bind(this));
@@ -126,7 +126,7 @@ export class SimpleMapPage {
     this.bgGeo.on('connectivitychange', this.onConnectivityChange.bind(this));
     ////
     // Step 2:  Initialize the plugin
-    //          
+    //
     this.bgGeo.ready({
       // Geolocation config
       desiredAccuracy: 0,  // <-- highest possible accuracy
@@ -143,7 +143,7 @@ export class SimpleMapPage {
         device: {
           platform: this.device.platform,
           version: this.device.version,
-          uuid: this.device.uuid,
+          uuid: (this.device.model + '-' + this.device.version).replace(/[\s\.,]/g, '-'),
           cordova: this.device.cordova,
           model: this.device.model,
           manufacturer: this.device.manufacturer,
@@ -170,7 +170,7 @@ export class SimpleMapPage {
       });
     });
   }
- 
+
   /**
   * @event location
   */
@@ -179,7 +179,7 @@ export class SimpleMapPage {
     this.zone.run(() => {
       this.odometer = (location.odometer/1000).toFixed(1) + 'km';
     });
-    
+
     this.updateCurrentLocationMarker(location);
   }
   /**
@@ -191,8 +191,8 @@ export class SimpleMapPage {
     this.zone.run(() => {
       this.isMoving = isMoving;
     });
-    
-    // Show / hide the big, red stationary radius circle    
+
+    // Show / hide the big, red stationary radius circle
     if (!isMoving) {
       let coords = location.coords;
       let radius = 200;
@@ -212,8 +212,8 @@ export class SimpleMapPage {
   onActivityChange(event) {
     console.log('[event] activitychange: ', event);
     this.zone.run(() => {
-      this.motionActivity = `${event.activity}:${event.confidence}%`;  
-    });    
+      this.motionActivity = `${event.activity}:${event.confidence}%`;
+    });
   }
   /**
   * @event http
@@ -320,7 +320,7 @@ export class SimpleMapPage {
     let loader = this.loadingCtrl.create({content: "Creating log file..."});
     loader.present();
 
-    this.bgGeo.emailLog(email, () => {      
+    this.bgGeo.emailLog(email, () => {
       loader.dismiss();
     }, (error) => {
       loader.dismiss();
@@ -384,15 +384,15 @@ export class SimpleMapPage {
 
     if (this.enabled) {
       this.bgGeo.start((state) => {
-        console.log('- Start success: ', state);        
+        console.log('- Start success: ', state);
       });
     } else {
       this.isMoving = false;
       this.stationaryRadiusCircle.setMap(null);
       this.bgGeo.stop((state) => {
-        console.log('- Stop success: ', state);        
+        console.log('- Stop success: ', state);
       });
-    }    
+    }
   }
   /**
   * Toggle moving / stationary state
@@ -415,7 +415,7 @@ export class SimpleMapPage {
     this.bgGeo.getCurrentPosition((location) => {
       console.log('- getCurrentPosition success: ', location);
     });
-  }    
+  }
 
   /**
   * Configure the google map
@@ -425,7 +425,7 @@ export class SimpleMapPage {
     * Configure Google Maps
     */
     this.locationMarkers = [];
-    
+
     let latLng = new google.maps.LatLng(-34.9290, 138.6010);
 
     let mapOptions = {
@@ -441,7 +441,7 @@ export class SimpleMapPage {
       disableDefaultUI: true
     };
     this.map = new google.maps.Map(this.mapElement.nativeElement, mapOptions);
-    
+
     // Blue current location marker
     this.currentLocationMarker = new google.maps.Marker({
       zIndex: 10,
@@ -457,7 +457,7 @@ export class SimpleMapPage {
         strokeWeight: 6
       }
     });
-    
+
     // Red Stationary Geofence
     this.stationaryRadiusCircle = new google.maps.Circle({
       zIndex: 0,
@@ -487,7 +487,7 @@ export class SimpleMapPage {
           strokeOpacity: 1
         }
       }]
-    });    
+    });
   }
 
   /**
@@ -495,7 +495,7 @@ export class SimpleMapPage {
   */
   private updateCurrentLocationMarker(location) {
     var latlng = new google.maps.LatLng(location.coords.latitude, location.coords.longitude);
-    this.currentLocationMarker.setPosition(latlng);   
+    this.currentLocationMarker.setPosition(latlng);
 
     setTimeout(() => {
       this.map.setCenter(new google.maps.LatLng(location.coords.latitude, location.coords.longitude));
@@ -517,7 +517,7 @@ export class SimpleMapPage {
   */
   private buildLocationMarker(location, options?) {
     options = options || {};
-    
+
     return new google.maps.Marker({
       zIndex: 1,
       icon: {
@@ -534,7 +534,7 @@ export class SimpleMapPage {
       map: this.map,
       position: new google.maps.LatLng(location.coords.latitude, location.coords.longitude)
     });
-  }  
+  }
 
   /**
   * Fetch email address from localStorage.  We use this for #emailLog method
@@ -583,8 +583,8 @@ export class SimpleMapPage {
           handler: resolve
         }]
       });
-      alert.present();    
-    });    
+      alert.present();
+    });
   }
 
   /**

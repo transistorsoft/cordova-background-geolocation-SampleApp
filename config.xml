@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.transistorsoft.backgroundgeolocation.ionic2" version="2.13.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.transistorsoft.backgroundgeolocation.ionic2" version="2.13.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>BG Geo</name>
     <description>Cordova Background Geolocation Demo App.</description>
     <author email="info@transistorsoft.com" href="https://www.transistorsoft.com/">Transistor Software</author>
@@ -90,7 +90,7 @@
     <plugin name="cordova-plugin-dialogs" spec="^2.0.1" />
     <plugin name="cordova-plugin-statusbar" spec="^2.4.2" />
     <plugin name="cordova-plugin-device" spec="^2.0.2" />
-    <plugin name="cordova-background-geolocation-lt" spec="^2.13.1">
+    <plugin name="cordova-background-geolocation-lt" spec="2.13.2">
         <variable name="LICENSE" value="YOUR_LICENSE_KEY" />
         <variable name="GOOGLE_API_VERSION" value="15.0.1" />
         <variable name="APPCOMPAT_VERSION" value="27.1.1" />
@@ -101,5 +101,5 @@
         <variable name="MOTION_USAGE_DESCRIPTION" value="Using the accelerometer increases battery-efficiency by intelligently toggling location-tracking only when the device is detected to be moving" />
     </plugin>
     <engine name="ios" spec="^4.5.5" />
-    <engine name="android" spec="^7.1.1" />
+    <engine name="android" spec="7.1.1" />
 </widget>

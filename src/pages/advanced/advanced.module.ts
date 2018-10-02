@@ -6,7 +6,6 @@ import {BGService} from './lib/BGService';
 import {SettingsService} from './lib/SettingsService';
 import {TestService} from './lib/TestService';
 
-
 @NgModule({
   declarations: [
     AdvancedPage

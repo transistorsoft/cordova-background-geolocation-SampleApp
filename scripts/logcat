@@ -1,1 +1,1 @@
-adb logcat *:S TSLocationManager:V TSBackgroundFetch:V
+adb logcat *:S TSLocationManager:V TSBackgroundFetch:V chromium:V
