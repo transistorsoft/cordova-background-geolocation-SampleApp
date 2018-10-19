@@ -2,6 +2,19 @@ import { Component,  NgZone  } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import { Device } from '@ionic-native/device';
 
+////
+// NOTE:  normally you will simply import from "cordova-background-geolocation-lt" or "cordova-background-geolocation"
+// from "../../cordova-background-geolocation" is only fro convenience in the SampleApp for easily switching
+// between public / private version of the plugin
+//
+import BackgroundGeolocation, {
+  Location,
+  HttpEvent,
+  MotionActivityEvent,
+  ProviderChangeEvent,
+  MotionChangeEvent,
+  ConnectivityChangeEvent
+} from "../../cordova-background-geolocation";
 
 // Url to post locations to
 const TRACKER_HOST = 'http://tracker.transistorsoft.com/locations/';
@@ -12,9 +25,6 @@ const TRACKER_HOST = 'http://tracker.transistorsoft.com/locations/';
   templateUrl: 'hello-world.html',
 })
 export class HelloWorldPage {
-  // BackgroundGeolocation instance
-  bgGeo: any;
-
   // UI State
   enabled: boolean;
   isMoving: boolean;
@@ -41,22 +51,19 @@ export class HelloWorldPage {
     let username = localStorage.getItem('username');
     let url = TRACKER_HOST + username;
 
-    // Get reference to BackgroundGeolocation API
-    this.bgGeo = (<any>window).BackgroundGeolocation;
-
     // Step 1:  Listen to events
-    this.bgGeo.on('location', this.onLocation.bind(this));
-    this.bgGeo.on('motionchange', this.onMotionChange.bind(this));
-    this.bgGeo.on('activitychange', this.onActivityChange.bind(this));
-    this.bgGeo.on('http', this.onHttpSuccess.bind(this), this.onHttpFailure.bind(this));
-    this.bgGeo.on('providerchange', this.onProviderChange.bind(this));
-    this.bgGeo.on('powersavechange', this.onPowerSaveChange.bind(this));
-    this.bgGeo.on('connectivitychange', this.onConnectivityChange.bind(this));
+    BackgroundGeolocation.onLocation(this.onLocation.bind(this));
+    BackgroundGeolocation.onMotionChange(this.onMotionChange.bind(this));
+    BackgroundGeolocation.onActivityChange(this.onActivityChange.bind(this));
+    BackgroundGeolocation.onHttp(this.onHttpSuccess.bind(this));
+    BackgroundGeolocation.onProviderChange(this.onProviderChange.bind(this));
+    BackgroundGeolocation.onPowerSaveChange(this.onPowerSaveChange.bind(this));
+    BackgroundGeolocation.onConnectivityChange(this.onConnectivityChange.bind(this));
 
     // Step 2:  Configure the plugin
-    this.bgGeo.ready({
+    BackgroundGeolocation.ready({
       debug: true,
-      logLevel: this.bgGeo.LOG_LEVEL_VERBOSE,
+      logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
       distanceFilter: 10,
       stopTimeout: 1,
       stopOnTerminate: false,
@@ -64,17 +71,7 @@ export class HelloWorldPage {
       foregroundService: true,
       url: url,
       autoSync: true,
-      params: {
-        device: {  // <-- required for tracker.transistorsoft.com
-          platform: this.device.platform,
-          version: this.device.version,
-          uuid: (this.device.model + '-' + this.device.version).replace(/[\s\.,]/g, '-'),
-          cordova: this.device.cordova,
-          model: this.device.model,
-          manufacturer: this.device.manufacturer,
-          framework: 'Cordova'
-        }
-      }
+      params: BackgroundGeolocation.transistorTrackerParams(this.device)
     }, (state) => {
       console.log('- Configure success: ', state);
       // Update UI state (toggle switch, changePace button)
@@ -93,15 +90,15 @@ export class HelloWorldPage {
   // #start / #stop tracking
   onToggleEnabled() {
     if (this.enabled) {
-      this.bgGeo.start();
+      BackgroundGeolocation.start();
     } else {
-      this.bgGeo.stop();
+      BackgroundGeolocation.stop();
     }
   }
 
   // Fetch the current position
   onClickGetCurrentPosition() {
-    this.bgGeo.getCurrentPosition((location) => {
+    BackgroundGeolocation.getCurrentPosition({}, (location) => {
       console.log('- getCurrentPosition: ', location);
     }, (error) => {
       console.warn('- Location error: ', error);
@@ -111,7 +108,7 @@ export class HelloWorldPage {
   // Change plugin state between stationary / tracking
   onClickChangePace() {
     this.isMoving = !this.isMoving;
-    this.bgGeo.changePace(this.isMoving);
+    BackgroundGeolocation.changePace(this.isMoving);
   }
 
   // Clear the list of events from ion-list
@@ -122,7 +119,7 @@ export class HelloWorldPage {
   /**
   * @event location
   */
-  onLocation(location) {
+  onLocation(location:Location) {
     console.log('[event] location: ', location);
     let event = location.event || 'location';
 
@@ -133,16 +130,16 @@ export class HelloWorldPage {
   /**
   * @event motionchange
   */
-  onMotionChange(isMoving, location) {
-    console.log('[event] motionchange, isMoving: ', isMoving, ', location: ', location);
+  onMotionChange(event:MotionChangeEvent) {
+    console.log('[event] motionchange, isMoving: ', event.isMoving, ', location: ', event.location);
     this.zone.run(() => {
-      this.isMoving = isMoving;
+      this.isMoving = event.isMoving;
     });
   }
   /**
   * @event activitychange
   */
-  onActivityChange(event) {
+  onActivityChange(event:MotionActivityEvent) {
     console.log('[event] activitychange: ', event);
     this.zone.run(() => {
       this.addEvent('activitychange', new Date(), event);
@@ -151,13 +148,13 @@ export class HelloWorldPage {
   /**
   * @event http
   */
-  onHttpSuccess(response) {
+  onHttpSuccess(response:HttpEvent) {
     console.log('[event] http: ', response);
     this.zone.run(() => {
       this.addEvent('http', new Date(), response);
     });
   }
-  onHttpFailure(response) {
+  onHttpFailure(response:HttpEvent) {
     console.warn('[event] http failure: ', response);
     this.zone.run(() => {
       this.addEvent('http failure', new Date(), response);
@@ -166,7 +163,7 @@ export class HelloWorldPage {
   /**
   * @event providerchange
   */
-  onProviderChange(provider) {
+  onProviderChange(provider:ProviderChangeEvent) {
     console.log('[event] providerchange', provider);
     this.zone.run(() => {
       this.addEvent('providerchange', new Date(), provider);
@@ -175,7 +172,7 @@ export class HelloWorldPage {
   /**
   * @event powersavechange
   */
-  onPowerSaveChange(isPowerSaveEnabled) {
+  onPowerSaveChange(isPowerSaveEnabled:boolean) {
     console.log('[event] powersavechange', isPowerSaveEnabled);
     this.zone.run(() => {
       this.addEvent('powersavechange', new Date(), {isPowerSaveEnabled: isPowerSaveEnabled});
@@ -184,7 +181,7 @@ export class HelloWorldPage {
   /**
   * @event connectivitychange
   */
-  onConnectivityChange(event) {
+  onConnectivityChange(event:ConnectivityChangeEvent) {
     console.log('[event] connectivitychange connected? ', event.connected);
   }
   /**

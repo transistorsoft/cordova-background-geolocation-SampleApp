@@ -21,7 +21,26 @@ import {TestService} from './lib/TestService';
 import {SettingsService} from './lib/SettingsService';
 import {LongPress} from './lib/LongPress';
 
+////
+// NOTE:  normally you will simply import from "cordova-background-geolocation-lt" or "cordova-background-geolocation"
+// This is done only for convenience in the SampleApp for easily switching between public / private version of the plugin
+//
+import BackgroundGeolocation, {
+  State,
+  Location,
+  Geofence,
+  HttpEvent,
+  MotionActivityEvent,
+  ProviderChangeEvent,
+  MotionChangeEvent,
+  GeofenceEvent,
+  GeofencesChangeEvent,
+  HeartbeatEvent,
+  ConnectivityChangeEvent
+} from "../../cordova-background-geolocation";
+
 declare var google;
+
 
 const CONTAINER_BORDER_POWER_SAVE_OFF = 'none';
 const CONTAINER_BORDER_POWER_SAVE_ON = '7px solid red';
@@ -65,10 +84,6 @@ export class AdvancedPage {
   * @property {Object} state
   */
   state: any;
-  /**
-  * @property {BackgroundGeolocation} Reference to actual BackgroundGeolocation plugin
-  */
-  bgGeo: any;
   /**
   * @property {Object} lastLocation
   */
@@ -127,7 +142,7 @@ export class AdvancedPage {
       enabled: false,
       isMoving: false,
       geofenceProximityRadius: 1000,
-      trackingMode: 'location',
+      trackingMode: 1,
       isChangingPace: false,
       activityIcon: this.iconMap['activity_unknown'],
       odometer: 0,
@@ -262,15 +277,14 @@ export class AdvancedPage {
   * Configure BackgroundGeolocation plugin
   */
   async configureBackgroundGeolocation() {
-    var bgGeo = this.bgService.getPlugin();
 
     // [optional] We first bind all our event-handlers to *this* so that we have the option to later remove these
-    // listeners with bgGeo.un("event", this.onMyHandler), since the #bind method returns a new function instance.
+    // listeners with BackgroundGeolocation.un("eventname", this.onMyHandler), since the #bind method returns a new function instance.
     // To remove an event-handler requires a reference to the *exact* success-callback provided to #on
     // eg:
     //  this.onLocation = this.onLocation.bind(this);
-    //  bgGeo.on("location", this.onLocation);  <-- add listener
-    //  bgGeo.un("location", this.onLocation);  <-- remove listener
+    //  BackgroundGeolocation.onLocation(this.onLocation);  <-- add listener
+    //  BackgroundGeolocation.un("location", this.onLocation);  <-- remove listener
     // If you don't plan to remove events, this is unnecessary.
     //
     this.onLocation = this.onLocation.bind(this);
@@ -282,36 +296,36 @@ export class AdvancedPage {
     this.onProviderChange = this.onProviderChange.bind(this);
     this.onGeofencesChange = this.onGeofencesChange.bind(this);
     this.onSchedule = this.onSchedule.bind(this);
-    this.onHttpSuccess = this.onHttpSuccess.bind(this);
-    this.onHttpFailure = this.onHttpFailure.bind(this);
+    this.onHttp = this.onHttp.bind(this);
     this.onPowerSaveChange = this.onPowerSaveChange.bind(this);
     this.onConnectivityChange = this.onConnectivityChange.bind(this);
     this.onEnabledChange = this.onEnabledChange.bind(this);
 
     // Listen to BackgroundGeolocation events
-    bgGeo.on('location', this.onLocation, this.onLocationError);
-    bgGeo.on('motionchange', this.onMotionChange);
-    bgGeo.on('heartbeat', this.onHeartbeat);
-    bgGeo.on('geofence', this.onGeofence);
-    bgGeo.on('activitychange', this.onActivityChange);
-    bgGeo.on('providerchange', this.onProviderChange);
-    bgGeo.on('geofenceschange', this.onGeofencesChange);
-    bgGeo.on('schedule', this.onSchedule);
-    bgGeo.on('http', this.onHttpSuccess, this.onHttpFailure);
-    bgGeo.on('powersavechange', this.onPowerSaveChange);
-    bgGeo.on('connectivitychange', this.onConnectivityChange);
-    bgGeo.on('enabledchange', this.onEnabledChange);
 
-    this.state.containerBorder = (await bgGeo.isPowerSaveMode()) ? CONTAINER_BORDER_POWER_SAVE_ON : CONTAINER_BORDER_POWER_SAVE_OFF;
+    BackgroundGeolocation.onLocation(this.onLocation, this.onLocationError);
+    BackgroundGeolocation.onMotionChange(this.onMotionChange);
+    BackgroundGeolocation.onHeartbeat(this.onHeartbeat);
+    BackgroundGeolocation.onGeofence(this.onGeofence);
+    BackgroundGeolocation.onActivityChange(this.onActivityChange);
+    BackgroundGeolocation.onProviderChange(this.onProviderChange);
+    BackgroundGeolocation.onGeofencesChange(this.onGeofencesChange);
+    BackgroundGeolocation.onSchedule(this.onSchedule);
+    BackgroundGeolocation.onHttp(this.onHttp);
+    BackgroundGeolocation.onPowerSaveChange(this.onPowerSaveChange);
+    BackgroundGeolocation.onConnectivityChange(this.onConnectivityChange);
+    BackgroundGeolocation.onEnabledChange(this.onEnabledChange);
+
+    this.state.containerBorder = (await BackgroundGeolocation.isPowerSaveMode()) ? CONTAINER_BORDER_POWER_SAVE_ON : CONTAINER_BORDER_POWER_SAVE_OFF;
 
     let username = localStorage.getItem('username');
 
     // With the plugin's #ready method, the supplied config object will only be applied with the first
     // boot of your application.  The plugin persists the configuration you apply to it.  Each boot thereafter,
     // the plugin will automatically apply the last known configuration.
-    bgGeo.ready({
+    BackgroundGeolocation.ready({
       debug: true,
-      logLevel: bgGeo.LOG_LEVEL_VERBOSE,
+      logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
       distanceFilter: 10,
       stopTimeout: 1,
       maxDaysToPersist: 14,
@@ -320,16 +334,7 @@ export class AdvancedPage {
       foregroundService: true,
       enableHeadless: true,
       url: 'http://tracker.transistorsoft.com/locations/' + username,
-      params: {
-        device: {
-          model: this.device.model,
-          platform: this.device.platform,
-          uuid: (this.device.model + '-' + this.device.version).replace(/[\s\.,]/g, '-'),
-          version: this.device.version,
-          manufacturer: this.device.manufacturer,
-          framework: 'Cordova'
-        }
-      }
+      params: BackgroundGeolocation.transistorTrackerParams(this.device)
     }).then((state) => {
       // Store the plugin state onto ourself for convenience.
       console.log('- BackgroundGeolocation is ready: ', state);
@@ -337,10 +342,10 @@ export class AdvancedPage {
         this.state.enabled = state.enabled;
         this.state.isMoving = state.isMoving;
         this.state.geofenceProximityRadius = state.geofenceProximityRadius;
-        this.state.trackingMode = (state.trackingMode === 1 || state.trackingMode === 'location') ? 'location' : 'geofence';
+        this.state.trackingMode = state.trackingMode;
       });
       if (!state.schedulerEnabled && (state.schedule.length > 0)) {
-        bgGeo.startSchedule();
+        BackgroundGeolocation.startSchedule();
       }
     }).catch((error) => {
       console.warn('- BackgroundGeolocation configuration error: ', error);
@@ -379,6 +384,15 @@ export class AdvancedPage {
       bgService: this.bgService,
       settingsService: this.settingsService
     });
+    modal.onDidDismiss(async () => {
+      // Update our view-state -- BackgroundGeolocation state may have changed in Settings screen.
+      let state = await BackgroundGeolocation.getState();
+      this.state.enabled = state.enabled;
+      this.state.isMoving = state.isMoving;
+      this.state.geofenceProximityRadius = state.geofenceProximityRadius;
+      this.state.trackingMode = state.trackingMode;
+    });
+
     modal.present();
   }
 
@@ -390,8 +404,7 @@ export class AdvancedPage {
       this.zone.run(() => { this.isSyncing = false; })
     };
 
-    let bgGeo = this.bgService.getPlugin();
-    let count = await bgGeo.getCount();
+    let count = await BackgroundGeolocation.getCount();
     if (!count) {
       this.settingsService.toast('Database is empty.');
       return;
@@ -399,7 +412,7 @@ export class AdvancedPage {
     let message = 'Sync ' + count + ' location' + ((count>1) ? 's' : '') + '?';
     this.settingsService.confirm('Confirm Sync', message, () => {
       this.isSyncing = true;
-      bgGeo.sync().then(rs => {
+      BackgroundGeolocation.sync().then(rs => {
         this.bgService.playSound('MESSAGE_SENT');
         onComplete(MESSAGE.sync_success, count);
       }).catch(error => {
@@ -419,8 +432,7 @@ export class AdvancedPage {
       zone.run(() => { this.isDestroyingLocations = false; })
     };
 
-    let bgGeo = this.bgService.getPlugin();
-    let count = await bgGeo.getCount();
+    let count = await BackgroundGeolocation.getCount();
     if (!count) {
       this.settingsService.toast('Locations database is empty');
       return;
@@ -430,7 +442,7 @@ export class AdvancedPage {
     this.settingsService.confirm('Confirm Delete', message, () => {
       // Good to go...
       this.isDestroyingLocations = true;
-      bgGeo.destroyLocations().then(result => {
+      BackgroundGeolocation.destroyLocations().then(result => {
         this.bgService.playSound('MESSAGE_SENT');
         onComplete.call(this, MESSAGE.destroy_locations_success, count);
       }).catch(error => {
@@ -459,11 +471,9 @@ export class AdvancedPage {
   }
 
   doEmailLog(email) {
-    let bgGeo = this.bgService.getPlugin();
-
     this.isEmailingLog = true;
 
-    bgGeo.emailLog(email).then(result => {
+    BackgroundGeolocation.emailLog(email).then(result => {
       this.zone.run(() => {this.isEmailingLog = false; });
       console.log('- email log success');
     }).catch(error => {
@@ -475,7 +485,6 @@ export class AdvancedPage {
   onClickResetOdometer() {
     this.state.odometer = '0.0';
     this.bgService.playSound('BUTTON_CLICK');
-    let bgGeo = this.bgService.getPlugin();
     this.isResettingOdometer = true;
     this.resetMarkers();
 
@@ -487,7 +496,7 @@ export class AdvancedPage {
       zone.run(() => { this.isResettingOdometer = false; })
     };
 
-    bgGeo.resetOdometer((location) => {
+    BackgroundGeolocation.resetOdometer((location) => {
       onComplete.call(this, MESSAGE.reset_odometer_success);
     }, (error) => {
       onComplete.call(this, MESSAGE.reset_odometer_failure, error);
@@ -539,29 +548,27 @@ export class AdvancedPage {
   onToggleEnabled() {
     this.bgService.playSound('BUTTON_CLICK');
 
-    let bgGeo = this.bgService.getPlugin();
     if (this.state.enabled) {
-      if ((this.state.trackingMode == 1) || (this.state.trackingMode === 'location')) {
-        bgGeo.start(state => {
+      if (this.state.trackingMode == 1) {
+        BackgroundGeolocation.start(state => {
           console.log('[js] START SUCCESS :', state);
         }, error => {
           console.error('[js] START FAILURE: ', error);
         });
       } else {
-        bgGeo.startGeofences();
+        BackgroundGeolocation.startGeofences();
       }
     } else {
       this.state.isMoving = false;
-      bgGeo.stop();
+      BackgroundGeolocation.stop();
       this.clearMarkers();
     }
   }
 
   onClickGetCurrentPosition() {
     this.bgService.playSound('BUTTON_CLICK');
-    let bgGeo = this.bgService.getPlugin();
 
-    bgGeo.getCurrentPosition({
+    BackgroundGeolocation.getCurrentPosition({
       maximumAge: 0,
       desiredAccuracy: 100,
       samples: 1,
@@ -586,11 +593,10 @@ export class AdvancedPage {
       zone.run(() => { this.state.isChangingPace = false; })
     }
     this.bgService.playSound('BUTTON_CLICK');
-    let bgGeo = this.bgService.getPlugin();
 
     this.state.isChangingPace = true;
     this.state.isMoving = !this.state.isMoving;
-    bgGeo.changePace(this.state.isMoving).then(onComplete).catch(onComplete);
+    BackgroundGeolocation.changePace(this.state.isMoving).then(onComplete).catch(onComplete);
   }
 
   ////
@@ -628,8 +634,8 @@ export class AdvancedPage {
   /**
   * @event location
   */
-  onLocation(location:any) {
-    console.log('[event] - location: ', location);
+  onLocation(location:Location) {
+    console.log('[location] -', location);
     this.setCenter(location);
     if (!location.sample) {
       this.zone.run(() => {
@@ -641,55 +647,54 @@ export class AdvancedPage {
   /**
   * @event location failure
   */
-  onLocationError(error:any) {
-    console.warn('[event] - location error: ', error);
+  onLocationError(error:number) {
+    console.warn('[location] - ERROR: ', error);
   }
   /**
   * @event motionchange
   */
-  onMotionChange(isMoving:boolean, location:any) {
-    console.log('[event] - motionchange: ', isMoving, location);
-    let bgGeo = this.bgService.getPlugin();
-    if (isMoving) {
+  onMotionChange(event:MotionChangeEvent) {
+    console.log('[motionchange] -', event.isMoving, event.location);
+
+    if (event.isMoving) {
       this.hideStationaryCircle();
     } else {
-      this.showStationaryCircle(location);
+      this.showStationaryCircle(event.location);
     }
     this.zone.run(() => {
       this.state.enabled = true;
       this.state.isChangingPace = false;
-      this.state.isMoving = isMoving;
+      this.state.isMoving = event.isMoving;
     });
   }
   /**
   * @event heartbeat
   */
-  onHeartbeat(event:any) {
-    console.log('[event] - heartbeat', event);
+  onHeartbeat(event:HeartbeatEvent) {
+    console.log('[heartbeat] -', event);
   }
   /**
   * @event activitychange
   */
-  onActivityChange(event:any) {
+  onActivityChange(event:MotionActivityEvent) {
     this.zone.run(() => {
       this.state.activityName = event.activity;
       this.state.activityIcon = this.iconMap['activity_' + event.activity];
     });
-    console.log('[event] - activitychange: ', event.activity, event.confidence);
+    console.log('[activitychange] -', event.activity, event.confidence);
   }
   /**
   * @event providerchange
   */
-  onProviderChange(provider:any) {
-    console.log('[event] - providerchange: ', provider);
-    let bgGeo = this.bgService.getPlugin();
+  onProviderChange(provider:ProviderChangeEvent) {
+    console.log('[providerchange] -', provider);
 
     switch(provider.status) {
-      case bgGeo.AUTHORIZATION_STATUS_DENIED:
+      case BackgroundGeolocation.AUTHORIZATION_STATUS_DENIED:
         break;
-      case bgGeo.AUTHORIZATION_STATUS_ALWAYS:
+      case BackgroundGeolocation.AUTHORIZATION_STATUS_ALWAYS:
         break;
-      case bgGeo.AUTHORIZATION_STATUS_WHEN_IN_USE:
+      case BackgroundGeolocation.AUTHORIZATION_STATUS_WHEN_IN_USE:
         break;
     }
 
@@ -698,8 +703,8 @@ export class AdvancedPage {
   /**
   * @event geofenceschange
   */
-  onGeofencesChange(event:any) {
-    console.log('[event] - geofenceschange: ', event);
+  onGeofencesChange(event:GeofencesChangeEvent) {
+    console.log('[geofenceschange] -', event);
     // All geofences off
     if (!event.on.length && !event.off.length) {
       this.geofenceMarkers.forEach((circle) => {
@@ -720,7 +725,7 @@ export class AdvancedPage {
     });
 
     // Add new "on" geofences.
-    event.on.forEach((geofence) => {
+    event.on.forEach((geofence:Geofence) => {
       var circle = this.geofenceMarkers.find((marker) => { return marker.identifier === geofence.identifier;});
       // Already added?
       if (circle) { return; }
@@ -731,8 +736,8 @@ export class AdvancedPage {
   /**
   * @event geofence
   */
-  onGeofence(event:any) {
-    console.log('[event] - geofence: ', event);
+  onGeofence(event:GeofenceEvent) {
+    console.log('[geofence] -', event);
     var circle = this.geofenceMarkers.find((marker) => {
       return marker.identifier === event.identifier;
     });
@@ -834,24 +839,23 @@ export class AdvancedPage {
   /**
   * @event http
   */
-  onHttpSuccess(response) {
-    console.log('[event] http - success: ', response);
+  onHttp(response:HttpEvent) {
+    if (response.success) {
+      console.log('[http] - success: ', response);
+    } else {
+      console.warn('[http] - FAILURE: ', response);
+    }
   }
-  /**
-  * @event http failure
-  */
-  onHttpFailure(response) {
-    console.log('[event] http - FAILURE: ', response);
-  }
+
   /**
   * @event schedule
   */
-  onSchedule(state) {
+  onSchedule(state:State) {
     this.zone.run(() => {
       this.state.enabled = state.enabled;
     });
 
-    console.log('[event] - schedule: ', state);
+    console.log('[schedule] - ', state);
   }
   /**
   * @event powersavechange
@@ -866,30 +870,30 @@ export class AdvancedPage {
   /**
   * @event connectivitychange
   */
-  onConnectivityChange(event) {
+  onConnectivityChange(event:ConnectivityChangeEvent) {
     this.settingsService.toast('connectivitychange: ' + event.connected);
-    console.log('[event] - connectivitychange: ', event);
+    console.log('[connectivitychange] -', event);
   }
   /**
   * @event enabledchange
   */
-  onEnabledChange(event) {
-    this.settingsService.toast('enabledchange: ' + event.enabled);
-    console.log('[event] - enabledchange: ', event);
+  onEnabledChange(enabled:boolean) {
+    this.settingsService.toast('enabledchange: ' + enabled);
+    console.log('[enabledchange] -', event);
   }
   ////
   // Google map methods
   //
   //
   //
-  private setCenter(location) {
+  private setCenter(location:Location) {
     this.updateCurrentLocationMarker(location);
     setTimeout(function() {
       this.map.setCenter(new google.maps.LatLng(location.coords.latitude, location.coords.longitude));
     }.bind(this));
   }
 
-  private updateCurrentLocationMarker(location) {
+  private updateCurrentLocationMarker(location:Location) {
     var latlng = new google.maps.LatLng(location.coords.latitude, location.coords.longitude);
     this.currentLocationMarker.setPosition(latlng);
     this.locationAccuracyCircle.setCenter(latlng);
@@ -910,7 +914,7 @@ export class AdvancedPage {
   }
 
   // Build a bread-crumb location marker.
-  private buildLocationMarker(location, options?) {
+  private buildLocationMarker(location:Location, options?) {
     options = options || {};
     var icon = google.maps.SymbolPath.CIRCLE;
     var scale = 3;
@@ -950,26 +954,26 @@ export class AdvancedPage {
     });
   }
 
-  buildGeofenceMarker(params) {
+  buildGeofenceMarker(geofence:Geofence) {
     // Add longpress event for adding GeoFence of hard-coded radius 200m.
-    var geofence = new google.maps.Circle({
-      identifier: params.identifier,
+    var circle = new google.maps.Circle({
+      identifier: geofence.identifier,
       zIndex: 100,
       fillColor: COLORS.green,
       fillOpacity: 0.2,
       strokeColor: COLORS.green,
       strokeWeight: 1,
       strokeOpacity: 0.7,
-      params: params,
-      radius: parseInt(params.radius, 10),
-      center: new google.maps.LatLng(params.latitude, params.longitude),
+      params: geofence,
+      radius: geofence.radius,
+      center: new google.maps.LatLng(geofence.latitude, geofence.longitude),
       map: this.map
     });
     // Add 'click' listener to geofence so we can edit it.
     google.maps.event.addListener(geofence, 'click', () => {
       this.settingsService.toast('Click geofence ' + geofence.identifier, null, 1000);
     });
-    return geofence;
+    return circle;
   }
 
   buildStopZoneMarker(latlng:any) {
@@ -989,9 +993,9 @@ export class AdvancedPage {
     });
   }
 
-  showStationaryCircle(location:any) {
+  showStationaryCircle(location:Location) {
     var coords = location.coords;
-    var radius = ((this.state.trackingMode == 1) || (this.state.trackingMode === 'location')) ? 200 : (this.state.geofenceProximityRadius / 2);
+    var radius = (this.state.trackingMode == 1) ? 200 : (this.state.geofenceProximityRadius / 2);
     var center = new google.maps.LatLng(coords.latitude, coords.longitude);
 
     this.stationaryRadiusCircle.setRadius(radius);

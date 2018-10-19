@@ -8,6 +8,13 @@ import {
   LoadingController
 } from "ionic-angular";
 
+////
+// NOTE:  normally you will simply import from "cordova-background-geolocation-lt" or "cordova-background-geolocation"
+// This is done only for convenience in the SampleApp for easily switching between public / private version of the plugin
+//
+import BackgroundGeolocation, {Geofence} from "../../../../cordova-background-geolocation";
+
+
 const TRACKING_MODE_OPTIONS = [
   'location',
   'geofence'
@@ -79,11 +86,11 @@ export class SettingsPage {
 
     let settings = this.bgService.getSettings();
     this.state = {};
-    this.bgService.getState((state) => {
+    BackgroundGeolocation.getState((state) => {
       settings.forEach((setting) => {
         this.state[setting.name] = state[setting.name];
       });
-      this.state.trackingMode = (state.trackingMode === 1 || state.trackingMode === 'location') ? 'location' : 'geofence';
+      this.state.trackingMode = (state.trackingMode) ? 'location' : 'geofence';
       this.state.logLevel = this.decodeLogLevel(state.logLevel);
       this.state.notificationPriority = this.decodeNotficationPriority(state.notificationPriority);
       if (this.state.triggerActivities) {
@@ -148,19 +155,24 @@ export class SettingsPage {
   }
 
   setTrackingMode(mode) {
-    this.bgService.start(mode);
+    this.state.trackingMode = mode;
+    if (mode === 'location') {
+      BackgroundGeolocation.start();
+    } else {
+      BackgroundGeolocation.startGeofences();
+    }
   }
 
   onClickResetOdometer() {
     this.bgService.playSound('BUTTON_CLICK');
-    var bgGeo = this.bgService.getPlugin();
+
     this.isResettingOdometer = true;
 
     let zone = this.zone;
     function onComplete() {
       zone.run(() => { this.isResettingOdometer = false;});
     }
-    bgGeo.resetOdometer((location) => {
+    BackgroundGeolocation.resetOdometer((location) => {
       onComplete.call(this);
     }, (error) => {
       onComplete.call(this);
@@ -176,17 +188,14 @@ export class SettingsPage {
     this.bgService.playSound('BUTTON_CLICK');
     this.isSyncing = true;
 
-    var bgGeo = this.bgService.getPlugin();
-
     let zone = this.zone;
     function onComplete() {
       zone.run(() => { this.isSyncing = false; });
     };
 
-    bgGeo.sync((rs, taskId) => {
+    BackgroundGeolocation.sync((rs) => {
       this.bgService.playSound('MESSAGE_SENT');
       onComplete.call(this);
-      bgGeo.finish(taskId);
     }, (error) => {
       onComplete.call(this);
       this.bgService.playSound('ERROR');
@@ -215,7 +224,7 @@ export class SettingsPage {
       zone.run(() => { this.isEmailingLog = false; });
     }
 
-    this.bgService.getPlugin().emailLog(this.email, () => {
+    BackgroundGeolocation.emailLog(this.email, () => {
       onComplete.call(this);
     }, (error) => {
       onComplete.call(this);
@@ -226,7 +235,7 @@ export class SettingsPage {
   onClickDestroyLog() {
     this.settingsService.confirm('Confirm Destroy', 'Destroy Logs?', () => {
       this.isDestroyingLog = true;
-      this.bgService.getPlugin().destroyLog(() => {
+      BackgroundGeolocation.destroyLog(() => {
         this.isDestroyingLog = false;
         this.bgService.playSound('MESSAGE_SENT');
         this.settingsService.toast('Destroyed logs');
@@ -237,7 +246,7 @@ export class SettingsPage {
   onClickRemoveGeofences() {
     this.bgService.playSound('BUTTON_CLICK');
 
-    this.bgService.getPlugin().removeGeofences(() => {
+    BackgroundGeolocation.removeGeofences(() => {
       this.bgService.playSound('MESSAGE_SENT');
     }, (error) => {
       this.bgService.playSound('ERROR');
@@ -249,14 +258,13 @@ export class SettingsPage {
     this.bgService.playSound('BUTTON_CLICK');
     this.isAddingGeofences = true;
 
-    let bgGeo     = this.bgService.getPlugin();
     let data      = this.bgService.getCityDriveData();
-    let geofences = [], latlng;
+    let geofences:Array<Geofence> = []
 
     let applicationState = this.settingsService.getApplicationState();
 
     for (let n=0,len=data.length;n<len;n++) {
-      latlng = data[n];
+      let latlng = data[n];
       geofences.push({
         identifier: 'city_drive_' + (n+1),
         latitude: parseFloat(latlng.lat),
@@ -276,7 +284,7 @@ export class SettingsPage {
     };
 
 
-    bgGeo.addGeofences(geofences, () => {
+    BackgroundGeolocation.addGeofences(geofences, () => {
       onComplete.call(this);
       this.bgService.playSound('ADD_GEOFENCE');
     }, (error) => {

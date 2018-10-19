@@ -1,12 +1,18 @@
 import { Component } from '@angular/core';
 import {
-  IonicPage, 
+  IonicPage,
   ViewController,
   AlertController,
   NavParams
 } from 'ionic-angular';
 
 import {BGService} from '../../lib/BGService';
+
+////
+// NOTE:  normally you will simply import from "cordova-background-geolocation-lt" or "cordova-background-geolocation"
+// This is done only for convenience in the SampleApp for easily switching between public / private version of the plugin
+//
+import BackgroundGeolocation from "../../../../cordova-background-geolocation";
 
 /*
   Generated class for the Geofence page.
@@ -59,9 +65,8 @@ export class GeofencePage {
   }
 
   onClickSubmit() {
-    let bgGeo = this.bgService.getPlugin();
     let radius = parseInt(this.radius, 10);
-    bgGeo.addGeofence({
+    BackgroundGeolocation.addGeofence({
       identifier: this.identifier,
       radius: radius,
       latitude: this.latitude,
