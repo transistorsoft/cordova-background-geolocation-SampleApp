@@ -15,6 +15,21 @@ import {
   Platform
 } from 'ionic-angular';
 
+////
+// NOTE:  normally you will simply import from "cordova-background-geolocation-lt" or "cordova-background-geolocation"
+// from "../../cordova-background-geolocation" is only fro convenience in the SampleApp for easily switching
+// between public / private version of the plugin
+//
+import BackgroundGeolocation, {
+  Location,
+  HttpEvent,
+  HeartbeatEvent,
+  MotionActivityEvent,
+  ProviderChangeEvent,
+  MotionChangeEvent,
+  ConnectivityChangeEvent
+} from "../../cordova-background-geolocation";
+
 // Cordova plugins Device & Dialogs
 import { Device } from '@ionic-native/device';
 import { Dialogs } from '@ionic-native/dialogs';
@@ -36,9 +51,6 @@ const TRACKER_HOST = 'http://tracker.transistorsoft.com/locations/';
 })
 export class SimpleMapPage {
   @ViewChild('map') mapElement: ElementRef;
-
-  // BackgroundGeolocation API
-  bgGeo: any;
 
   // Background Geolocation State
   state: any;
@@ -111,25 +123,23 @@ export class SimpleMapPage {
     let username = localStorage.getItem('username');
     let url = TRACKER_HOST + username;
 
-    this.bgGeo = (<any>window).BackgroundGeolocation;
-
     ////
     // Step 1:  listen to events
     //
-    this.bgGeo.on('location', this.onLocation.bind(this));
-    this.bgGeo.on('motionchange', this.onMotionChange.bind(this));
-    this.bgGeo.on('activitychange', this.onActivityChange.bind(this));
-    this.bgGeo.on('http', this.onHttpSuccess.bind(this), this.onHttpFailure.bind(this));
-    this.bgGeo.on('providerchange', this.onProviderChange.bind(this));
-    this.bgGeo.on('heartbeat', this.onHeartbeat.bind(this));
-    this.bgGeo.on('powersavechange', this.onPowerSaveChange.bind(this));
-    this.bgGeo.on('connectivitychange', this.onConnectivityChange.bind(this));
+    BackgroundGeolocation.onLocation(this.onLocation.bind(this));
+    BackgroundGeolocation.onMotionChange(this.onMotionChange.bind(this));
+    BackgroundGeolocation.onActivityChange(this.onActivityChange.bind(this));
+    BackgroundGeolocation.onHttp(this.onHttpSuccess.bind(this));
+    BackgroundGeolocation.onProviderChange(this.onProviderChange.bind(this));
+    BackgroundGeolocation.onHeartbeat(this.onHeartbeat.bind(this));
+    BackgroundGeolocation.onPowerSaveChange(this.onPowerSaveChange.bind(this));
+    BackgroundGeolocation.onConnectivityChange(this.onConnectivityChange.bind(this));
     ////
     // Step 2:  Initialize the plugin
     //
-    this.bgGeo.ready({
+    BackgroundGeolocation.ready({
       // Geolocation config
-      desiredAccuracy: 0,  // <-- highest possible accuracy
+      desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,  // <-- highest possible accuracy
       distanceFilter: this.distanceFilter,
       // ActivityRecognition config
       stopTimeout: this.stopTimeout,
@@ -139,22 +149,12 @@ export class SimpleMapPage {
       heartbeatInterval: 60,
       // HTTP / Persistence config
       url: url,
-      params: {
-        device: {
-          platform: this.device.platform,
-          version: this.device.version,
-          uuid: (this.device.model + '-' + this.device.version).replace(/[\s\.,]/g, '-'),
-          cordova: this.device.cordova,
-          model: this.device.model,
-          manufacturer: this.device.manufacturer,
-          framework: 'Cordova'
-        }
-      },
+      params: BackgroundGeolocation.transistorTrackerParams(this.device),
       autoSync: this.autoSync,
       autoSyncThreshold: 0,
       // Logging / Debug config
       debug: this.debug,
-      logLevel: this.bgGeo.LOG_LEVEL_VERBOSE
+      logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE
     }, (state) => {
       console.log('- BackgroundGeolocation ready: ', state);
       // Set current plugin state upon our view.
@@ -174,7 +174,7 @@ export class SimpleMapPage {
   /**
   * @event location
   */
-  onLocation(location) {
+  onLocation(location:Location) {
     console.log('[event] location ', location);
     this.zone.run(() => {
       this.odometer = (location.odometer/1000).toFixed(1) + 'km';
@@ -185,16 +185,16 @@ export class SimpleMapPage {
   /**
   * @event motionchange
   */
-  onMotionChange(isMoving, location) {
-    console.log('[event] motionchange, isMoving: ', isMoving, location);
+  onMotionChange(event:MotionChangeEvent) {
+    console.log('[event] motionchange, isMoving: ', event.isMoving, event.location);
 
     this.zone.run(() => {
-      this.isMoving = isMoving;
+      this.isMoving = event.isMoving;
     });
 
     // Show / hide the big, red stationary radius circle
-    if (!isMoving) {
-      let coords = location.coords;
+    if (!event.isMoving) {
+      let coords = event.location.coords;
       let radius = 200;
       let center = new google.maps.LatLng(coords.latitude, coords.longitude);
 
@@ -209,7 +209,7 @@ export class SimpleMapPage {
   /**
   * @event activitychange
   */
-  onActivityChange(event) {
+  onActivityChange(event:MotionActivityEvent) {
     console.log('[event] activitychange: ', event);
     this.zone.run(() => {
       this.motionActivity = `${event.activity}:${event.confidence}%`;
@@ -218,17 +218,17 @@ export class SimpleMapPage {
   /**
   * @event http
   */
-  onHttpSuccess(response) {
+  onHttpSuccess(response:HttpEvent) {
     console.log('[event] http: ', response);
   }
-  onHttpFailure(response) {
+  onHttpFailure(response:HttpEvent) {
     console.warn('[event] http failure: ', response);
   }
 
   /**
   * @event heartbeat
   */
-  onHeartbeat(event) {
+  onHeartbeat(event:HeartbeatEvent) {
     let location = event.location;
     // NOTE:  this is merely the last *known* location.  It is not the *current* location.  If you want the current location,
     // fetch it yourself with #getCurrentPosition here.
@@ -241,14 +241,14 @@ export class SimpleMapPage {
     this.dialogs.alert('[event] powersavechnage, Power-save mode enabled? ' + isPowerSaveEnabled);
     console.log('[event] powersavechange, isPowerSaveEnabled: ', isPowerSaveEnabled);
   }
-  onConnectivityChange(event) {
+  onConnectivityChange(event:ConnectivityChangeEvent) {
     console.log('[event] connectivitychange, connected? ', event.connected);
     this.toast('[event] connectivitychange: Network connected? ', event.connected);
   }
   /**
   * @event providerchange
   */
-  onProviderChange(provider) {
+  onProviderChange(provider:ProviderChangeEvent) {
     this.provider = provider;
     console.log('[event] providerchange: ', provider);
   }
@@ -265,7 +265,7 @@ export class SimpleMapPage {
   }
 
   private doSync() {
-    this.bgGeo.sync((records) => {
+    BackgroundGeolocation.sync((records) => {
       this.toast(`Synced ${records.length} records to server.`);
       console.log('- #sync success: ', records.length);
     }, (error) => {
@@ -282,7 +282,7 @@ export class SimpleMapPage {
   }
 
   private doDestroyLocations() {
-    this.bgGeo.destroyLocations(() => {
+    BackgroundGeolocation.destroyLocations(() => {
       this.toast('Destroyed all records');
       console.log('- #destroyLocations success');
     }, (error) => {
@@ -292,7 +292,7 @@ export class SimpleMapPage {
 
   private hasRecords() {
     return new Promise((resolve, reject) => {
-      this.bgGeo.getCount((count) => {
+      BackgroundGeolocation.getCount((count) => {
         if (count > 0) {
           resolve(count);
         } else {
@@ -320,7 +320,7 @@ export class SimpleMapPage {
     let loader = this.loadingCtrl.create({content: "Creating log file..."});
     loader.present();
 
-    this.bgGeo.emailLog(email, () => {
+    BackgroundGeolocation.emailLog(email, () => {
       loader.dismiss();
     }, (error) => {
       loader.dismiss();
@@ -336,7 +336,7 @@ export class SimpleMapPage {
     let loader = this.loadingCtrl.create({content: "Destroying logs..."});
     loader.present();
 
-    this.bgGeo.destroyLog(() => {
+    BackgroundGeolocation.destroyLog(() => {
       loader.dismiss();
       this.toast('Destroyed logs');
     }, (error) => {
@@ -364,7 +364,7 @@ export class SimpleMapPage {
 
     // #setConfig
 
-    this.bgGeo.setConfig(config, (state) => {
+    BackgroundGeolocation.setConfig(config, (state) => {
       this.toast(`#setConfig ${name}: ${this[name]}`);
     });
   }
@@ -383,13 +383,13 @@ export class SimpleMapPage {
     console.log('- enabled: ', this.enabled);
 
     if (this.enabled) {
-      this.bgGeo.start((state) => {
+      BackgroundGeolocation.start((state) => {
         console.log('- Start success: ', state);
       });
     } else {
       this.isMoving = false;
       this.stationaryRadiusCircle.setMap(null);
-      this.bgGeo.stop((state) => {
+      BackgroundGeolocation.stop((state) => {
         console.log('- Stop success: ', state);
       });
     }
@@ -404,7 +404,7 @@ export class SimpleMapPage {
     }
     this.isMoving = !this.isMoving;
 
-    this.bgGeo.changePace(this.isMoving, () => {
+    BackgroundGeolocation.changePace(this.isMoving, () => {
       console.log('- changePace success');
     });
   }
@@ -412,7 +412,7 @@ export class SimpleMapPage {
   * Get the current position
   */
   onClickGetCurrentPosition() {
-    this.bgGeo.getCurrentPosition((location) => {
+    BackgroundGeolocation.getCurrentPosition({}, (location) => {
       console.log('- getCurrentPosition success: ', location);
     });
   }
@@ -595,6 +595,6 @@ export class SimpleMapPage {
     if (!soundId) {
       console.warn('playSound: Unknown sound: ', name);
     }
-    this.bgGeo.playSound(soundId);
+    BackgroundGeolocation.playSound(soundId);
   }
 }

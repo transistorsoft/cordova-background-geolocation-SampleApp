@@ -1,17 +1,21 @@
 import { Component } from '@angular/core';
-import { 
-  IonicPage, 
+import {
+  IonicPage,
   NavController,
-  NavParams, 
-  Platform  
+  NavParams,
+  Platform
 } from 'ionic-angular';
 
 import { Dialogs } from '@ionic-native/dialogs';
 
-const TRACKER_HOST = 'http://tracker.transistorsoft.com/';
+////
+// NOTE:  normally you will simply import from "cordova-background-geolocation-lt" or "cordova-background-geolocation"
+// from "../../cordova-background-geolocation" is only fro convenience in the SampleApp for easily switching
+// between public / private version of the plugin
+//
+import BackgroundGeolocation from "../../cordova-background-geolocation";
 
-// Default tracking server username if use doesn't provide one.
-const DEFAULT_USERNAME = "cordova-anonymous";
+const TRACKER_HOST = 'http://tracker.transistorsoft.com/';
 
 // Only allow alpha-numeric usernames with '-' and '_'
 const USERNAME_VALIDATOR =  /^[a-zA-Z0-9_-]*$/;
@@ -28,34 +32,32 @@ const USERNAME_VALIDATOR =  /^[a-zA-Z0-9_-]*$/;
   templateUrl: 'home.html',
 })
 export class HomePage {
-  bgGeo: any;
   trackerUsername: string;
   url: string;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private platform: Platform, private dialogs: Dialogs) {    
+  constructor(public navCtrl: NavController, public navParams: NavParams, private platform: Platform, private dialogs: Dialogs) {
     this.platform.ready().then(this.onDeviceReady.bind(this));
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad HomePage');
-    let localStorage = (<any>window).localStorage;    
-    localStorage.removeItem('page');    
+    let localStorage = (<any>window).localStorage;
+    localStorage.removeItem('page');
   }
 
   onDeviceReady() {
-    this.bgGeo = (<any>window).BackgroundGeolocation;
-    this.bgGeo.removeListeners();
-    this.bgGeo.stop();
+    BackgroundGeolocation.removeListeners();
+    BackgroundGeolocation.stop();
 
     // Prompt for Tracking Server Username
     this.getUsername().then(this.doGetUsername.bind(this)).catch(() => {
       console.warn('Failed to get username.  We *really* do need a username.');
-      // We really need a username.  Use DEFAULT_USERNAME
+      // We *really* need a username:  back you go...
       this.onClickEditUsername();
     });
   }
 
-  onNavigation(value) {    
+  onNavigation(value) {
     let localStorage = (<any>window).localStorage;
     localStorage.setItem('page', value);
     this.navCtrl.setRoot(value);
@@ -65,7 +67,7 @@ export class HomePage {
     let localStorage = (<any>window).localStorage;
     let username = localStorage.getItem('username');
     localStorage.removeItem('username');
-    this.getUsername(username).then(this.doGetUsername.bind(this)).catch(() => {      
+    this.getUsername(username).then(this.doGetUsername.bind(this)).catch(() => {
       localStorage.setItem('username', username);
       this.onClickEditUsername();
     });
@@ -99,7 +101,7 @@ export class HomePage {
           });
         } else {
           resolve(username);
-        }       
+        }
       });
     });
   }
@@ -110,6 +112,6 @@ export class HomePage {
       localStorage.setItem('username', username);
       this.trackerUsername = username;
       this.url = TRACKER_HOST + username;
-      this.bgGeo.setConfig({url: TRACKER_HOST + 'locations/' + username});
+      BackgroundGeolocation.setConfig({url: TRACKER_HOST + 'locations/' + username});
   }
 }

@@ -9,7 +9,7 @@ export class TestService {
   private getLocationsTask: any;
 
   constructor() {
-    
+
   }
 
   private getPlugin() {
@@ -31,13 +31,13 @@ export class TestService {
       });
     }, delay);
   }
-  
+
   stopSqliteTest() {
     clearInterval(this.getLocationsTask);
     clearInterval(this.getCurrentPositionTask);
   }
 
-  addGeofenceTest(length, prefix, success, failure) {    
+  addGeofenceTest(length, prefix, success, failure) {
     prefix = prefix || 'default';
     this.getPlugin().getCurrentPosition((location, taskId) => {
       for (var n=0;n<length;n++) {
@@ -55,7 +55,7 @@ export class TestService {
   }
 
   addGeofencesTest(length, prefix, success, failure) {
-    prefix = prefix || 'default';    
+    prefix = prefix || 'default';
     var rs = [];
     this.getPlugin().getCurrentPosition((location, taskId) => {
       for (var n=0;n<length;n++) {
@@ -158,7 +158,7 @@ export class TestService {
     });
     this.getPlugin().stop();
     this.getPlugin().start(() => {
-      this.getPlugin().changePace(true);  
+      this.getPlugin().changePace(true);
     });
   }
 
@@ -277,7 +277,7 @@ export class TestService {
         }, (error) => {
           console.log('- Failed to find location; ', uuid);
         })
-      });        
+      });
     }, {
       persist: true
     });
