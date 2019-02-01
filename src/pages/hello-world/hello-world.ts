@@ -1,6 +1,6 @@
 import { Component,  NgZone  } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
-import { Device } from '@ionic-native/device';
+import { Device } from '@ionic-native/device/ngx';
 
 ////
 // NOTE:  normally you will simply import from "cordova-background-geolocation-lt" or "cordova-background-geolocation"
@@ -32,7 +32,7 @@ export class HelloWorldPage {
   // ion-list datasource
   events: any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private device: Device, private platform: Platform, private zone:NgZone) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private platform: Platform, private device: Device, private zone:NgZone) {
     this.isMoving = false;
     this.enabled = false;
     this.events = [];
@@ -46,6 +46,9 @@ export class HelloWorldPage {
   }
 
   onDeviceReady() {
+    // @ionic-native/device is broken with Ionic 4, go old-school
+    this.device = (<any>window).device;
+
     // Compose #url: tracker.transistorsoft.com/locations/{username}
     let localStorage = (<any>window).localStorage;
     let username = localStorage.getItem('username');

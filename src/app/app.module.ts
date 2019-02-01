@@ -4,8 +4,8 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 
-import { Device } from '@ionic-native/device';
-import { Dialogs } from '@ionic-native/dialogs';
+import { Device } from '@ionic-native/device/ngx';
+import { Dialogs } from '@ionic-native/dialogs/ngx';
 
 import { MyApp } from './app.component';
 

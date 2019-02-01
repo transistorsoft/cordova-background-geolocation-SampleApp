@@ -4,7 +4,7 @@ import {
 } from 'ionic-angular';
 import {Injectable} from "@angular/core";
 
-import { Device } from '@ionic-native/device';
+import { Device } from '@ionic-native/device/ngx';
 
 import BackgroundGeolocation from "../../../cordova-background-geolocation";
 
@@ -109,11 +109,13 @@ const SOUND_MAP = {
 export class BGService {
   private settings: any;
 
-  constructor(private platform:Platform, private events: Events, private device:Device) {
+  constructor(private platform:Platform, private events: Events, private device: Device) {
     this.platform.ready().then(this.init.bind(this));
   }
 
   private init() {
+    // @ionic-native/device is broken with Ionic 4, go old-school
+    this.device = (<any>window).device;
     // Build a collection of available settings by platform for use on the Settings screen
     var settings = [].concat(SETTINGS.common).concat(SETTINGS[this.device.platform||'iOS']);
     this.settings = {

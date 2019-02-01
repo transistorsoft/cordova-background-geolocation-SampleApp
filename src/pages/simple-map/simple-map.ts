@@ -31,8 +31,8 @@ import BackgroundGeolocation, {
 } from "../../cordova-background-geolocation";
 
 // Cordova plugins Device & Dialogs
-import { Device } from '@ionic-native/device';
-import { Dialogs } from '@ionic-native/dialogs';
+import { Dialogs } from '@ionic-native/dialogs/ngx';
+import { Device } from '@ionic-native/device/ngx';
 
 // Handy color & sound constants.
 import COLORS from '../../lib/colors';
@@ -85,8 +85,8 @@ export class SimpleMapPage {
     private loadingCtrl: LoadingController,
     private zone:NgZone,
     private platform:Platform,
-    private device:Device,
-    private dialogs:Dialogs
+    private device: Device,
+    private dialogs: Dialogs
   ) {
     this.platform.ready().then(this.onDeviceReady.bind(this));
 
@@ -112,6 +112,9 @@ export class SimpleMapPage {
   }
 
   onDeviceReady() {
+    // @ionic-native/device is broken with Ionic 4, go old-school
+    this.device = (<any>window).device;
+
     // We prompt you for a unique identifier in order to post locations tracker.transistorsoft.com
     this.configureBackgroundGeolocation();
   }

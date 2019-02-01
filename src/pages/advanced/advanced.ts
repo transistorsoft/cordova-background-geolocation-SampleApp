@@ -13,11 +13,11 @@ import {
   ModalController
 } from 'ionic-angular';
 
-import { Dialogs } from '@ionic-native/dialogs';
-import { Device } from '@ionic-native/device';
+import { Dialogs } from '@ionic-native/dialogs/ngx';
+import { Device } from '@ionic-native/device/ngx';
 
 import {BGService} from './lib/BGService';
-import {TestService} from './lib/TestService';
+//import {TestService} from './lib/TestService';
 import {SettingsService} from './lib/SettingsService';
 import {LongPress} from './lib/LongPress';
 
@@ -115,16 +115,16 @@ export class AdvancedPage {
   isMapMenuOpen: boolean;
 
   constructor(
+    //private testService: TestService
     public navCtrl: NavController,
     public navParams: NavParams,
     private modalController: ModalController,
-    private dialogs: Dialogs,
-    private device: Device,
     private zone: NgZone,
     private platform: Platform,
+    private device: Device,
+    private dialogs: Dialogs,
     private bgService: BGService,
-    public settingsService: SettingsService,
-    private testService: TestService) {
+    public settingsService: SettingsService) {
 
     // FAB Menu state.
     this.isMainMenuOpen = false;
@@ -158,6 +158,9 @@ export class AdvancedPage {
 
   ionViewDidLoad(){
     this.platform.ready().then(() => {
+      // @ionic-native/device is broken with Ionic 4, go old-school
+      this.device = (<any>window).device;
+
       this.configureMap();
       this.configureBackgroundGeolocation();
       this.configureBackgroundFetch();
@@ -277,7 +280,6 @@ export class AdvancedPage {
   * Configure BackgroundGeolocation plugin
   */
   async configureBackgroundGeolocation() {
-
     // [optional] We first bind all our event-handlers to *this* so that we have the option to later remove these
     // listeners with BackgroundGeolocation.un("eventname", this.onMyHandler), since the #bind method returns a new function instance.
     // To remove an event-handler requires a reference to the *exact* success-callback provided to #on
@@ -637,6 +639,7 @@ export class AdvancedPage {
   onLocation(location:Location) {
     console.log('[location] -', location);
     this.setCenter(location);
+
     if (!location.sample) {
       this.zone.run(() => {
         // Convert meters -> km -> round nearest hundredth -> fix float xxx.x
@@ -738,6 +741,7 @@ export class AdvancedPage {
   */
   onGeofence(event:GeofenceEvent) {
     console.log('[geofence] -', event);
+
     var circle = this.geofenceMarkers.find((marker) => {
       return marker.identifier === event.identifier;
     });
