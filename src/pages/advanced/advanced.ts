@@ -299,12 +299,12 @@ export class AdvancedPage {
     this.onGeofencesChange = this.onGeofencesChange.bind(this);
     this.onSchedule = this.onSchedule.bind(this);
     this.onHttp = this.onHttp.bind(this);
+
     this.onPowerSaveChange = this.onPowerSaveChange.bind(this);
     this.onConnectivityChange = this.onConnectivityChange.bind(this);
     this.onEnabledChange = this.onEnabledChange.bind(this);
 
     // Listen to BackgroundGeolocation events
-
     BackgroundGeolocation.onLocation(this.onLocation, this.onLocationError);
     BackgroundGeolocation.onMotionChange(this.onMotionChange);
     BackgroundGeolocation.onHeartbeat(this.onHeartbeat);

@@ -16,8 +16,10 @@ import BackgroundGeolocation, {
   GeofenceEvent,
   GeofencesChangeEvent,
   HeartbeatEvent,
-  ConnectivityChangeEvent
-} from "cordova-background-geolocation";  // <-- Use "cordova-background-geolocation" for customers-only version
+  ConnectivityChangeEvent,
+  DeviceSettings,
+  DeviceSettingsRequest,
+} from "cordova-background-geolocation-lt";  // <-- Use "cordova-background-geolocation" for customers-only version
 
 export default BackgroundGeolocation;
 
@@ -34,5 +36,7 @@ export {
   GeofenceEvent,
   GeofencesChangeEvent,
   HeartbeatEvent,
-  ConnectivityChangeEvent
+  ConnectivityChangeEvent,
+  DeviceSettings,
+  DeviceSettingsRequest,
 };
