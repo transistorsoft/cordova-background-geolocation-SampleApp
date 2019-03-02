@@ -1,7 +1,7 @@
 {
   "name": "cordova-background-geolocation-SampleApp",
   "description": "Cordova Background Geolocation Demo Application",
-  "version": "3.0.0-beta.3",
+  "version": "3.0.0-beta.4",
   "author": "Transistor Software",
   "homepage": "https://www.transistorsoft.com",
   "repository": {
@@ -34,7 +34,7 @@
     "@ionic-native/status-bar": "^5.0.0",
     "@ionic/storage": "2.2.0",
     "cordova-android": "^7.1.4",
-    "cordova-background-geolocation-lt": "3.0.0-beta.3",
+    "cordova-background-geolocation-lt": "3.0.0-beta.4",
     "cordova-ios": "4.5.5",
     "cordova-plugin-background-fetch": "5.4.1",
     "cordova-plugin-cocoalumberjack": "0.0.4",
