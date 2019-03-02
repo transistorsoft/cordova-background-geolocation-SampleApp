@@ -90,6 +90,10 @@
     <plugin name="cordova-plugin-statusbar" spec="^2.4.2" />
     <plugin name="cordova-plugin-device" spec="^2.0.2" />
     <plugin name="cordova-plugin-splashscreen" spec="5.0.2" />
+    <plugin name="cordova-fabric-plugin" spec="^1.1.14-dev">
+        <variable name="FABRIC_API_KEY" value="e85c45e5a0e7b6748d3bb0fc018713c7ebb481dc" />
+        <variable name="FABRIC_API_SECRET" value="6f6542a9ab83e60b3b8dbc5772de84677fbd53fd2496e221f4dfc885391bfb47" />
+    </plugin>
     <plugin name="cordova-background-geolocation-lt" spec="3.0.0-beta.4">
         <variable name="LICENSE" value="YOUR_LICENSE_KEY" />
         <variable name="GOOGLE_API_VERSION" value="16.0.0" />
