@@ -12,7 +12,10 @@ import {
 // NOTE:  normally you will simply import from "cordova-background-geolocation-lt" or "cordova-background-geolocation"
 // This is done only for convenience in the SampleApp for easily switching between public / private version of the plugin
 //
-import BackgroundGeolocation, {Geofence} from "../../../../cordova-background-geolocation";
+import BackgroundGeolocation, {
+  Geofence,
+  DeviceSettingsRequest
+} from "../../../../cordova-background-geolocation";
 
 
 const TRACKING_MODE_OPTIONS = [
@@ -291,6 +294,38 @@ export class SettingsPage {
       onComplete.call(this);
       this.bgService.playSound('ERROR');
       this.notify('Add geofences error', error);
+    });
+  }
+
+  async onClickIgnoreBatteryOptimizations() {
+    let isIgnoring = await BackgroundGeolocation.deviceSettings.isIgnoringBatteryOptimizations();
+    BackgroundGeolocation.deviceSettings.showIgnoreBatteryOptimizations().then((request:DeviceSettingsRequest) => {
+      let message = [
+        `isIgnoring: ${isIgnoring}`,
+        `Device: ${request.manufacturer} ${request.model} @ ${request.version}`,
+        `Seen? ${request.seen} on ${request.lastSeenAt}`
+      ];
+      this.settingsService.confirm('Battery Optimizations', message.join("<br />"), () => {
+        BackgroundGeolocation.deviceSettings.show(request);
+      });
+    }).catch((error:string) => {
+      console.warn('[ignoreBatteryOptimizations]', error);
+      this.notify('Notice', error);
+    });
+  }
+
+  onClickPowerManager() {
+    BackgroundGeolocation.deviceSettings.showPowerManager().then((request:DeviceSettingsRequest) => {
+      let message = [
+        `Device: ${request.manufacturer} ${request.model} @ ${request.version}`,
+        `Seen? ${request.seen} on ${request.lastSeenAt}`
+      ];
+      this.settingsService.confirm('Power Manager', message.join("<br />"), () => {
+        BackgroundGeolocation.deviceSettings.show(request);
+      });
+    }).catch((error:string) => {
+      console.warn('[showPowerManager]', error);
+      this.notify('Notice', error);
     });
   }
 

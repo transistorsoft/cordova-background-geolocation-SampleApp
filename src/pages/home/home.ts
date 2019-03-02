@@ -6,7 +6,7 @@ import {
   Platform
 } from 'ionic-angular';
 
-import { Dialogs } from '@ionic-native/dialogs';
+import { Dialogs } from '@ionic-native/dialogs/ngx';
 
 ////
 // NOTE:  normally you will simply import from "cordova-background-geolocation-lt" or "cordova-background-geolocation"
@@ -35,7 +35,7 @@ export class HomePage {
   trackerUsername: string;
   url: string;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private platform: Platform, private dialogs: Dialogs) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private dialogs: Dialogs, private platform: Platform) {
     this.platform.ready().then(this.onDeviceReady.bind(this));
   }
 

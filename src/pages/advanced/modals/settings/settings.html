@@ -167,6 +167,15 @@
     			</ion-option>
     		</ion-select>
     	</ion-item>
+
+    	<ion-list-header mode="ios"><ion-icon name="radio-button-on" color="primary"></ion-icon>&nbsp;DeviceSettings API</ion-list-header>
+
+    	<ion-card mode="ios">
+	  		<button ion-button full round (click)="onClickIgnoreBatteryOptimizations()" color="">Show Ignore Battery Optimizations</button>
+	  		<button ion-button full round (click)="onClickPowerManager()" color="">Show Power Manager</button>
+	  	</ion-card>
+
+
 	</ion-list>
 
 </ion-content>
