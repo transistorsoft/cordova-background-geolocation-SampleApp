@@ -22,8 +22,9 @@ const SETTINGS = {
     {name: 'elasticityMultiplier', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 1, 2, 3, 5, 10], defaultValue: 1},
     {name: 'geofenceProximityRadius', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [1000, 2500, 5000, 10000, 100000], defaultValue: 1000},
     {name: 'locationTimeout', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 5, 10, 30, 60], defaultValue: 60},
+    {name: 'useSignificantChangesOnly', group: 'geolocation', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'false'},
     // HTTP
-    {name: 'url', group: 'http', ignore: true, inputType: 'text', dataType: 'string', defaultValue: 'http://posttestserver.com/post.php?dir=ionic-cordova-background-geolocation'},
+    {name: 'url', group: 'http', ignore: true, inputType: 'text', dataType: 'string', defaultValue: 'http://tracker.transistorsoft.com/locations/null'},
     {name: 'method', group: 'http', inputType: 'select', dataType: 'string', values: ['POST', 'PUT'], defaultValue: 'POST'},
     {name: 'autoSync', group: 'http', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'true'},
     {name: 'autoSyncThreshold', group: 'http', dataType: 'integer', inputType: 'select', values: [0, 5, 10, 25, 50, 100], defaultValue: 0},
@@ -36,7 +37,6 @@ const SETTINGS = {
     {name: 'stopOnTerminate', group: 'application', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'true'},
     {name: 'startOnBoot', group: 'application', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'false'},
     {name: 'stopTimeout', group: 'activity_recognition', dataType: 'integer', inputType: 'select', values: [0, 1, 3, 5, 10, 15], defaultValue: 1},
-    {name: 'activityRecognitionInterval', group: 'activity_recognition', dataType: 'integer', inputType: 'select', values: [0, 1000, 10000, 30000, 60000], defaultValue: 10000},
     {name: 'heartbeatInterval', group: 'application', dataType: 'integer', inputType: 'select', values: [-1, 60, (2*60), (5*60), (15*60)], defaultValue: 60},
     // Logging & Debug
     {name: 'debug', group: 'debug', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'true'},
@@ -47,7 +47,6 @@ const SETTINGS = {
     // Geolocation
     {name: 'stationaryRadius', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [25, 50, 100, 500, 1000], defaultValue: 25 },
     {name: 'activityType', group: 'geolocation', dataType: 'string', inputType: 'select', values: ['Other', 'AutomotiveNavigation', 'Fitness', 'OtherNavigation'], defaultValue: 'OtherNavigation'},
-    {name: 'useSignificantChangesOnly', group: 'geolocation', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'false'},
     // Activity Recognition
     {name: 'stopDetectionDelay', group: 'activity_recognition', dataType: 'integer', inputType: 'select', values: [0, 1, 2, 5], defaultValue: 0},
     {name: 'disableStopDetection', group: 'activity_recognition', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: false},
@@ -57,8 +56,9 @@ const SETTINGS = {
   Android: [
     // Geolocation
     {name: 'locationUpdateInterval', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 1000, 5000, 10000, 30000, 60000], defaultValue: 5000},
-    {name: 'fastestLocationUpdateInterval', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 1000, 5000, 10000, 30000, 60000], defaultValue: 1000},
+    {name: 'fastestLocationUpdateInterval', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [-1, 0, 1000, 5000, 10000, 30000, 60000], defaultValue: -1},
     {name: 'deferTime', group: 'geolocation', dataType: 'integer', inputType: 'select', values: [0, 10*1000, 30*1000, 60*1000, 10*60*1000], defaultValue: 0},
+    {name: 'geofenceModeHighAccuracy', group: 'geolocation', dataType: 'boolean', inputType: 'toggle', value: [true, false], defaultValue: false},
     // Activity Recognition
     {name: 'triggerActivities', group: 'activity_recognition', dataType: 'string', inputType: 'select', multiple: true, values: ['in_vehicle', 'on_bicycle', 'on_foot', 'running', 'walking'], defaultValue: 'in_vehicle, on_bicycle, running, walking, on_foot'},
     // Application
@@ -93,7 +93,7 @@ const SOUND_MAP = {
     "LONG_PRESS_CANCEL": "DOT_STOP",
     "ADD_GEOFENCE": "DOT_SUCCESS",
     "BUTTON_CLICK": "BUTTON_CLICK",
-    "MESSAGE_SENT": "SENT",
+    "MESSAGE_SENT": "WHOO_SEND_SHARE",
     "ERROR": "ERROR",
     "OPEN": "OPEN",
     "CLOSE": "CLOSE",

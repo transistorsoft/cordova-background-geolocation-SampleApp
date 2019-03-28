@@ -114,6 +114,10 @@ export class AdvancedPage {
   isEmailingLog: boolean;
   isMapMenuOpen: boolean;
 
+  // Private
+  testModeClicks: number;
+  testModeTimer: number;
+
   constructor(
     //private testService: TestService
     public navCtrl: NavController,
@@ -132,6 +136,8 @@ export class AdvancedPage {
     this.isSyncing = false;
     this.isResettingOdometer = false;
     this.isEmailingLog = false;
+
+    this.testModeClicks = 0;
 
     this.iconMap = ICON_MAP;
 
@@ -326,6 +332,7 @@ export class AdvancedPage {
     // boot of your application.  The plugin persists the configuration you apply to it.  Each boot thereafter,
     // the plugin will automatically apply the last known configuration.
     BackgroundGeolocation.ready({
+      reset: false,
       debug: true,
       logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
       distanceFilter: 10,
@@ -373,6 +380,15 @@ export class AdvancedPage {
   // UI event handlers
   //
   onClickMainMenu() {
+    // Test background-task.
+    BackgroundGeolocation.startBackgroundTask().then(taskId => {
+      console.log('- start background task: ', taskId);
+      setTimeout(() => {
+        console.log('- timeout expired');
+        BackgroundGeolocation.stopBackgroundTask(taskId);
+      }, 1000);
+    });
+
     this.isMainMenuOpen = !this.isMainMenuOpen;
     if (this.isMainMenuOpen) {
       this.bgService.playSound('OPEN');
@@ -586,6 +602,24 @@ export class AdvancedPage {
     });
   }
 
+  /**
+  * My private test mode.  DO NOT USE
+  * @private
+  */
+  onClickTestMode() {
+    BackgroundGeolocation.playSound('POP');
+    this.testModeClicks++;
+    if (this.testModeClicks == 10) {
+      BackgroundGeolocation.playSound('BEEP_ON');
+      this.settingsService.applyTestConfig(this.device);
+    }
+    if (this.testModeTimer > 0) clearTimeout(this.testModeTimer);
+
+    this.testModeTimer = setTimeout(() => {
+      this.testModeClicks = 0;
+    }, 2000);
+
+  }
   onClickChangePace() {
     if (!this.state.enabled) {
       return;
