@@ -50,7 +50,7 @@ export class GeofencePage {
     this.longitude = this.navParams.get('longitude');
 
     this.notifyOnEntry = true;
-    this.notifyOnExit = false;
+    this.notifyOnExit = true;
     this.notifyOnDwell = false;
 
     this.radiusOptions = [100, 150, 200, 500, 1000, 5000, 10000];

@@ -66,14 +66,17 @@
 			<button ion-button solid (click)="onClickGetCurrentPosition()" color="gold" style="font-size:2.3rem">
 				<ion-icon name="md-navigate" color=""></ion-icon>
 			</button>
-			<ion-icon [hidden]="!state.provider.gps" name="{{iconMap.provider_gps}}" color="secondary"></ion-icon>
-			<ion-icon [hidden]="!state.provider.network"name="{{iconMap.provider_network}}" color="secondary"></ion-icon>
-			<ion-icon [hidden]="state.provider.enabled" name="{{iconMap.provider_disabled}}" color="danger"></ion-icon>
+      <button (click)="onClickTestMode()" style="background-color: transparent">
+        <ion-icon [hidden]="!state.provider.gps" name="{{iconMap.provider_gps}}" color="secondary"></ion-icon>
+        <ion-icon [hidden]="!state.provider.network"name="{{iconMap.provider_network}}" color="secondary"></ion-icon>
+        <ion-icon [hidden]="state.provider.enabled" name="{{iconMap.provider_disabled}}" color="danger"></ion-icon>
+      </button>
 		</ion-buttons>
 		<ion-title>
-			<span ion-text class="label" color="">Activity</span>&nbsp;
-			<ion-icon color="" name="{{state.activityIcon}}"></ion-icon>
-			<span ion-text class="odometer" color="">{{this.state.odometer}}km</span>
+			 <span ion-text class="label" color="">Activity</span>&nbsp;
+			 <ion-icon color="" name="{{state.activityIcon}}"></ion-icon>
+			 <span ion-text class="odometer" color="">{{this.state.odometer}}km</span>
+
 		</ion-title>
 		<ion-buttons end>
 			<button ion-button solid [disabled]="!state.enabled" (click)="onClickChangePace()" style="width:50px" color="{{state.isMoving ? 'danger' : 'secondary'}}">
