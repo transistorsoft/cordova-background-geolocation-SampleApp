@@ -57,6 +57,8 @@ public class BackgroundGeolocationHeadlessTask  {
             GeofenceEvent geofenceEvent = event.getGeofenceEvent();
         } else if (name.equals(BackgroundGeolocation.EVENT_HEARTBEAT)) {
             HeartbeatEvent heartbeatEvent = event.getHeartbeatEvent();
+        } else if (name.equals(BackgroundGeolocation.EVENT_NOTIFICATIONACTION)) {
+            String buttonId = event.getNotificationEvent();
         } else {
             TSLog.logger.warn(TSLog.warn("Unknown Headless Event: " + name));
         }
