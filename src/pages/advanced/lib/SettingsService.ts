@@ -129,7 +129,8 @@ export class SettingsService {
   * DO NOT USE
   * @private
   */
-  applyTestConfig(device) {
+  async applyTestConfig(device) {
+
     let geofences = [{
       "identifier": "Jfk",
       "radius": 200,
@@ -212,12 +213,11 @@ export class SettingsService {
       }
     }];
 
-    BackgroundGeolocation.removeGeofences().then(() => {
-      BackgroundGeolocation.addGeofences(geofences);
-    });
+    await BackgroundGeolocation.removeGeofences();
+    await BackgroundGeolocation.addGeofences(geofences);
 
     let storage = (<any>window).localStorage;
-    BackgroundGeolocation.setConfig({
+    await BackgroundGeolocation.setConfig({
       debug: true,
       logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
       desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_NAVIGATION,

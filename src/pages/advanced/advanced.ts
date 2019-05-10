@@ -323,6 +323,7 @@ export class AdvancedPage {
     BackgroundGeolocation.onPowerSaveChange(this.onPowerSaveChange);
     BackgroundGeolocation.onConnectivityChange(this.onConnectivityChange);
     BackgroundGeolocation.onEnabledChange(this.onEnabledChange);
+    BackgroundGeolocation.onNotificationAction(this.onNotificationAction);
 
     this.state.containerBorder = (await BackgroundGeolocation.isPowerSaveMode()) ? CONTAINER_BORDER_POWER_SAVE_ON : CONTAINER_BORDER_POWER_SAVE_OFF;
 
@@ -331,6 +332,7 @@ export class AdvancedPage {
     // With the plugin's #ready method, the supplied config object will only be applied with the first
     // boot of your application.  The plugin persists the configuration you apply to it.  Each boot thereafter,
     // the plugin will automatically apply the last known configuration.
+
     BackgroundGeolocation.ready({
       reset: false,
       debug: true,
@@ -339,12 +341,19 @@ export class AdvancedPage {
       stopTimeout: 1,
       maxDaysToPersist: 14,
       stopOnTerminate: false,
+      notification: {
+        title: 'cordova-background-geolocation',
+        text: 'Tracking engaged'
+      },
       startOnBoot: true,
       foregroundService: true,
       enableHeadless: true,
       url: 'http://tracker.transistorsoft.com/locations/' + username,
       params: BackgroundGeolocation.transistorTrackerParams(this.device)
-    }).then((state) => {
+    }).then(async (state) => {
+      await BackgroundGeolocation.setConfig({
+        pausesLocationUpdatesAutomatically: false
+      });
       // Store the plugin state onto ourself for convenience.
       console.log('- BackgroundGeolocation is ready: ', state);
       this.zone.run(() => {
@@ -353,12 +362,13 @@ export class AdvancedPage {
         this.state.geofenceProximityRadius = state.geofenceProximityRadius;
         this.state.trackingMode = state.trackingMode;
       });
-      if (!state.schedulerEnabled && (state.schedule.length > 0)) {
+      if ((state.schedule.length > 0)) {
         BackgroundGeolocation.startSchedule();
       }
     }).catch((error) => {
       console.warn('- BackgroundGeolocation configuration error: ', error);
     });
+
   }
 
   configureBackgroundFetch() {
@@ -382,8 +392,8 @@ export class AdvancedPage {
   onClickMainMenu() {
     // Test background-task.
     BackgroundGeolocation.startBackgroundTask().then(taskId => {
-      console.log('- start background task: ', taskId);
-      setTimeout(() => {
+      console.log('- start background task: ', taskId);!
+      setTimeout(() => {  // <-- SIMULATE a long-running async-task with setTimeout.  DO NOT ACTUALLY use #setTimeout here!
         console.log('- timeout expired');
         BackgroundGeolocation.stopBackgroundTask(taskId);
       }, 1000);
@@ -672,6 +682,7 @@ export class AdvancedPage {
   */
   onLocation(location:Location) {
     console.log('[location] -', location);
+
     this.setCenter(location);
 
     if (!location.sample) {
@@ -917,8 +928,23 @@ export class AdvancedPage {
   */
   onEnabledChange(enabled:boolean) {
     this.settingsService.toast('enabledchange: ' + enabled);
-    console.log('[enabledchange] -', event);
+    console.log('[enabledchange] -', enabled);
+    this.state.enabled = enabled;
+    this.state.isMoving = false;
   }
+  /**
+  * @event notificationaction
+  */
+  onNotificationAction(buttonId:string) {
+    console.log('[notificationaction] -', buttonId);
+    switch(buttonId) {
+      case 'notificationButtonFoo':
+        break;
+      case 'notificaitonButtonBar':
+        break;
+    }
+  }
+
   ////
   // Google map methods
   //

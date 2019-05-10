@@ -1,7 +1,9 @@
 <ion-header>
   <ion-navbar color="gold" mode="ios">
   	<ion-buttons start>
-  		<!-- <button ion-button (click)="onClickSettings()" style="font-size:2.3rem"><ion-icon name="arrow-dropup-circle"></ion-icon></button>-->
+  		<button ion-button (click)="onClickHome()" style="font-size:2.3rem">
+          <ion-icon name="home"></ion-icon>
+        </button>
   	</ion-buttons>
     <ion-title mode="ios">
       BG Geo
@@ -13,11 +15,11 @@
 </ion-header>
 
 <ion-content [ngStyle]="{'border-left':state.containerBorder, 'border-right':state.containerBorder}">
-	<ion-fab top left #fab>
+	<ion-fab right bottom #fab>
    		<button ion-fab color="gold" (click)="onClickMainMenu()">
-        <ion-icon color="dark" name="arrow-dropdown-circle"></ion-icon>
+        <ion-icon color="dark" name="add"></ion-icon>
       </button>
-   		<ion-fab-list side="bottom">
+   		<ion-fab-list side="top">
      		<button ion-fab (click)="onClickSettings()" color="gold">
      			<ion-icon name="cog"></ion-icon>
      		</button>
@@ -36,9 +38,6 @@
         <button ion-fab (click)="onClickDestroyLocations()" color="gold">
           <ion-spinner [hidden]="!isDestroyingLocations" name="circles" color="dark"></ion-spinner>
           <ion-icon [hidden]="isDestroyingLocations" name="trash"></ion-icon>
-        </button>
-        <button ion-fab (click)="onClickHome()" color="gold">
-          <ion-icon name="home"></ion-icon>
         </button>
    		</ion-fab-list>
  	</ion-fab>
