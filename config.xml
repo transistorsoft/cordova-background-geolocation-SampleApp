@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="30004" id="com.transistorsoft.backgroundgeolocation.ionic2" version="3.0.4" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="30005" id="com.transistorsoft.backgroundgeolocation.ionic2" version="3.0.5" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>BG Geo</name>
     <description>Cordova Background Geolocation Demo App.</description>
     <author email="info@transistorsoft.com" href="https://www.transistorsoft.com/">Transistor Software</author>
@@ -20,12 +20,9 @@
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="3000" />
     <platform name="android">
-        <!-- cordova-background-geolocation -->
         <config-file parent="/manifest/application" target="app/src/main/AndroidManifest.xml">
-            <meta-data android:name="com.transistorsoft.locationmanager.license" android:value="6da948b0a8e4eebd2af03d2defe363bc3d5ca380b4bb846cb8342c6446c69975" />
+            <meta-data android:name="com.transistorsoft.locationmanager.license_key" android:value="6da948b0a8e4eebd2af03d2defe363bc3d5ca380b4bb846cb8342c6446c69975" />
         </config-file>
-        <!-- /cordova-background-geolocation -->
-
         <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
             <application android:usesCleartextTraffic="true" />
         </edit-config>
@@ -53,7 +50,6 @@
         <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
     </platform>
     <platform name="ios">
-        <!-- cordova-background-geolocation -->
         <config-file parent="NSLocationAlwaysAndWhenInUseUsageDescription" target="*-Info.plist">
             <string>LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION</string>
         </config-file>
@@ -66,7 +62,6 @@
         <config-file parent="NSMotionUsageDescription" target="*-Info.plist">
             <string>MOTION_USAGE_DESCRIPTION</string>
         </config-file>
-        <!-- /cordova-background-geolocation -->
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
         <icon height="20" src="resources/ios/icon/Icon-App-20x20@1x.png" width="20" />
