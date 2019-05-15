@@ -351,9 +351,6 @@ export class AdvancedPage {
       url: 'http://tracker.transistorsoft.com/locations/' + username,
       params: BackgroundGeolocation.transistorTrackerParams(this.device)
     }).then(async (state) => {
-      await BackgroundGeolocation.setConfig({
-        pausesLocationUpdatesAutomatically: false
-      });
       // Store the plugin state onto ourself for convenience.
       console.log('- BackgroundGeolocation is ready: ', state);
       this.zone.run(() => {
@@ -382,7 +379,7 @@ export class AdvancedPage {
     }, {
       minimumFetchInterval: 15, // <-- default is 15
       stopOnTerminate: false,   // <-- Android only
-      startOnBoot: false,
+      startOnBoot: true,
       enableHeadless: true
     });
   }
