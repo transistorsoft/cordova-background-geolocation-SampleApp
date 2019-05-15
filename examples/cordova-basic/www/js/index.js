@@ -97,7 +97,7 @@ var app = {
             stopOnTerminate: false, // Don't stop tracking when app is terminated.
             foregroundService: true,// Prevent Android from terminating service due to memory pressure from other apps.
             heartbeatInterval: 60,  // <-- heartbeat event every 60s
-            url: 'https://' + app.host + '/locations/' + username,
+            url: 'http://' + app.host + '/locations/' + username,
             params: bgGeo.transistorTrackerParams(window.device),
             debug: true,            // Debug sounds & notifications
             autoSync: true,         // Auto sync each recorded location to #url immediately.
