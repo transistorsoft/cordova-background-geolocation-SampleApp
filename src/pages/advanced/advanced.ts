@@ -379,7 +379,7 @@ export class AdvancedPage {
     }, {
       minimumFetchInterval: 15, // <-- default is 15
       stopOnTerminate: false,   // <-- Android only
-      startOnBoot: false,
+      startOnBoot: true,
       enableHeadless: true
     });
   }
