@@ -21,16 +21,6 @@ var app = {
         enabled: false,
         isMoving: false
     },
-    // UI Sounds.
-    sounds: {
-        "ios": {
-            "BUTTON_CLICK": 1104
-        },
-        "android": {    
-            "BUTTON_CLICK": 19    
-        }
-    },
-
 
     // Application Constructor
     initialize: function() {
@@ -68,7 +58,7 @@ var app = {
         //
 
         // location event: Fires whenever a location is recorded.
-        bgGeo.on('location', function(location) {
+        bgGeo.onLocation(function(location) {
             console.log('[event] location: ', location);
             app.setLocation(location);
         }, function(error) {
@@ -76,38 +66,39 @@ var app = {
         });
 
         // motionchange event:  Fires when plugin changes state from Stationary->Moving and vice-versa.
-        bgGeo.on('motionchange', function(isMoving, location) {
-            console.log('[event] motionchange, isMoving: ', isMoving, ', location: ', location);
+        bgGeo.onMotionchange(function(location) {
+            console.log('[event] motionchange', location);
             app.setState({
                 enabled: true,
-                isMoving: isMoving
+                isMoving: location.isMoving
             });
         });
 
         // providerchange event:  Fires when user changes location authorization)
-        bgGeo.on('providerchange', function(provider) {
+        bgGeo.onProviderChange(function(provider) {
             console.log('[event] providerchange: ', provider);
             app.setProvider(provider);
         });
 
         // heartbeat event:  Fires every heartbeatInterval while plugin is in stationary state.  iOS requires preventSuspend: true)
-        bgGeo.on('heartbeat', function(event) {
+        bgGeo.onHeartbeat(function(event) {
             console.log('[event] heartbeat: ', event);
         });
-    
+
         ////
         // Step 2:  Configure the plugin ONCE when your app boots.
         //
 
-        bgGeo.configure({
-            desiredAccuracy: 0,     // Highest possible accuracy: GPS + Wifi + Cellular
+        bgGeo.ready({
+            reset: true,
+            desiredAccuracy: bgGeo.DESIRED_ACCURACY_HIGH,     // Highest possible accuracy: GPS + Wifi + Cellular
             distanceFilter: 10,     // Record a location every 10 meters.
             stopTimeout: 1,         // Change state to stationary after 1 min with device "still"
             stopOnTerminate: false, // Don't stop tracking when app is terminated.
             foregroundService: true,// Prevent Android from terminating service due to memory pressure from other apps.
             heartbeatInterval: 60,  // <-- heartbeat event every 60s
-            url: 'https://' + app.host + '/locations',
-            params: this.getParams(username),
+            url: 'https://' + app.host + '/locations/' + username,
+            params: bgGeo.transistorTrackerParams(window.device),
             debug: true,            // Debug sounds & notifications
             autoSync: true,         // Auto sync each recorded location to #url immediately.
             logLevel: bgGeo.LOG_LEVEL_VERBOSE
@@ -130,38 +121,7 @@ var app = {
         label.innerHTML = 'View your tracking at http://' + app.host + '/' + username;
     },
 
-    /**
-    * Returns plugin's HTTP #params config.  Attach cordova-plugin-device to plugin's #params along with 
-    * provided {username} as company_token so you can view your tracking history in browser at: 
-        http://tracker.transistorsoft.com/{username}.
-    * This is how the tracking server organizes locations by device & username
-    * eg:
-    params: {
-        "device": {
-            "platform": "Android",
-            "version": "8.1.0",
-            "uuid": "cd4ce2e5d0447f8a",
-            "cordova": "6.3.0",
-            "model": "Pixel",
-            "manufacturer": "Google",
-            "framework": "Cordova"
-        },
-        "company_token": "{username}"
-    }
-    *
-    */
-    getParams: function(username) {        
-        var params = {
-            device: window.device,
-            company_token: username
-        };
-        params.device.framework = 'Cordova';
-        
-        return params;
-    },
-
     onToggleEnabled: function() {
-        this.playSound('BUTTON_CLICK');
         if (app.state.enabled) {
             app.bgGeo.stop(function(state) {
                 console.log('- stop success');
@@ -172,13 +132,12 @@ var app = {
             app.bgGeo.start(function(state) {
                 console.log('- start success');
                 app.setState(state);
-                app.setLabel('Acquiring motionchange position...', 'red');                
+                app.setLabel('Acquiring motionchange position...', 'red');
             });
         }
     },
 
     onClickChangePace: function() {
-        this.playSound('BUTTON_CLICK');
         if (!app.state.enabled) {
             console.warn('- Cannot changePace while disabled.  You must #start the plugin first');
             return;
@@ -192,8 +151,7 @@ var app = {
     },
 
     onClickGetCurrentPosition: function() {
-        this.playSound('BUTTON_CLICK');
-        app.bgGeo.getCurrentPosition(function(location) {
+        app.bgGeo.getCurrentPosition({persist: true, samples: 1}).then(function(location) {
             console.log('- getCurrentPosition success: ', location);
         }, function(error) {
             console.warn('- getCurrentPosition error: ', error);
@@ -281,13 +239,6 @@ var app = {
                 callback(null);
             }
         }, 'Tracking Server Identifier');
-    },
-
-    playSound: function(key) {
-        var soundId = app.sounds[window.device.platform.toLowerCase()].BUTTON_CLICK;
-        if (soundId) {
-            app.bgGeo.playSound(soundId);
-        }
     }
 };
 
