@@ -66,7 +66,7 @@ var app = {
         });
 
         // motionchange event:  Fires when plugin changes state from Stationary->Moving and vice-versa.
-        bgGeo.onMotionchange(function(location) {
+        bgGeo.onMotionChange(function(location) {
             console.log('[event] motionchange', location);
             app.setState({
                 enabled: true,
