@@ -1,7 +1,7 @@
 {
   "name": "cordova-background-geolocation-SampleApp",
   "description": "Cordova Background Geolocation Demo Application",
-  "version": "3.0.0-rc.2",
+  "version": "3.2.0",
   "author": "Transistor Software",
   "homepage": "https://www.transistorsoft.com",
   "repository": {
