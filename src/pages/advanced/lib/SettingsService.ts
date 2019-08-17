@@ -132,14 +132,30 @@ export class SettingsService {
   async applyTestConfig(device) {
 
     let geofences = [{
-      "identifier": "Jfk",
+      "identifier": "[Cordova] Home",
+      "radius": 200,
+      "latitude": 45.5192534,
+      "longitude": -73.6169719,
+      "notifyOnEntry": true,
+      "notifyOnExit": true,
+      "notifyOnDwell": true,
+      "loiteringDelay": 10000,
+      "extras": {
+        "radius": 200,
+        "center": {
+          "latitude": 45.5192534,
+          "longitude": -73.6169719
+        }
+      }
+    }, {
+      "identifier": "[Cordova] Jfk",
       "radius": 200,
       "latitude": 45.52193435702239,
       "longitude": -73.61602026242679,
       "notifyOnEntry": true,
       "notifyOnExit": true,
-      "notifyOnDwell": false,
-      "loiteringDelay": 0,
+      "notifyOnDwell": true,
+      "loiteringDelay": 10000,
       "extras": {
         "radius": 200,
         "center": {
@@ -148,14 +164,14 @@ export class SettingsService {
         }
       }
     }, {
-      "identifier": "Laj",
+      "identifier": "[Cordova] Laj",
       "radius": 200,
       "latitude": 45.52011166353691,
       "longitude": -73.61188565687189,
       "notifyOnEntry": true,
       "notifyOnExit": true,
-      "notifyOnDwell": false,
-      "loiteringDelay": 0,
+      "notifyOnDwell": true,
+      "loiteringDelay": 10000,
       "extras": {
         "radius": 200,
         "center": {
@@ -164,14 +180,14 @@ export class SettingsService {
         }
       }
     }, {
-      "identifier": "Bernard",
+      "identifier": "[Cordova] Bernard",
       "radius": 200,
       "latitude": 45.51890341224348,
       "longitude": -73.60920346871359,
       "notifyOnEntry": true,
       "notifyOnExit": true,
-      "notifyOnDwell": false,
-      "loiteringDelay": 0,
+      "notifyOnDwell": true,
+      "loiteringDelay": 10000,
       "extras": {
         "radius": 200,
         "center": {
@@ -180,14 +196,14 @@ export class SettingsService {
         }
       }
     }, {
-      "identifier": "Park",
+      "identifier": "[Cordova] Park",
       "radius": 200,
       "latitude": 45.51793055832324,
       "longitude": -73.60288022069346,
       "notifyOnEntry": true,
       "notifyOnExit": true,
-      "notifyOnDwell": false,
-      "loiteringDelay": 0,
+      "notifyOnDwell": true,
+      "loiteringDelay": 10000,
       "extras": {
         "radius": 200,
         "center": {
@@ -196,14 +212,14 @@ export class SettingsService {
         }
       }
     }, {
-      "identifier": "Dollard",
+      "identifier": "[Cordova] Dollard",
       "radius": 200,
       "latitude": 45.51722612373795,
       "longitude": -73.61367125021673,
       "notifyOnEntry": true,
       "notifyOnExit": true,
-      "notifyOnDwell": false,
-      "loiteringDelay": 0,
+      "notifyOnDwell": true,
+      "loiteringDelay": 10000,
       "extras": {
         "radius": 200,
         "center": {
@@ -224,8 +240,13 @@ export class SettingsService {
       distanceFilter: 50,
       locationUpdateInterval: 5000,
       fastestLocationUpdateInterval: -1,
-      stopTimeout: 0,
+      stopTimeout: 1,
+      schedule: [
+        //'2-6 09:00-17:00'
+      ],
+      scheduleUseAlarmManager: true,
       url: 'http://tracker.transistorsoft.com/locations/' + storage.getItem('username'),
+      maxDaysToPersist: 14,
       params: BackgroundGeolocation.transistorTrackerParams(device),
       geofenceModeHighAccuracy: true,
       stopOnTerminate: false,

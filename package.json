@@ -33,13 +33,14 @@
     "@ionic-native/splash-screen": "^5.0.0",
     "@ionic-native/status-bar": "^5.0.0",
     "@ionic/storage": "2.2.0",
-    "cordova-android": "^8.0.0",
-    "cordova-background-geolocation-lt": "3.0.5",
+    "cordova-android": "8.0.0",
+    "cordova-background-geolocation-lt": "3.2.0",
     "cordova-ios": "5.0.1",
-    "cordova-plugin-background-fetch": "5.4.1",
+    "cordova-plugin-background-fetch": "5.5.0",
     "cordova-plugin-cocoalumberjack": "0.0.4",
     "cordova-plugin-device": "2.0.2",
     "cordova-plugin-dialogs": "2.0.1",
+    "cordova-plugin-ionic-webview": "4.1.0",
     "cordova-plugin-splashscreen": "5.0.2",
     "cordova-plugin-statusbar": "2.4.2",
     "cordova-plugin-whitelist": "1.3.3",
@@ -63,10 +64,12 @@
       "cordova-plugin-dialogs": {},
       "cordova-plugin-statusbar": {},
       "cordova-plugin-splashscreen": {},
-      "cordova-plugin-background-fetch": {},
+      "cordova-plugin-ionic-webview": {
+        "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
+      },
       "cordova-background-geolocation-lt": {
         "GOOGLE_API_VERSION": "16.+",
-        "APPCOMPAT_VERSION": "27.+",
+        "APPCOMPAT_VERSION": "28.+",
         "OKHTTP_VERSION": "3.12.+",
         "EVENTBUS_VERSION": "3.0.0",
         "BACKGROUND_MODE_LOCATION": "<string>location</string>"
