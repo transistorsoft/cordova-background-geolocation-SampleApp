@@ -39,6 +39,8 @@ import BackgroundGeolocation, {
   ConnectivityChangeEvent
 } from "../../cordova-background-geolocation";
 
+import BackgroundFetch from "cordova-plugin-background-fetch";
+
 declare var google;
 
 
@@ -369,18 +371,22 @@ export class AdvancedPage {
   }
 
   configureBackgroundFetch() {
-    let BackgroundFetch = (<any>window).BackgroundFetch;
-
     BackgroundFetch.configure(() => {
       console.log('[BackgroundFetch] - Received fetch event');
-      BackgroundFetch.finish();
+      BackgroundFetch.finish(BackgroundFetch.FETCH_RESULT_NEW_DATA);
     }, (error) => {
       console.warn('BackgroundFetch error: ', error);
     }, {
       minimumFetchInterval: 15, // <-- default is 15
-      stopOnTerminate: false,   // <-- Android only
+      // Android config
+      stopOnTerminate: false,
       startOnBoot: true,
-      enableHeadless: true
+      enableHeadless: true,
+      requiresCharging: false,
+      requiresDeviceIdle: false,
+      requiresBatteryNotLow: false,
+      requiresStorageNotLow: false,
+      requiredNetworkType: BackgroundFetch.NETWORK_TYPE_NONE
     });
   }
   ////

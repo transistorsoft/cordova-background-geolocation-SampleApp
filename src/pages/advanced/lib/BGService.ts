@@ -31,7 +31,7 @@ const SETTINGS = {
     {name: 'batchSync', group: 'http', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'false'},
     {name: 'maxBatchSize', group: 'http', dataType: 'integer', inputType: 'select', values: [-1, 5, 10, 50, 100]},
     {name: 'maxRecordsToPersist', group: 'http', dataType: 'integer', inputType: 'select', values: [-1, 0, 1, 5, 10]},
-    {name: 'maxDaysToPersist', group: 'http', dataType: 'integer', inputType: 'select', values: [1, 2, 3, 5, 7], defaultValue: 1},
+    {name: 'maxDaysToPersist', group: 'http', dataType: 'integer', inputType: 'select', values: [1, 2, 3, 5, 7, 14], defaultValue: 2},
     {name: 'persistMode', group: 'http', dataType: 'integer', inputType: 'select', values: [2, 1, -1, 0], defaultValue: 2},
     // Application
     {name: 'stopOnTerminate', group: 'application', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'true'},
