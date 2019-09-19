@@ -98,6 +98,17 @@ const SOUND_MAP = {
     "OPEN": "OPEN",
     "CLOSE": "CLOSE",
     "FLOURISH": "MOTIONCHANGE_TRUE"
+  },
+  "browser": {
+    "LONG_PRESS_ACTIVATE": 1,
+    "LONG_PRESS_CANCEL": 1,
+    "ADD_GEOFENCE": 1,
+    "BUTTON_CLICK": 1,
+    "MESSAGE_SENT": 1,
+    "ERROR": 1,
+    "OPEN": 1,
+    "CLOSE": 1,
+    "FLOURISH": 1
   }
 };
 
@@ -118,7 +129,11 @@ export class BGService {
     // @ionic-native/device is broken with Ionic 4, go old-school
     this.device = (<any>window).device;
     // Build a collection of available settings by platform for use on the Settings screen
-    var settings = [].concat(SETTINGS.common).concat(SETTINGS[this.device.platform||'iOS']);
+    let platform = this.device.platform || 'iOS';
+    if (platform === 'browser') {
+      platform = 'Android';
+    }
+    var settings = [].concat(SETTINGS.common).concat(SETTINGS[platform]);
     this.settings = {
       list: settings,
       map: {}
