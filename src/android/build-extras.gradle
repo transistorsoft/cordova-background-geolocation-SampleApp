@@ -1,1 +1,2 @@
 // This file has no implementation
+ext.removeBackgroundGeolocationDebugSoundsInRelease = false
