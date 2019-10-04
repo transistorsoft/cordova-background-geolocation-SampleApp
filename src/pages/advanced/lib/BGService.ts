@@ -37,6 +37,7 @@ const SETTINGS = {
     {name: 'stopOnTerminate', group: 'application', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'true'},
     {name: 'startOnBoot', group: 'application', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'false'},
     {name: 'stopTimeout', group: 'activity_recognition', dataType: 'integer', inputType: 'select', values: [0, 1, 3, 5, 10, 15], defaultValue: 1},
+    {name: 'disableMotionActivityUpdates', group: 'activity_recognition', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'false'},
     {name: 'heartbeatInterval', group: 'application', dataType: 'integer', inputType: 'select', values: [-1, 60, (2*60), (5*60), (15*60)], defaultValue: 60},
     // Logging & Debug
     {name: 'debug', group: 'debug', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'true'},
@@ -50,7 +51,6 @@ const SETTINGS = {
     // Activity Recognition
     {name: 'stopDetectionDelay', group: 'activity_recognition', dataType: 'integer', inputType: 'select', values: [0, 1, 2, 5], defaultValue: 0},
     {name: 'disableStopDetection', group: 'activity_recognition', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: false},
-    {name: 'disableMotionActivityUpdates', group: 'activity_recognition', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'false'},
     {name: 'preventSuspend', group: 'application', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'false'}
   ],
   Android: [

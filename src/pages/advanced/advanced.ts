@@ -685,6 +685,8 @@ export class AdvancedPage {
   */
   onLocation(location:Location) {
     console.log('[location] -', location);
+    // Print a log message to SDK's logger to prove this executed, even in the background.
+    BackgroundGeolocation.logger.debug("👍 [onLocation] received location in Javascript: " + location.uuid);
 
     this.setCenter(location);
 
