@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="32007" id="com.transistorsoft.backgroundgeolocation.ionic2" version="3.2.2" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="32010" id="com.transistorsoft.backgroundgeolocation.ionic2" version="3.2.3" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>BG Geo</name>
     <description>Cordova Background Geolocation Demo App.</description>
     <author email="info@transistorsoft.com" href="https://www.transistorsoft.com/">Transistor Software</author>
