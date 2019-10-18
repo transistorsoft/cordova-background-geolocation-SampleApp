@@ -231,14 +231,16 @@ export class SettingsService {
 
     await BackgroundGeolocation.removeGeofences();
     await BackgroundGeolocation.addGeofences(geofences);
+    await BackgroundGeolocation.resetOdometer();
 
     let storage = (<any>window).localStorage;
     await BackgroundGeolocation.setConfig({
       debug: true,
       logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
-      desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_NAVIGATION,
+      desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
       distanceFilter: 50,
-      locationUpdateInterval: 5000,
+      disableElasticity: false,
+      locationUpdateInterval: 1000,
       fastestLocationUpdateInterval: -1,
       stopTimeout: 1,
       schedule: [

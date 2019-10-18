@@ -7,5 +7,6 @@ if [[ -n $1 ]]; then
 fi
 
 cordova plugin remove $PLUGIN  --nosave
-ionic cordova plugin add $PLUGIN
+ionic cordova plugin add ../$PLUGIN
+install-local ../$PLUGIN
 

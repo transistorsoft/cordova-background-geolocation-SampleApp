@@ -789,7 +789,7 @@ export class AdvancedPage {
   /**
   * @event geofence
   */
-  onGeofence(event:GeofenceEvent) {
+  async onGeofence(event:GeofenceEvent) {
     console.log('[geofence] -', event);
 
     var circle = this.geofenceMarkers.find((marker) => {
@@ -800,9 +800,9 @@ export class AdvancedPage {
     var map = (this.settingsService.applicationState.mapHideGeofenceHits) ? null : this.map;
 
     let location = event.location;
-    let geofence = this.geofenceHits[event.identifier];
-    if (!geofence) {
-      geofence = {
+    let geofenceMarker = this.geofenceHits[event.identifier];
+    if (!geofenceMarker) {
+      geofenceMarker = {
         circle: new google.maps.Circle({
           zIndex: 100,
           fillOpacity: 0,
@@ -815,8 +815,8 @@ export class AdvancedPage {
         }),
         events: []
       };
-      this.geofenceHits[event.identifier] = geofence;
-      this.geofenceHitMarkers.push(geofence.circle);
+      this.geofenceHits[event.identifier] = geofenceMarker;
+      this.geofenceHitMarkers.push(geofenceMarker.circle);
     }
 
     var color;
@@ -828,21 +828,21 @@ export class AdvancedPage {
       color = COLORS.red;
     }
 
-    let circleLatLng = geofence.circle.getCenter();
+    let circleLatLng = geofenceMarker.circle.getCenter();
     let locationLatLng = new google.maps.LatLng(location.coords.latitude, location.coords.longitude);
     let distance = google.maps.geometry.spherical.computeDistanceBetween (circleLatLng, locationLatLng);
 
     // Push event
-    geofence.events.push({
+    geofenceMarker.events.push({
       action: event.action,
       location: event.location,
       distance: distance
     });
 
     let heading = google.maps.geometry.spherical.computeHeading(circleLatLng, locationLatLng);
-    let circleEdgeLatLng = google.maps.geometry.spherical.computeOffset(circleLatLng, geofence.circle.getRadius(), heading);
+    let circleEdgeLatLng = google.maps.geometry.spherical.computeOffset(circleLatLng, geofenceMarker.circle.getRadius(), heading);
 
-    geofence.events.push({
+    geofenceMarker.events.push({
       location: event.location,
       action: event.action,
       distance: distance
