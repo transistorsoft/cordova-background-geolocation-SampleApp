@@ -238,7 +238,7 @@ export class SettingsPage {
   onClickDestroyLog() {
     this.settingsService.confirm('Confirm Destroy', 'Destroy Logs?', () => {
       this.isDestroyingLog = true;
-      BackgroundGeolocation.destroyLog(() => {
+      BackgroundGeolocation.logger.destroyLog().then((success) => {
         this.isDestroyingLog = false;
         this.bgService.playSound('MESSAGE_SENT');
         this.settingsService.toast('Destroyed logs');

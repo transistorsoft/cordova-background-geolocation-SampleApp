@@ -18,7 +18,7 @@ import BackgroundGeolocation, {
   HeartbeatEvent,
   ConnectivityChangeEvent,
   DeviceSettings,
-  DeviceSettingsRequest,
+  DeviceSettingsRequest
 } from "cordova-background-geolocation-lt";  // <-- Use "cordova-background-geolocation" for customers-only version
 
 export default BackgroundGeolocation;

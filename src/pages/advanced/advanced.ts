@@ -504,7 +504,7 @@ export class AdvancedPage {
   doEmailLog(email) {
     this.isEmailingLog = true;
 
-    BackgroundGeolocation.emailLog(email).then(result => {
+    BackgroundGeolocation.logger.emailLog(email).then(result => {
       this.zone.run(() => {this.isEmailingLog = false; });
       console.log('- email log success');
     }).catch(error => {
