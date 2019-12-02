@@ -1,6 +1,5 @@
 import { Component,  NgZone  } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
-import { Device } from '@ionic-native/device/ngx';
 
 ////
 // NOTE:  normally you will simply import from "cordova-background-geolocation-lt" or "cordova-background-geolocation"
@@ -13,11 +12,12 @@ import BackgroundGeolocation, {
   MotionActivityEvent,
   ProviderChangeEvent,
   MotionChangeEvent,
-  ConnectivityChangeEvent
+  ConnectivityChangeEvent,
+  AuthorizationEvent,
+  TransistorAuthorizationToken
 } from "../../cordova-background-geolocation";
 
-// Url to post locations to
-const TRACKER_HOST = 'http://tracker.transistorsoft.com/locations/';
+import ENV from "../../ENV";
 
 @IonicPage()
 @Component({
@@ -32,7 +32,7 @@ export class HelloWorldPage {
   // ion-list datasource
   events: any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private platform: Platform, private device: Device, private zone:NgZone) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private platform: Platform,  private zone:NgZone) {
     this.isMoving = false;
     this.enabled = false;
     this.events = [];
@@ -46,13 +46,18 @@ export class HelloWorldPage {
   }
 
   onDeviceReady() {
-    // @ionic-native/device is broken with Ionic 4, go old-school
-    this.device = (<any>window).device;
+    this.configureBackgroundGeolocation();
+  }
 
+  async configureBackgroundGeolocation() {
     // Compose #url: tracker.transistorsoft.com/locations/{username}
     let localStorage = (<any>window).localStorage;
-    let username = localStorage.getItem('username');
-    let url = TRACKER_HOST + username;
+
+    let token:TransistorAuthorizationToken = await BackgroundGeolocation.findOrCreateTransistorAuthorizationToken(
+      localStorage.getItem('orgname'),
+      localStorage.getItem('username'),
+      ENV.TRACKER_HOST
+    );
 
     // Step 1:  Listen to events
     BackgroundGeolocation.onLocation(this.onLocation.bind(this));
@@ -62,19 +67,29 @@ export class HelloWorldPage {
     BackgroundGeolocation.onProviderChange(this.onProviderChange.bind(this));
     BackgroundGeolocation.onPowerSaveChange(this.onPowerSaveChange.bind(this));
     BackgroundGeolocation.onConnectivityChange(this.onConnectivityChange.bind(this));
+    BackgroundGeolocation.onAuthorization(this.onAuthorization.bind(this));
 
     // Step 2:  Configure the plugin
     BackgroundGeolocation.ready({
+      reset: true,
       debug: true,
       logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
       distanceFilter: 10,
       stopTimeout: 1,
       stopOnTerminate: false,
       startOnBoot: true,
-      foregroundService: true,
-      url: url,
-      autoSync: true,
-      params: BackgroundGeolocation.transistorTrackerParams(this.device)
+      url: ENV.TRACKER_HOST + '/api/locations',
+      authorization: {  // <-- JWT authorization for tracker.transistorsoft.com
+        strategy: 'jwt',
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
+        refreshUrl: ENV.TRACKER_HOST + '/api/refresh_token',
+        refreshPayload: {
+          refresh_token: '{refreshToken}'
+        },
+        expires: token.expires
+      },
+      autoSync: true
     }, (state) => {
       console.log('- Configure success: ', state);
       // Update UI state (toggle switch, changePace button)
@@ -84,7 +99,6 @@ export class HelloWorldPage {
       });
     });
   }
-
   // Return to Home screen (app switcher)
   onClickHome() {
     this.navCtrl.setRoot('HomePage');
@@ -101,7 +115,7 @@ export class HelloWorldPage {
 
   // Fetch the current position
   onClickGetCurrentPosition() {
-    BackgroundGeolocation.getCurrentPosition({}, (location) => {
+    BackgroundGeolocation.getCurrentPosition({persist: true}, (location) => {
       console.log('- getCurrentPosition: ', location);
     }, (error) => {
       console.warn('- Location error: ', error);
@@ -186,6 +200,12 @@ export class HelloWorldPage {
   */
   onConnectivityChange(event:ConnectivityChangeEvent) {
     console.log('[event] connectivitychange connected? ', event.connected);
+  }
+  /**
+  * @event authorization
+  */
+  onAuthorization(event:AuthorizationEvent) {
+    console.log('[event] authorization: ', event);
   }
   /**
   * Add a record to ion-list

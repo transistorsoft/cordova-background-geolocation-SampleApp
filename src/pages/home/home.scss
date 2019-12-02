@@ -10,3 +10,60 @@ page-home {
         justify-content: center;
     }
 }
+
+.toast-error {
+    .toast-message {
+        background-color: red;
+    }
+}
+/**
+* Registration Modal
+*/
+
+/**
+* Android is tricky with so many different screen-sizes
+* Have to compress the layout and pin the Alert to top.
+*/
+ion-alert.registration.Android {
+    padding-top: 5px;
+    .alert-wrapper {
+        .alert-input-group {
+            padding: 0 10px 10px 10px;
+
+            .alert-input {
+                margin-top: 5px;
+            }
+        }
+        .alert-button-group {
+            padding: 0;
+            button {
+
+            }
+        }
+    }
+}
+/**
+* Common
+*/
+ion-alert.registration {
+    .alert-wrapper {
+        border-radius: 10px;
+        padding: 5px 10px 5px 10px;
+        .alert-head {
+            padding: 10px;
+            h2 {
+                text-align: center;
+            }
+            h3 {
+                font-size: 13px;
+            }
+        }
+        .alert-message {
+            font-style: italic;
+            font-weight: bold;
+            font-size: 15px;
+            text-align: center;
+            padding: 0 0 10px 0;
+        }
+    }
+}

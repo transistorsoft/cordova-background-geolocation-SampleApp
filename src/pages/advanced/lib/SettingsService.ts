@@ -25,7 +25,9 @@ const GEOFENCE_LOITERING_DELAY_OPTIONS = [1*1000, 10*1000, 30*1000, 60*1000, 5*6
 // Normally once wouldn't include the plugin like this.  It's done to allow me to
 // easily switch between importing the npm vs paid version by editing a single file.
 //
-import BackgroundGeolocation from "../../../cordova-background-geolocation";
+import BackgroundGeolocation, {TransistorAuthorizationToken} from "../../../cordova-background-geolocation";
+
+import ENV from "../../../ENV";
 
 @Injectable()
 
@@ -129,7 +131,7 @@ export class SettingsService {
   * DO NOT USE
   * @private
   */
-  async applyTestConfig(device) {
+  async applyTestConfig() {
 
     let geofences = [{
       "identifier": "[Cordova] Home",
@@ -233,23 +235,29 @@ export class SettingsService {
     await BackgroundGeolocation.addGeofences(geofences);
     await BackgroundGeolocation.resetOdometer();
 
-    let storage = (<any>window).localStorage;
-    await BackgroundGeolocation.setConfig({
+    let localStorage = (<any>window).localStorage;
+    let token:TransistorAuthorizationToken = await BackgroundGeolocation.findOrCreateTransistorAuthorizationToken(
+      localStorage.getItem('orgname'),
+      localStorage.getItem('username'),
+      ENV.TRACKER_HOST
+    );
+
+    await BackgroundGeolocation.reset({
       debug: true,
       logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
       desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
       distanceFilter: 50,
+      encrypt: true,
       disableElasticity: false,
       locationUpdateInterval: 1000,
       fastestLocationUpdateInterval: -1,
       stopTimeout: 1,
+      transistorAuthorizationToken: token,
       schedule: [
         //'2-6 09:00-17:00'
       ],
       scheduleUseAlarmManager: true,
-      url: 'http://tracker.transistorsoft.com/locations/' + storage.getItem('username'),
       maxDaysToPersist: 14,
-      params: BackgroundGeolocation.transistorTrackerParams(device),
       geofenceModeHighAccuracy: true,
       stopOnTerminate: false,
       startOnBoot: true,
