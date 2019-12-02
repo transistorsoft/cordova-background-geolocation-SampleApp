@@ -20,17 +20,17 @@
     </ion-row>
     <ion-row>
       <ion-col>
-        <button ion-button full round (click)="onNavigation('HelloWorldPage')" color="gold">Hello World</button>
+        <button ion-button full round (click)="onClickNavigate('HelloWorldPage')" color="gold">Hello World</button>
       </ion-col>
     </ion-row>
     <ion-row>
       <ion-col>
-        <button ion-button full round (click)="onNavigation('SimpleMapPage')" color="gold">Simple Map</button>
+        <button ion-button full round (click)="onClickNavigate('SimpleMapPage')" color="gold">Simple Map</button>
       </ion-col>
     </ion-row>
     <ion-row>
       <ion-col>
-        <button ion-button full round (click)="onNavigation('AdvancedPage')" color="gold">Advanced</button>
+        <button ion-button full round (click)="onClickNavigate('AdvancedPage')" color="gold">Advanced</button>
       </ion-col>
     </ion-row>
   </ion-grid>
@@ -40,18 +40,25 @@
   <ion-navbar color="light">
     <p style="padding:5px">
       These apps will post locations to Transistor Software's demo server.  You can view your tracking in the browser by visiting:</p>
-    <p style="text-align:center"><i>tracker.transistorsoft.com/<strong [innerHTML]="trackerUsername"></strong></i></p>
+    <p style="text-align:center"><i [innerHTML]="url">/<strong [innerHTML]="orgname"></strong></i></p>
+
     <ion-item>
-      <ion-label color="primary">Username:</ion-label>
-      <ion-input [(ngModel)]="trackerUsername" readonly="true"></ion-input>
+      <ion-label color="primary">Organization:</ion-label>
+      <ion-input [(ngModel)]="orgname" readonly="true"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label color="primary">Device ID:</ion-label>
+      <ion-input [(ngModel)]="deviceIdentifier" readonly="true"></ion-input>
     </ion-item>
 
     <ion-row>
       <ion-col align-self-start style="padding-right:5px;">
-        <button ion-button small full round color="danger" (click)="onClickEditUsername()">Edit Username</button>
+        <button ion-button full color="danger" (click)="onClickRegister()">Edit</button>
       </ion-col>
       <ion-col align-self-end style="padding-right:5px;">
-        <a [href]="url" style="text-decoration:none"><button ion-button round small full color="primary">View Server</button></a>
+        <a [href]="url" style="text-decoration:none">
+          <button ion-button full color="primary">View Server</button></a>
       </ion-col>
     </ion-row>
   </ion-navbar>

@@ -27,12 +27,15 @@ import BackgroundGeolocation, {
   MotionActivityEvent,
   ProviderChangeEvent,
   MotionChangeEvent,
-  ConnectivityChangeEvent
+  ConnectivityChangeEvent,
+  DeviceInfo,
+  TransistorAuthorizationToken
 } from "../../cordova-background-geolocation";
+
+import ENV from "../../ENV";
 
 // Cordova plugins Device & Dialogs
 import { Dialogs } from '@ionic-native/dialogs/ngx';
-import { Device } from '@ionic-native/device/ngx';
 
 // Handy color & sound constants.
 import COLORS from '../../lib/colors';
@@ -40,9 +43,6 @@ import SOUND_MAP from '../../lib/sound-map';
 
 // Google maps <script> is loaded in main index.html
 declare var google;
-
-// Transistor Software Tracking Server Host
-const TRACKER_HOST = 'http://tracker.transistorsoft.com/locations/';
 
 @IonicPage()
 @Component({
@@ -53,6 +53,7 @@ export class SimpleMapPage {
   @ViewChild('map') mapElement: ElementRef;
 
   // Background Geolocation State
+  deviceInfo: DeviceInfo;
   state: any;
   enabled: boolean;
   isMoving: boolean;
@@ -85,7 +86,6 @@ export class SimpleMapPage {
     private loadingCtrl: LoadingController,
     private zone:NgZone,
     private platform:Platform,
-    private device: Device,
     private dialogs: Dialogs
   ) {
     this.platform.ready().then(this.onDeviceReady.bind(this));
@@ -112,19 +112,24 @@ export class SimpleMapPage {
   }
 
   onDeviceReady() {
-    // @ionic-native/device is broken with Ionic 4, go old-school
-    this.device = (<any>window).device;
+    BackgroundGeolocation.getDeviceInfo().then((deviceInfo) => {
+      this.deviceInfo = deviceInfo;
+    });
 
     // We prompt you for a unique identifier in order to post locations tracker.transistorsoft.com
     this.configureBackgroundGeolocation();
   }
 
-  private configureBackgroundGeolocation() {
+  async configureBackgroundGeolocation() {
 
     // Compose #url from username
     let localStorage = (<any>window).localStorage;
-    let username = localStorage.getItem('username');
-    let url = TRACKER_HOST + username;
+
+    // Fetch Transistor JSON Web Token from localStorage.  For authorization with tracker.transistorsoft.com.
+    let token:TransistorAuthorizationToken = await BackgroundGeolocation.findOrCreateTransistorAuthorizationToken(
+        localStorage.getItem('orgname'),
+        localStorage.getItem('username'),
+        ENV.TRACKER_HOST);
 
     ////
     // Step 1:  listen to events
@@ -141,23 +146,32 @@ export class SimpleMapPage {
     // Step 2:  Initialize the plugin
     //
     BackgroundGeolocation.ready({
+      // Logging / Debug config
+      debug: this.debug,
+      logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
       // Geolocation config
       desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,  // <-- highest possible accuracy
       distanceFilter: this.distanceFilter,
       // ActivityRecognition config
       stopTimeout: this.stopTimeout,
       // Application config
-      foregroundService: true,
       stopOnTerminate: this.stopOnTerminate,
+      startOnBoot: this.startOnBoot,
       heartbeatInterval: 60,
       // HTTP / Persistence config
-      url: url,
-      params: BackgroundGeolocation.transistorTrackerParams(this.device),
+      url: ENV.TRACKER_HOST + '/api/locations',
+      authorization: {
+        strategy: 'JWT',
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
+        refreshUrl: ENV.TRACKER_HOST + '/api/refresh_token',
+        refreshPayload: {
+          refresh_token: '{refreshToken}'
+        },
+        expires: token.expires
+      },
       autoSync: this.autoSync,
-      autoSyncThreshold: 0,
-      // Logging / Debug config
-      debug: this.debug,
-      logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE
+      autoSyncThreshold: 0
     }, (state) => {
       console.log('- BackgroundGeolocation ready: ', state);
       // Set current plugin state upon our view.
@@ -594,7 +608,7 @@ export class SimpleMapPage {
   * Play a UI sound via BackgroundGeolocation#playSound
   */
   private playSound(name) {
-    let soundId = SOUND_MAP[this.device.platform.toUpperCase()][name.toUpperCase()];
+    let soundId = SOUND_MAP[this.deviceInfo.platform.toUpperCase()][name.toUpperCase()];
     if (!soundId) {
       console.warn('playSound: Unknown sound: ', name);
     }

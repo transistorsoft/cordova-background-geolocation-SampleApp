@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="32012" id="com.transistorsoft.backgroundgeolocation.ionic2" version="3.3.0-beta1" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="32014" id="com.transistorsoft.backgroundgeolocation.ionic2" version="3.4.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>BG Geo</name>
     <description>Cordova Background Geolocation Demo App.</description>
     <author email="info@transistorsoft.com" href="https://www.transistorsoft.com/">Transistor Software</author>
@@ -23,6 +23,7 @@
         <preference name="android-minSdkVersion" value="21" />
         <config-file parent="/manifest/application" target="app/src/main/AndroidManifest.xml">
             <meta-data android:name="com.transistorsoft.locationmanager.license_key" android:value="6da948b0a8e4eebd2af03d2defe363bc3d5ca380b4bb846cb8342c6446c69975" />
+            <meta-data android:name="com.transistorsoft.locationmanager.ENCRYPTION_PASSWORD" android:value="transistorsoft" />
         </config-file>
         <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
             <application android:usesCleartextTraffic="true" />
@@ -62,6 +63,9 @@
         </config-file>
         <config-file parent="NSMotionUsageDescription" target="*-Info.plist">
             <string>MOTION_USAGE_DESCRIPTION</string>
+        </config-file>
+        <config-file parent="BACKGROUND_GEOLOCATION_ENCRYPTION_PASSWORD" target="*-Info.plist">
+            <string>transistorsoft</string>
         </config-file>
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
@@ -105,7 +109,6 @@
     </platform>
     <allow-navigation href="http://192.168.11.220:8100" />
     <allow-navigation href="http://192.168.11.22:8100" sessionid="0400b73c" />
-    <plugin name="cordova-plugin-device" spec="2.0.2" />
     <plugin name="ionic-plugin-keyboard" spec="2.2.1" />
     <plugin name="cordova-plugin-whitelist" spec="1.3.3" />
     <plugin name="cordova-plugin-dialogs" spec="2.0.1" />

@@ -14,7 +14,6 @@ import {
 } from 'ionic-angular';
 
 import { Dialogs } from '@ionic-native/dialogs/ngx';
-import { Device } from '@ionic-native/device/ngx';
 
 import {BGService} from './lib/BGService';
 //import {TestService} from './lib/TestService';
@@ -36,7 +35,8 @@ import BackgroundGeolocation, {
   GeofenceEvent,
   GeofencesChangeEvent,
   HeartbeatEvent,
-  ConnectivityChangeEvent
+  ConnectivityChangeEvent,
+  TransistorAuthorizationToken
 } from "../../cordova-background-geolocation";
 
 import BackgroundFetch from "cordova-plugin-background-fetch";
@@ -49,6 +49,7 @@ const CONTAINER_BORDER_POWER_SAVE_ON = '7px solid red';
 
 import COLORS from "../../lib/colors";
 import ICON_MAP from "../../lib/icon-map";
+import ENV from "../../ENV";
 
 // Messages
 const MESSAGE = {
@@ -127,7 +128,6 @@ export class AdvancedPage {
     private modalController: ModalController,
     private zone: NgZone,
     private platform: Platform,
-    private device: Device,
     private dialogs: Dialogs,
     private bgService: BGService,
     public settingsService: SettingsService) {
@@ -166,9 +166,6 @@ export class AdvancedPage {
 
   ionViewDidLoad(){
     this.platform.ready().then(() => {
-      // @ionic-native/device is broken with Ionic 4, go old-school
-      this.device = (<any>window).device;
-
       this.configureMap();
       this.configureBackgroundGeolocation();
       this.configureBackgroundFetch();
@@ -329,29 +326,34 @@ export class AdvancedPage {
 
     this.state.containerBorder = (await BackgroundGeolocation.isPowerSaveMode()) ? CONTAINER_BORDER_POWER_SAVE_ON : CONTAINER_BORDER_POWER_SAVE_OFF;
 
-    let username = localStorage.getItem('username');
+    let localStorage = (<any>window).localStorage;
+    let orgname = localStorage.getItem('orgname') || ''
+    let username = localStorage.getItem('username') || '';
+
+    let token:TransistorAuthorizationToken = await
+      BackgroundGeolocation.findOrCreateTransistorAuthorizationToken(orgname, username,ENV.TRACKER_HOST);
 
     // With the plugin's #ready method, the supplied config object will only be applied with the first
     // boot of your application.  The plugin persists the configuration you apply to it.  Each boot thereafter,
     // the plugin will automatically apply the last known configuration.
 
     BackgroundGeolocation.ready({
+      transistorAuthorizationToken: token,
       reset: false,
       debug: true,
       logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
       distanceFilter: 10,
       stopTimeout: 1,
-      maxDaysToPersist: 14,
       stopOnTerminate: false,
+      startOnBoot: true,
+      enableHeadless: true,
+      encrypt: true,
+      autoSync: true,
+      maxDaysToPersist: 14,
       notification: {
         title: 'cordova-background-geolocation',
         text: 'Tracking engaged'
-      },
-      startOnBoot: true,
-      foregroundService: true,
-      enableHeadless: true,
-      url: 'http://tracker.transistorsoft.com/locations/' + username,
-      params: BackgroundGeolocation.transistorTrackerParams(this.device)
+      }
     }).then(async (state) => {
       // Store the plugin state onto ourself for convenience.
       console.log('- BackgroundGeolocation is ready: ', state);
@@ -620,11 +622,11 @@ export class AdvancedPage {
   * @private
   */
   onClickTestMode() {
-    BackgroundGeolocation.playSound('POP');
+    this.bgService.playSound('TEST_MODE_CLICK');
     this.testModeClicks++;
     if (this.testModeClicks == 10) {
-      BackgroundGeolocation.playSound('BEEP_ON');
-      this.settingsService.applyTestConfig(this.device);
+      this.bgService.playSound('TEST_MODE_SUCCESS');
+      this.settingsService.applyTestConfig();
     }
     if (this.testModeTimer > 0) clearTimeout(this.testModeTimer);
 

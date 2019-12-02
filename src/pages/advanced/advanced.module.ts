@@ -13,8 +13,8 @@ import {TestService} from './lib/TestService';
   imports: [
     IonicPageModule.forChild(AdvancedPage)
   ],
-  providers: [    
+  providers: [
     BGService, SettingsService, TestService
-  ]  
+  ]
 })
 export class AdvancedPageModule {}

@@ -8,5 +8,5 @@ fi
 
 cordova plugin remove $PLUGIN  --nosave
 ionic cordova plugin add ../$PLUGIN
-install-local ../$PLUGIN
+#install-local ../$PLUGIN
 

@@ -6,15 +6,15 @@
     <ion-buttons end>
     	<ion-toggle [(ngModel)]="enabled" (ionChange)="onToggleEnabled()" style="display:block;"></ion-toggle>
     </ion-buttons>
-  </ion-navbar>  
+  </ion-navbar>
 </ion-header>
 
 <ion-content>
-	<ion-fab top left edge>    
+	<ion-fab top left edge>
    		<button ion-fab color="gold" (click)="onClickMainMenu()">
           <ion-icon color="dark" name="arrow-dropdown-circle"></ion-icon>
       </button>
-   		<ion-fab-list side="bottom" style="width:250px">   			
+   		<ion-fab-list side="bottom" style="width:250px">
         <ion-item>
           <button ion-button full round color="primary" (click)="onClickHome()"><ion-icon name="home"></ion-icon>&nbsp;Home</button>
         </ion-item>
@@ -49,7 +49,7 @@
   			<ion-item>
        		<button ion-button color="primary" (click)="onClickEmailLog()">Email Log</button>
        		<button ion-button color="danger" (click)="onClickDestroyLog()">Destroy</button>
-       	</ion-item>        
+       	</ion-item>
      	</ion-fab-list>
     </ion-fab>
 
@@ -58,7 +58,7 @@
 
 </ion-content>
 
-<ion-footer>	
+<ion-footer>
 	<ion-toolbar mode="ios" color="gold">
 		<ion-buttons start>
 			<button ion-button solid (click)="onClickGetCurrentPosition()" color="primary" style="width:50px">
@@ -66,7 +66,7 @@
 			</button>
 		</ion-buttons>
 		<ion-title>
-			<span [innerHTML]="motionActivity">Activity</span>&nbsp;&middot;&nbsp;<span [innerHTML]="odometer"></span>      
+			<span [innerHTML]="motionActivity">Activity</span>&nbsp;&middot;&nbsp;<span [innerHTML]="odometer"></span>
 		</ion-title>
 		<ion-buttons end>
 			<button ion-button solid (click)="onClickChangePace()" style="width:50px" color="{{isMoving ? 'danger' : 'secondary'}}">

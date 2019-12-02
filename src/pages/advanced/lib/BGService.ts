@@ -4,9 +4,7 @@ import {
 } from 'ionic-angular';
 import {Injectable} from "@angular/core";
 
-import { Device } from '@ionic-native/device/ngx';
-
-import BackgroundGeolocation from "../../../cordova-background-geolocation";
+import BackgroundGeolocation, {DeviceInfo} from "../../../cordova-background-geolocation";
 
 //import { defaultLocationUrl, companyToken } from '../consoleConfig';
 
@@ -30,12 +28,14 @@ const SETTINGS = {
     {name: 'url', group: 'http', ignore: true, inputType: 'text', dataType: 'string', defaultValue: 'http://tracker.transistorsoft.com/locations/null'},
     {name: 'method', group: 'http', inputType: 'select', dataType: 'string', values: ['POST', 'PUT'], defaultValue: 'POST'},
     {name: 'autoSync', group: 'http', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'true'},
+    {name: 'disableAutoSyncOnCellular', group: 'http', dataType: 'boolean', inputType: 'toggle', values: [true, false], defaultValue: false},
     {name: 'autoSyncThreshold', group: 'http', dataType: 'integer', inputType: 'select', values: [0, 5, 10, 25, 50, 100], defaultValue: 0},
     {name: 'batchSync', group: 'http', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'false'},
     {name: 'maxBatchSize', group: 'http', dataType: 'integer', inputType: 'select', values: [-1, 5, 10, 50, 100]},
     {name: 'maxRecordsToPersist', group: 'http', dataType: 'integer', inputType: 'select', values: [-1, 0, 1, 5, 10]},
     {name: 'maxDaysToPersist', group: 'http', dataType: 'integer', inputType: 'select', values: [1, 2, 3, 5, 7, 14], defaultValue: 2},
     {name: 'persistMode', group: 'http', dataType: 'integer', inputType: 'select', values: [2, 1, -1, 0], defaultValue: 2},
+    {name: 'encrypt', group: 'http', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'false'},
     // Application
     {name: 'stopOnTerminate', group: 'application', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'true'},
     {name: 'startOnBoot', group: 'application', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'false'},
@@ -87,7 +87,9 @@ const SOUND_MAP = {
     "ERROR": 1006,
     "OPEN": 1502,
     "CLOSE": 1503,
-    "FLOURISH": 1509
+    "FLOURISH": 1509,
+    "TEST_MODE_CLICK": 1130,
+    "TEST_MODE_SUCCESS": 1114
   },
   "Android": {
     "LONG_PRESS_ACTIVATE": "DOT_START",
@@ -98,7 +100,9 @@ const SOUND_MAP = {
     "ERROR": "ERROR",
     "OPEN": "OPEN",
     "CLOSE": "CLOSE",
-    "FLOURISH": "MOTIONCHANGE_TRUE"
+    "FLOURISH": "POP_OPEN",
+    "TEST_MODE_CLICK": "POP",
+    "TEST_MODE_SUCCESS": "BEEP_ON"
   },
   "browser": {
     "LONG_PRESS_ACTIVATE": 1,
@@ -121,16 +125,16 @@ const SOUND_MAP = {
 */
 export class BGService {
   private settings: any;
+  private deviceInfo:DeviceInfo;
 
-  constructor(private platform:Platform, private events: Events, private device: Device) {
+  constructor(private platform:Platform, private events: Events) {
     this.platform.ready().then(this.init.bind(this));
   }
 
-  private init() {
-    // @ionic-native/device is broken with Ionic 4, go old-school
-    this.device = (<any>window).device;
+  private async init() {
+    this.deviceInfo = await BackgroundGeolocation.getDeviceInfo();
     // Build a collection of available settings by platform for use on the Settings screen
-    let platform = this.device.platform || 'iOS';
+    let platform = this.deviceInfo.platform || 'iOS';
     if (platform === 'browser') {
       platform = 'Android';
     }
@@ -216,11 +220,11 @@ export class BGService {
     }
   }
 
-  playSound(name) {
-    var soundId = 0;
-
+  async playSound(name) {
+    let soundId = 0;
+    let deviceInfo = await BackgroundGeolocation.getDeviceInfo();
     if (typeof(name) === 'string') {
-      soundId = SOUND_MAP[this.device.platform][name];
+      soundId = SOUND_MAP[deviceInfo.platform][name];
     } else if (typeof(name) === 'number') {
       soundId = name;
     }
