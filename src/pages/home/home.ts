@@ -154,6 +154,7 @@ export class HomePage {
         duration: 3000,
         cssClass: 'toast-error',
         position: 'top'
+
       }).present();
 
       return false;
@@ -163,7 +164,11 @@ export class HomePage {
     // Destroy existing cached token.
     await BackgroundGeolocation.destroyTransistorAuthorizationToken(ENV.TRACKER_HOST);
     // Register device with tracker.transistorsoft.com to receive a JSON Web Token (JWT).
-    await BackgroundGeolocation.findOrCreateTransistorAuthorizationToken(orgname, username,ENV.TRACKER_HOST);
+    let token = await BackgroundGeolocation.findOrCreateTransistorAuthorizationToken(orgname, username,ENV.TRACKER_HOST);
+
+    await BackgroundGeolocation.setConfig({
+      transistorAuthorizationToken: token
+    });
 
     let localStorage = (<any>window).localStorage;
 
