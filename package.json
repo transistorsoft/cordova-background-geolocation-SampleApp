@@ -35,7 +35,7 @@
     "cordova-android": "8.1.0",
     "cordova-background-geolocation-lt": "3.4.2",
     "cordova-browser": "^6.0.0",
-    "cordova-ios": "^5.0.1",
+    "cordova-ios": "5.1.1",
     "cordova-plugin-background-fetch": "5.6.1",
     "cordova-plugin-cocoalumberjack": "0.0.4",
     "cordova-plugin-device": "2.0.3",
@@ -77,8 +77,8 @@
     },
     "platforms": [
       "browser",
-      "ios",
-      "android"
+      "android",
+      "ios"
     ]
   }
 }

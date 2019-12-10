@@ -4,8 +4,7 @@ import {
   NavController,
   NavParams,
   Platform,
-  AlertController,
-  ToastController
+  ModalController
 } from 'ionic-angular';
 
 ////
@@ -45,8 +44,7 @@ export class HomePage {
     public navCtrl: NavController,
     public navParams: NavParams,
     private platform: Platform,
-    private alertController: AlertController,
-    private toastController: ToastController
+    private modalController: ModalController
   ) {
     this.platform.ready().then(this.onDeviceReady.bind(this));
   }
@@ -67,6 +65,7 @@ export class HomePage {
 
     this.orgname = localStorage.getItem('orgname');
     this.username = localStorage.getItem('username');
+
 
     // Handle install of previous version, where orgname didn't exist and reverse the values, placing username into orgname.
     if (this.isValid(this.username) && this.orgname == null) {
@@ -108,79 +107,20 @@ export class HomePage {
   }
 
   async onClickRegister() {
-    let deviceInfo = await BackgroundGeolocation.getDeviceInfo();
-
-    this.alertController.create({
-      enableBackdropDismiss: false,
-      title: 'Device Registration',
-      subTitle: 'Please provide an Organization and User identifier',
-      cssClass: 'registration ' + this.deviceInfo.platform,
-      message: deviceInfo.manufacturer + ' ' + deviceInfo.model,
-      inputs: [{
-        name: 'orgname',
-        value: this.orgname,
-        placeholder: 'Organization or Company name',
-        type: 'email'
-      },{
-        name: 'username',
-        value: this.username,
-        placeholder: 'Username or initials',
-        type: 'email'
-      }],
-      buttons: [{
-        text: 'Cancel',
-        role: 'cancel',
-        handler: data => {
-          console.log('Cancel clicked');
-        }
-      }, {
-        text: 'Register',
-        handler: this.onClickSave.bind(this)
-      }]
-    }).present();
-  }
-
-  async onClickSave(data) {
-    let orgname = data.orgname;
-    let username = data.username;
-    let errors = [];
-    if (!this.isValid(orgname)) errors.push('Organization name');
-    if (!this.isValid(username)) errors.push('Username');
-
-    if (errors.length > 0) {
-      let msg = "Invalid " + errors.join(', ');
-      this.toastController.create({
-        message: msg,
-        duration: 3000,
-        cssClass: 'toast-error',
-        position: 'top'
-
-      }).present();
-
-      return false;
-    }
-    this.url = ENV.TRACKER_HOST + '/' + orgname;
-
-    // Destroy existing cached token.
-    await BackgroundGeolocation.destroyTransistorAuthorizationToken(ENV.TRACKER_HOST);
-    // Register device with tracker.transistorsoft.com to receive a JSON Web Token (JWT).
-    let token = await BackgroundGeolocation.findOrCreateTransistorAuthorizationToken(orgname, username,ENV.TRACKER_HOST);
-
-    await BackgroundGeolocation.setConfig({
-      transistorAuthorizationToken: token
+    let modal = this.modalController.create('RegistrationPage', {
+      orgname: this.orgname,
+      username: this.username
+    });
+    modal.onDidDismiss(async (result) => {
+      // Update our view-state -- BackgroundGeolocation state may have changed in Settings screen.
+      if (result != null) {
+        this.orgname = result.orgname;
+        this.username = result.username;
+        this.deviceIdentifier = this.deviceInfo.model + '-' + this.username;
+      }
     });
 
-    let localStorage = (<any>window).localStorage;
-
-    this.orgname = orgname;
-    this.username = username;
-    localStorage.setItem('orgname', orgname);
-    localStorage.setItem('username', username);
-
-    let deviceInfo = await BackgroundGeolocation.getDeviceInfo();
-    this.deviceIdentifier = deviceInfo.model + '-' + username;
-
-    return true;
+    modal.present();
   }
 
   private isValid(name) {
