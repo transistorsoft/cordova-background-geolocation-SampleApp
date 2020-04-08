@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="32014" id="com.transistorsoft.backgroundgeolocation.ionic2" version="3.4.2" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="32018" id="com.transistorsoft.backgroundgeolocation.ionic2" version="3.6.2" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>BG Geo</name>
     <description>Cordova Background Geolocation Demo App.</description>
     <author email="info@transistorsoft.com" href="https://www.transistorsoft.com/">Transistor Software</author>
@@ -30,6 +30,7 @@
         </edit-config>
         <resource-file src="src/android/build-extras.gradle" target="app/build-extras.gradle" />
         <resource-file src="src/android/BackgroundGeolocationHeadlessTask.java" target="app/src/main/java/com/transistorsoft/cordova/bggeo/BackgroundGeolocationHeadlessTask.java" />
+        <resource-file src="src/android/BackgroundFetchHeadlessTask.java" target="app/src/main/java/com/transistorsoft/cordova/backgroundfetch/BackgroundFetchHeadlessTask.java" />
         <resource-file src="src/android/notification_layout.xml" target="app/src/main/res/layout/notification_layout.xml" />
         <allow-intent href="market:*" />
         <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
@@ -52,6 +53,11 @@
         <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
     </platform>
     <platform name="ios">
+        <config-file parent="BGTaskSchedulerPermittedIdentifiers" target="*-Info.plist">
+            <array>
+                <string>com.transistorsoft.customtask</string>
+            </array>
+        </config-file>
         <config-file parent="NSLocationAlwaysAndWhenInUseUsageDescription" target="*-Info.plist">
             <string>LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION</string>
         </config-file>

@@ -162,14 +162,22 @@ export class AdvancedPage {
       },
       containerBorder: 'none'
     };
-  }
 
-  ionViewDidLoad(){
     this.platform.ready().then(() => {
       this.configureMap();
       this.configureBackgroundGeolocation();
       this.configureBackgroundFetch();
     });
+    this.platform.pause.subscribe(() => {
+      console.log('************************** PAUSE');
+    });
+    this.platform.resume.subscribe(() => {
+      console.log('************************** RESUME');
+    })
+  }
+
+  ionViewDidLoad(){
+
   }
 
   /**
@@ -373,9 +381,25 @@ export class AdvancedPage {
   }
 
   configureBackgroundFetch() {
-    BackgroundFetch.configure(() => {
-      console.log('[BackgroundFetch] - Received fetch event');
-      BackgroundFetch.finish(BackgroundFetch.FETCH_RESULT_NEW_DATA);
+    BackgroundFetch.configure((taskId) => {
+      console.log('[BackgroundFetch] - Received event:', taskId);
+      switch(taskId) {
+        case 'com.transistorsoft.customtask':
+          break;
+        default:
+          // Schedule another one-shot
+          BackgroundFetch.scheduleTask({
+            taskId: 'com.transistorsoft.customtask',
+            delay: 5000,
+            stopOnTerminate: false,
+            enableHeadless: true,
+            periodic: false,
+            forceAlarmManager: true
+          });
+          break;
+      }
+      BackgroundFetch.finish(taskId);
+
     }, (error) => {
       console.warn('BackgroundFetch error: ', error);
     }, {
@@ -390,6 +414,16 @@ export class AdvancedPage {
       requiresStorageNotLow: false,
       requiredNetworkType: BackgroundFetch.NETWORK_TYPE_NONE
     });
+
+    BackgroundFetch.scheduleTask({
+      taskId: 'com.transistorsoft.customtask',
+      delay: 10000,
+      periodic: false,
+      stopOnTerminate: false,
+      enableHeadless: true,
+      forceAlarmManager: true
+    });
+
   }
   ////
   // UI event handlers

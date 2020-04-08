@@ -33,7 +33,7 @@ public class BackgroundGeolocationHeadlessTask  {
     @Subscribe
     public void onHeadlessTask(HeadlessEvent event) {
         String name = event.getName();
-        TSLog.logger.debug("\uD83D\uDC80  event: " + event.getName());
+        TSLog.logger.debug("\uD83D\uDC80  event (CUSTOM IMPLEMENTATION): " + event.getName());
         TSLog.logger.debug("- event: " + event.getEvent());
 
         if (name.equals(BackgroundGeolocation.EVENT_TERMINATE)) {
