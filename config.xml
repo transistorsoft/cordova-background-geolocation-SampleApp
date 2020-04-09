@@ -30,7 +30,6 @@
         </edit-config>
         <resource-file src="src/android/build-extras.gradle" target="app/build-extras.gradle" />
         <resource-file src="src/android/BackgroundGeolocationHeadlessTask.java" target="app/src/main/java/com/transistorsoft/cordova/bggeo/BackgroundGeolocationHeadlessTask.java" />
-        <resource-file src="src/android/BackgroundFetchHeadlessTask.java" target="app/src/main/java/com/transistorsoft/cordova/backgroundfetch/BackgroundFetchHeadlessTask.java" />
         <resource-file src="src/android/notification_layout.xml" target="app/src/main/res/layout/notification_layout.xml" />
         <allow-intent href="market:*" />
         <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
