@@ -377,7 +377,6 @@ export class AdvancedPage {
     }).catch((error) => {
       console.warn('- BackgroundGeolocation configuration error: ', error);
     });
-
   }
 
   configureBackgroundFetch() {

@@ -1,7 +1,7 @@
 {
   "name": "cordova-background-geolocation-SampleApp",
   "description": "Cordova Background Geolocation Demo Application",
-  "version": "3.4.2",
+  "version": "3.7.0",
   "author": "Transistor Software",
   "homepage": "https://www.transistorsoft.com",
   "repository": {
@@ -32,13 +32,13 @@
     "@ionic-native/splash-screen": "^5.0.0",
     "@ionic-native/status-bar": "^5.0.0",
     "@ionic/storage": "2.2.0",
-    "cordova-android": "8.1.0",
-    "cordova-background-geolocation-lt": "^3.6.2",
-    "cordova-ios": "5.1.1",
-    "cordova-plugin-background-fetch": "^6.0.4",
+    "cordova-android": "^8.1.0",
+    "cordova-background-geolocation-lt": "^3.7.0",
+    "cordova-ios": "^5.1.1",
+    "cordova-plugin-background-fetch": "^6.0.8",
     "cordova-plugin-device": "2.0.3",
     "cordova-plugin-dialogs": "^2.0.1",
-    "cordova-plugin-ionic-webview": "^4.1.0",
+    "cordova-plugin-ionic-webview": "^5.0.0",
     "cordova-plugin-splashscreen": "^5.0.2",
     "cordova-plugin-statusbar": "^2.4.2",
     "cordova-plugin-whitelist": "^1.3.3",
@@ -61,9 +61,6 @@
       "cordova-plugin-dialogs": {},
       "cordova-plugin-statusbar": {},
       "cordova-plugin-splashscreen": {},
-      "cordova-plugin-ionic-webview": {
-        "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
-      },
       "cordova-plugin-device": {},
       "cordova-background-geolocation-lt": {
         "GOOGLE_API_VERSION": "16.+",
@@ -71,7 +68,8 @@
         "OKHTTP_VERSION": "3.12.+",
         "EVENTBUS_VERSION": "3.0.0",
         "BACKGROUND_MODE_LOCATION": "<string>location</string>"
-      }
+      },
+      "cordova-plugin-ionic-webview": {}
     },
     "platforms": [
       "ios",
