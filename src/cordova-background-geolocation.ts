@@ -25,6 +25,7 @@ import BackgroundGeolocation, {
   TransistorAuthorizationToken
 } from "cordova-background-geolocation-lt";  // <-- Use "cordova-background-geolocation" for customers-only version
 
+
 export default BackgroundGeolocation;
 
 export {
