@@ -66,14 +66,8 @@ const SETTINGS = {
     {name: 'motionTriggerDelay', group: 'activity_recognition', dataType: 'integer', inputType: 'select', values: [0, 10000, 30000, 60000], defaultValue: 0},
     {name: 'triggerActivities', group: 'activity_recognition', dataType: 'string', inputType: 'select', multiple: true, values: ['in_vehicle', 'on_bicycle', 'on_foot', 'running', 'walking'], defaultValue: 'in_vehicle, on_bicycle, running, walking, on_foot'},
     // Application
-    {name: 'foregroundService', group: 'application', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'true'},
     {name: 'enableHeadless', group: 'application', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'false'},
-    {name: 'notificationPriority', ignore: true, group: 'application', dataType: 'integer', inputType: 'select', values: [0, 1, -1, 2, -2], defaultValue: 0},
-    {name: 'forceReloadOnBoot', group: 'application', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'false'},
-    {name: 'forceReloadOnMotionChange', group: 'application', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'false'},
-    {name: 'forceReloadOnLocationChange', group: 'application', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'false'},
-    {name: 'forceReloadOnGeofence', group: 'application', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'false'},
-    {name: 'forceReloadOnHeartbeat', group: 'application', dataType: 'boolean', inputType: 'toggle', values: ['true', 'false'], defaultValue: 'false'}
+    {name: 'notificationPriority', ignore: true, group: 'application', dataType: 'integer', inputType: 'select', values: [0, 1, -1, 2, -2], defaultValue: 0}
   ]
 };
 
