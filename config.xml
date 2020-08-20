@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="32020" id="com.transistorsoft.backgroundgeolocation.ionic2" version="3.8.1" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="32021" id="com.transistorsoft.backgroundgeolocation.ionic2" version="3.8.2" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>BG Geo</name>
     <description>Cordova Background Geolocation Demo App.</description>
     <author email="info@transistorsoft.com" href="https://www.transistorsoft.com/">Transistor Software</author>
@@ -55,6 +55,13 @@
         <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
     </platform>
     <platform name="ios">
+        <config-file parent="NSLocationTemporaryUsageDescriptionDictionary" target="*-Info.plist">
+            <key>NSLocationTemporaryUsageDescriptionDictionary</key>
+            <dict>
+                <key>DemoPurpose</key>
+                <string>CHANGEME: provide high accuracy location-tracking</string>
+            </dict>
+        </config-file>
         <config-file parent="BGTaskSchedulerPermittedIdentifiers" target="*-Info.plist">
             <array>
                 <string>com.transistorsoft.customtask</string>

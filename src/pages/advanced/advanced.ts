@@ -347,8 +347,9 @@ export class AdvancedPage {
 
     BackgroundGeolocation.ready({
       transistorAuthorizationToken: token,
-      reset: false,
+      reset: true,
       debug: true,
+      locationAuthorizationRequest: 'Always',
       logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
       distanceFilter: 10,
       stopTimeout: 1,
@@ -428,6 +429,23 @@ export class AdvancedPage {
   // UI event handlers
   //
   onClickMainMenu() {
+    // Test requestPermission.
+    BackgroundGeolocation.requestPermission().then(async (status) => {
+      console.log('[requestPermission] success: ', status);
+      // Supply "Purpose" key from Info.plist as 1st argument.
+      BackgroundGeolocation.requestTemporaryFullAccuracy("DemoPurpose").then((accuracyAuthorization) => {
+        if (accuracyAuthorization == BackgroundGeolocation.ACCURACY_AUTHORIZATION_FULL) {
+          console.log('[requestTemporaryFullAccuracy] GRANTED: ', accuracyAuthorization);
+        } else {
+          console.log('[requestTemporaryFullAccuracy] DENIED: ', accuracyAuthorization);
+        }
+      }).catch((error) => {
+        console.warn("[requestTemporaryFullAccuracy] FAILED TO SHOW DIALOG: ", error);
+      });
+    }).catch((status) => {
+      console.log('[requestPermission] failure: ', status);
+    });
+
     // Test background-task.
     BackgroundGeolocation.startBackgroundTask().then(taskId => {
       console.log('- start background task: ', taskId);!
@@ -611,22 +629,25 @@ export class AdvancedPage {
      this.settingsService.toast(message, undefined, 1000);
   }
 
-  onToggleEnabled() {
+  async onToggleEnabled() {
     this.bgService.playSound('BUTTON_CLICK');
 
     if (this.state.enabled) {
+      let onSuccess = (state) => {
+        console.log('[js] START SUCCESS :', state);
+      };
+      let onFailure = (error) => {
+        console.error('[js] START FAILURE: ', error);
+      };
+
       if (this.state.trackingMode == 1) {
-        BackgroundGeolocation.start(state => {
-          console.log('[js] START SUCCESS :', state);
-        }, error => {
-          console.error('[js] START FAILURE: ', error);
-        });
+        BackgroundGeolocation.start().then(onSuccess).catch(onFailure);
       } else {
-        BackgroundGeolocation.startGeofences();
+        BackgroundGeolocation.startGeofences().then(onSuccess).catch(onFailure);
       }
     } else {
       this.state.isMoving = false;
-      BackgroundGeolocation.stop();
+      await BackgroundGeolocation.stop();
       this.clearMarkers();
     }
   }
