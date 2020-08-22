@@ -347,7 +347,7 @@ export class AdvancedPage {
 
     BackgroundGeolocation.ready({
       transistorAuthorizationToken: token,
-      reset: true,
+      reset: false,
       debug: true,
       locationAuthorizationRequest: 'Always',
       logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
