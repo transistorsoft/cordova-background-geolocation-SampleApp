@@ -446,6 +446,7 @@ export class SettingsService {
       stopTimeout: 1,
       motionTriggerDelay: 30000,
       transistorAuthorizationToken: token,
+      backgroundPermissionRationale: {},
       schedule: [
         //'2-6 09:00-17:00'
       ],
