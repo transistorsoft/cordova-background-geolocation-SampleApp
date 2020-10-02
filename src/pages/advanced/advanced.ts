@@ -359,10 +359,6 @@ export class AdvancedPage {
       encrypt: true,
       autoSync: true,
       maxDaysToPersist: 14,
-      notification: {
-        title: 'cordova-background-geolocation',
-        text: 'Tracking engaged'
-      }
     }).then(async (state) => {
       // Store the plugin state onto ourself for convenience.
       console.log('- BackgroundGeolocation is ready: ', state);
