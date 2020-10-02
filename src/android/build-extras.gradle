@@ -1,4 +1,5 @@
 // This file has no implementation
 ext.removeBackgroundGeolocationDebugSoundsInRelease = false
 
-cdvCompileSdkVersion="29"
+ext.cdvCompileSdkVersion="30"
+ext.cdvTargetSdkVersion="30"

@@ -21,6 +21,7 @@
     <platform name="android">
         <preference name="AndroidXEnabled" value="true" />
         <preference name="android-minSdkVersion" value="22" />
+        <preference name="android-targetSdkVersion" value="30" />
         <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
             <application android:usesCleartextTraffic="true" />
         </edit-config>
