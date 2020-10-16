@@ -158,6 +158,13 @@ export class SimpleMapPage {
       stopOnTerminate: this.stopOnTerminate,
       startOnBoot: this.startOnBoot,
       heartbeatInterval: 60,
+      // [Android] backgroundPermissionRationale for Always permission.
+      backgroundPermissionRationale: {
+        title: "Allow {applicationName} to access this device's location even when closed or not in use.",
+        message: "This app collects location data to enable recording your trips to work and calculate distance-travelled.",
+        positiveAction: 'Change to "{backgroundPermissionOptionLabel}"',
+        negativeAction: 'Cancel'
+      },
       // HTTP / Persistence config
       url: ENV.TRACKER_HOST + '/api/locations',
       authorization: {

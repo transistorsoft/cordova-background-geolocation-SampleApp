@@ -2,6 +2,7 @@ import { Component, NgZone } from '@angular/core';
 import {
   IonicPage,
   NavController,
+  AlertController,
   NavParams,
   Platform,
   ModalController
@@ -44,7 +45,8 @@ export class HomePage {
     public navCtrl: NavController,
     public navParams: NavParams,
     private platform: Platform,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private alertCtrl: AlertController
   ) {
     this.platform.ready().then(this.onDeviceReady.bind(this));
   }
@@ -89,7 +91,9 @@ export class HomePage {
     });
 
     if (!this.isValid(this.orgname) || !this.isValid(this.username)) {
-      this.onClickRegister();
+      // NOTE:  showing modal immediately on boot causes problem with focussing fields on
+      // registration modal.
+      //this.onClickRegister();
     }
   }
 
@@ -101,6 +105,10 @@ export class HomePage {
     if (!this.isValid(orgname) || !this.isValid(username)) {
       return this.onClickRegister();
     }
+    if (this.willDiscloseBackgroundPermission(value)) {
+      return;
+    }
+
     // Persist the selected page.
     localStorage.setItem('page', value);
     this.navCtrl.setRoot(value);
@@ -127,5 +135,26 @@ export class HomePage {
     if (!name || (name.length == 0)) return false;
     name = name.replace(/s+/, '');
     return USERNAME_VALIDATOR.test(name);
+  }
+
+  private willDiscloseBackgroundPermission(routeName):boolean {
+    let localStorage = (<any>window).localStorage;
+    let hasDisclosedBackgroundPermission = (localStorage.getItem('hasDisclosedBackgroundPermission') !== null);
+
+    if (!hasDisclosedBackgroundPermission) {
+      let alert = this.alertCtrl.create({
+        title: 'Background Location Access',
+        message: 'BG Geo collects location data to enable tracking your trips to work and calculate distance travelled even when the app is closed or not in use.\n\nThis data will be uploaded to tracker.transistorsoft.com where you may view and/or delete your location history.',
+        buttons: [{
+          text: 'Close'
+        }]
+      });
+      alert.onDidDismiss(() => {
+        localStorage.setItem('hasDisclosedBackgroundPermission', true);
+        this.onClickNavigate(routeName);
+      });
+      alert.present();
+    }
+    return !hasDisclosedBackgroundPermission;
   }
 }

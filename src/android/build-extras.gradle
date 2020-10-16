@@ -1,5 +1,4 @@
-// This file has no implementation
 ext.removeBackgroundGeolocationDebugSoundsInRelease = false
-
+ext.cdvReleaseSigningPropertiesFile="../../../keystore/signing.properties"
 ext.cdvCompileSdkVersion="30"
 ext.cdvTargetSdkVersion="30"
