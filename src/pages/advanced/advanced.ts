@@ -351,6 +351,12 @@ export class AdvancedPage {
       debug: true,
       locationAuthorizationRequest: 'Always',
       logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
+      backgroundPermissionRationale: {
+        title: "Allow {applicationName} to access this device's location even when closed or not in use.",
+        message: "This app collects location data to enable recording your trips to work and calculate distance-travelled.",
+        positiveAction: 'Change to "{backgroundPermissionOptionLabel}"',
+        negativeAction: 'Cancel'
+      },
       distanceFilter: 10,
       stopTimeout: 1,
       stopOnTerminate: false,

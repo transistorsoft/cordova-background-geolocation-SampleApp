@@ -446,7 +446,12 @@ export class SettingsService {
       stopTimeout: 1,
       motionTriggerDelay: 30000,
       transistorAuthorizationToken: token,
-      backgroundPermissionRationale: {},
+      backgroundPermissionRationale: {
+        title: "Allow {applicationName} to access this device's location even when the app is closed or not in use.",
+        message: "This app collects location data to enable recording your trips to work and calculate distance-travelled.",
+        positiveAction: 'Change to "{backgroundPermissionOptionLabel}"',
+        negativeAction: 'Cancel'
+      },
       schedule: [
         //'2-6 09:00-17:00'
       ],

@@ -79,6 +79,13 @@ export class HelloWorldPage {
       stopOnTerminate: false,
       startOnBoot: true,
       url: ENV.TRACKER_HOST + '/api/locations',
+      // [Android] backgroundPermissionRationale for Always permission.
+      backgroundPermissionRationale: {
+        title: "Allow {applicationName} to access this device's location even when closed or not in use.",
+        message: "This app collects location data to enable recording your trips to work and calculate distance-travelled.",
+        positiveAction: 'Change to "{backgroundPermissionOptionLabel}"',
+        negativeAction: 'Cancel'
+      },
       authorization: {  // <-- JWT authorization for tracker.transistorsoft.com
         strategy: 'jwt',
         accessToken: token.accessToken,
