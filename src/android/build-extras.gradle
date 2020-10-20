@@ -1,4 +1,9 @@
+def SIGNING_PROPERTIES = "../../../keystore/signing.properties"
+
 ext.removeBackgroundGeolocationDebugSoundsInRelease = false
-ext.cdvReleaseSigningPropertiesFile="../../../keystore/signing.properties"
+if (file(SIGNING_PROPERTIES).exists()) {
+  println("[SampleApp] Found signing properties file: ${SIGNING_PROPERTIES}")
+  ext.cdvReleaseSigningPropertiesFile = SIGNING_PROPERTIES
+}
 ext.cdvCompileSdkVersion="30"
 ext.cdvTargetSdkVersion="30"
