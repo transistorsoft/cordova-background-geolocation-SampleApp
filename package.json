@@ -33,8 +33,6 @@
     "@ionic-native/status-bar": "^5.28.0",
     "@ionic/storage": "2.3.1",
     "@types/node": "^14.11.2",
-    "cordova-background-geolocation-lt": "^3.9.2",
-    "cordova-plugin-background-fetch": "^6.1.1",
     "cordova-ios": "^6.1.1",
     "cordova-plugin-device": "2.0.3",
     "cordova-plugin-dialogs": "^2.0.2",
@@ -53,6 +51,8 @@
     "@ionic/app-scripts": "^3.2.4",
     "chalk": "^4.1.0",
     "cordova-android": "^9.0.0",
+    "cordova-background-geolocation-lt": "^3.9.4",
+    "cordova-plugin-background-fetch": "^6.1.1",
     "opn": "^5.1.0",
     "typescript": "3.6.2"
   },
@@ -66,7 +66,7 @@
       "cordova-plugin-device": {},
       "cordova-plugin-ionic-webview": {},
       "cordova-background-geolocation-lt": {
-        "GOOGLE_API_VERSION": "17.0.0",
+        "GOOGLE_API_VERSION": "16.+",
         "APPCOMPAT_VERSION": "28.+",
         "OKHTTP_VERSION": "3.12.+",
         "EVENTBUS_VERSION": "3.0.0",

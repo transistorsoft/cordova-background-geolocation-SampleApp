@@ -9,6 +9,7 @@ import {
   IonicPage,
   Platform,
   NavController,
+  AlertController,
   NavParams,
   ModalController
 } from 'ionic-angular';
@@ -130,6 +131,7 @@ export class AdvancedPage {
     private platform: Platform,
     private dialogs: Dialogs,
     private bgService: BGService,
+    private alertCtrl: AlertController,
     public settingsService: SettingsService) {
 
     // FAB Menu state.
@@ -431,32 +433,6 @@ export class AdvancedPage {
   // UI event handlers
   //
   onClickMainMenu() {
-    // Test requestPermission.
-    BackgroundGeolocation.requestPermission().then(async (status) => {
-      console.log('[requestPermission] success: ', status);
-      // Supply "Purpose" key from Info.plist as 1st argument.
-      BackgroundGeolocation.requestTemporaryFullAccuracy("DemoPurpose").then((accuracyAuthorization) => {
-        if (accuracyAuthorization == BackgroundGeolocation.ACCURACY_AUTHORIZATION_FULL) {
-          console.log('[requestTemporaryFullAccuracy] GRANTED: ', accuracyAuthorization);
-        } else {
-          console.log('[requestTemporaryFullAccuracy] DENIED: ', accuracyAuthorization);
-        }
-      }).catch((error) => {
-        console.warn("[requestTemporaryFullAccuracy] FAILED TO SHOW DIALOG: ", error);
-      });
-    }).catch((status) => {
-      console.log('[requestPermission] failure: ', status);
-    });
-
-    // Test background-task.
-    BackgroundGeolocation.startBackgroundTask().then(taskId => {
-      console.log('- start background task: ', taskId);!
-      setTimeout(() => {  // <-- SIMULATE a long-running async-task with setTimeout.  DO NOT ACTUALLY use #setTimeout here!
-        console.log('- timeout expired');
-        BackgroundGeolocation.stopBackgroundTask(taskId);
-      }, 1000);
-    });
-
     this.isMainMenuOpen = !this.isMainMenuOpen;
     if (this.isMainMenuOpen) {
       this.bgService.playSound('OPEN');
@@ -464,6 +440,7 @@ export class AdvancedPage {
       this.bgService.playSound('CLOSE');
     }
   }
+
   onClickSettings() {
     this.bgService.playSound('OPEN');
     let modal = this.modalController.create('SettingsPage', {
@@ -480,6 +457,40 @@ export class AdvancedPage {
     });
 
     modal.present();
+  }
+
+  async onClickRequestPermission() {
+    let providerState = await BackgroundGeolocation.getProviderState();
+
+    this.alertCtrl.create({
+      title: 'Request Permission',
+      message: `Current Authorization Status: ${providerState.status}`,
+      cssClass: 'alert-wide',
+      buttons: [{
+        text: 'When in Use',
+        handler: () => { this.requestPermission('WhenInUse') }
+      }, {
+        text: 'Always',
+        handler: () => { this.requestPermission('Always') }
+      }]
+    }).present();
+  }
+
+  async requestPermission(request) {
+    await BackgroundGeolocation.setConfig({locationAuthorizationRequest: request});
+    let status = await BackgroundGeolocation.requestPermission();
+
+    console.log('[requestPermission] status:', status);
+
+    this.alertCtrl.create({
+      title: 'Permission Result',
+      message: `Authorization Status: ${status}`,
+      cssClass: 'alert-wide',
+      buttons: [{
+        text: 'Ok',
+        handler: () => {  }
+      }]
+    }).present();
   }
 
   async onClickSync() {
