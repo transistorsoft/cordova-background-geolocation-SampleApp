@@ -23,6 +23,9 @@
      		<button ion-fab (click)="onClickSettings()" color="gold">
      			<ion-icon name="cog"></ion-icon>
      		</button>
+        <button ion-fab (click)="onClickRequestPermission()" color="gold">
+          <ion-icon name="ios-unlock"></ion-icon>
+        </button>
      		<button ion-fab (click)="onClickResetOdometer()" color="gold">
      			<ion-spinner [hidden]="!isResettingOdometer" name="circles" color="dark"></ion-spinner>
      			<ion-icon [hidden]="isResettingOdometer" name="speedometer"></ion-icon>
