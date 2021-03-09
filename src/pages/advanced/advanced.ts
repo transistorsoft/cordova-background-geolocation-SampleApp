@@ -364,7 +364,6 @@ export class AdvancedPage {
       stopOnTerminate: false,
       startOnBoot: true,
       enableHeadless: true,
-      encrypt: true,
       autoSync: true,
       maxDaysToPersist: 14,
     }).then(async (state) => {
@@ -384,8 +383,19 @@ export class AdvancedPage {
     });
   }
 
-  configureBackgroundFetch() {
-    BackgroundFetch.configure((taskId) => {
+  async configureBackgroundFetch() {
+    await BackgroundFetch.configure({
+      minimumFetchInterval: 15, // <-- default is 15
+      // Android config
+      stopOnTerminate: false,
+      startOnBoot: true,
+      enableHeadless: true,
+      requiresCharging: false,
+      requiresDeviceIdle: false,
+      requiresBatteryNotLow: false,
+      requiresStorageNotLow: false,
+      requiredNetworkType: BackgroundFetch.NETWORK_TYPE_NONE
+    }, (taskId) => {
       console.log('[BackgroundFetch] - Received event:', taskId);
       switch(taskId) {
         case 'com.transistorsoft.customtask':
@@ -403,20 +413,9 @@ export class AdvancedPage {
           break;
       }
       BackgroundFetch.finish(taskId);
-
-    }, (error) => {
-      console.warn('BackgroundFetch error: ', error);
-    }, {
-      minimumFetchInterval: 15, // <-- default is 15
-      // Android config
-      stopOnTerminate: false,
-      startOnBoot: true,
-      enableHeadless: true,
-      requiresCharging: false,
-      requiresDeviceIdle: false,
-      requiresBatteryNotLow: false,
-      requiresStorageNotLow: false,
-      requiredNetworkType: BackgroundFetch.NETWORK_TYPE_NONE
+    }, (taskId) => {
+      console.warn('[BackgroundFetch] TIMEOUT: ', taskId);
+      BackgroundFetch.finish(taskId);
     });
 
     BackgroundFetch.scheduleTask({
@@ -753,7 +752,7 @@ export class AdvancedPage {
   * @event location
   */
   onLocation(location:Location) {
-    console.log('[location] -', location);
+    console.log('[location] -', JSON.stringify(location, null, 2));
     // Print a log message to SDK's logger to prove this executed, even in the background.
     BackgroundGeolocation.logger.debug("👍 [onLocation] received location in Javascript: " + location.uuid);
 
@@ -777,6 +776,20 @@ export class AdvancedPage {
   */
   onMotionChange(event:MotionChangeEvent) {
     console.log('[motionchange] -', event.isMoving, event.location);
+
+    let d = new Date();
+    BackgroundGeolocation.insertLocation({
+      uuid: '',
+      coords: event.location.coords,
+      timestamp: d.toISOString(),
+      odometer: event.location.odometer,
+      is_moving: event.location.is_moving,
+      battery: event.location.battery,
+      activity: event.location.activity,
+      extras: {
+        insertLocation: true
+      }
+    });
 
     if (event.isMoving) {
       this.hideStationaryCircle();

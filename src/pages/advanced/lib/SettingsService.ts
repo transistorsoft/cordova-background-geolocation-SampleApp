@@ -439,7 +439,6 @@ export class SettingsService {
       logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
       desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
       distanceFilter: 50,
-      encrypt: true,
       disableElasticity: false,
       locationUpdateInterval: 1000,
       fastestLocationUpdateInterval: -1,
