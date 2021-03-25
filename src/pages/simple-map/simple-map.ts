@@ -35,7 +35,7 @@ import BackgroundGeolocation, {
 import ENV from "../../ENV";
 
 // Cordova plugins Device & Dialogs
-import { Dialogs } from '@ionic-native/dialogs/ngx';
+import { Dialogs } from '@ionic-native/dialogs';
 
 // Handy color & sound constants.
 import COLORS from '../../lib/colors';

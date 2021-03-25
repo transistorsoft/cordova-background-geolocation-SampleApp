@@ -14,7 +14,7 @@ import {
   ModalController
 } from 'ionic-angular';
 
-import { Dialogs } from '@ionic-native/dialogs/ngx';
+import { Dialogs } from '@ionic-native/dialogs';
 
 import {BGService} from './lib/BGService';
 //import {TestService} from './lib/TestService';

@@ -27,13 +27,12 @@
     "@angular/http": "5.2.11",
     "@angular/platform-browser": "5.2.11",
     "@angular/platform-browser-dynamic": "5.2.11",
-    "@ionic-native/core": "^5.28.0",
-    "@ionic-native/dialogs": "^5.28.0",
-    "@ionic-native/splash-screen": "^5.28.0",
-    "@ionic-native/status-bar": "^5.28.0",
-    "@ionic/storage": "2.3.1",
+    "@ionic-native/core": "4.20.0",
+    "@ionic-native/dialogs": "4.20.0",
+    "@ionic-native/splash-screen": "4.20.0",
+    "@ionic-native/status-bar": "4.20.0",
+    "@ionic/storage": "2.2.0",
     "@types/node": "^14.14.32",
-    "cordova-ios": "^6.1.1",
     "cordova-plugin-device": "2.0.3",
     "cordova-plugin-dialogs": "^2.0.2",
     "cordova-plugin-ionic-webview": "^5.0.0",
@@ -51,10 +50,11 @@
     "@ionic/app-scripts": "^3.2.4",
     "chalk": "^4.1.0",
     "cordova-android": "^9.0.0",
-    "cordova-background-geolocation-lt": "^4.0.0",
+    "cordova-background-geolocation-lt": "^4.0.1",
+    "cordova-ios": "^6.2.0",
     "cordova-plugin-background-fetch": "~7.0.1",
     "opn": "^5.1.0",
-    "typescript": "^4.2.3"
+    "typescript": "2.6.2"
   },
   "cordova": {
     "plugins": {
@@ -74,8 +74,8 @@
       }
     },
     "platforms": [
-      "ios",
-      "android"
+      "android",
+      "ios"
     ]
   }
 }
