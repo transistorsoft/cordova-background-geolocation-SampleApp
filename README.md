@@ -47,13 +47,13 @@ The demo is composed of three separate and indpendant sub-applications implement
 
 The demo app is configured to post locations to Transistor Software's demo server, which hosts a web-application for visualizing and filtering your tracking on a map.
 
-- After booting the app the first time, you'll be asked to enter a **unique** "Tracking Server Username" (eg: Github username) so the plugin can post locations to `tracker.transistorsoft.com`.  
+- After booting the app the first time, you'll be asked to enter a **unique** "Organization" (eg: your company name) and "Device ID" (eg: Github username) so the plugin can post locations to `tracker.transistorsoft.com`.  
 
-:warning: Make your username **unique** and known only to *you* &mdash; if every one uses *"test"*, you'll never find your device!)
+:warning: Make your organization and Device ID **unique** and known only to *you* &mdash; if every one uses *"test"*, you'll never find your device!)
 
 ![](https://dl.dropboxusercontent.com/s/yhb311q5shxri36/ionic-demo-username.png?dl=1)
 
-- You can view the plugin's tracking history by visiting [http://tracker.transistorsoft.com/username](http://tracker.transistorsoft.com/username).
+- You can view the plugin's tracking history by visiting [http://tracker.transistorsoft.com/your-organization-name](http://tracker.transistorsoft.com/your-organization-name).
 
 ![](https://dl.dropboxusercontent.com/s/1a4far51w70rjvj/Screenshot%202017-08-16%2011.34.43.png?dl=1)
 
