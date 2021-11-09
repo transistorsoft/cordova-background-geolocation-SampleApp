@@ -1,0 +1,6 @@
+// By SampleApp.
+ext.repos = {
+    google()
+    mavenCentral()
+    jcenter()
+}

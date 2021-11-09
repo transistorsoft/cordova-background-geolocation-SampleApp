@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="32025" id="com.transistorsoft.backgroundgeolocation.ionic2" version="3.9.3" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="32029" id="com.transistorsoft.backgroundgeolocation.ionic2" version="4.4.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>BG Geo</name>
     <description>Cordova Background Geolocation Demo App.</description>
     <author email="info@transistorsoft.com" href="https://www.transistorsoft.com/">Transistor Software</author>
@@ -31,6 +31,7 @@
             <service android:foregroundServiceType="location" android:name="com.transistorsoft.locationmanager.service.TrackingService" />
             <service android:foregroundServiceType="location" android:name="com.transistorsoft.locationmanager.service.LocationRequestService" />
         </config-file>
+        <resource-file src="src/android/repositories.gradle" target="app/repositories.gradle" />
         <resource-file src="src/android/build-extras.gradle" target="app/build-extras.gradle" />
         <resource-file src="src/android/BackgroundGeolocationHeadlessTask.java" target="app/src/main/java/com/transistorsoft/cordova/bggeo/BackgroundGeolocationHeadlessTask.java" />
         <resource-file src="src/android/BackgroundFetchHeadlessTask.java" target="app/src/main/java/com/transistorsoft/cordova/backgroundfetch/BackgroundFetchHeadlessTask.java" />
@@ -163,7 +164,6 @@
     <allow-navigation href="http://192.168.11.220:8100" />
     <allow-navigation href="http://192.168.11.22:8100" sessionid="0400b73c" />
     <plugin name="ionic-plugin-keyboard" spec="2.2.1" />
-    <plugin name="cordova-plugin-whitelist" spec="1.3.3" />
     <plugin name="cordova-plugin-dialogs" spec="2.0.1" />
     <plugin name="cordova-plugin-statusbar" spec="2.4.2" />
     <plugin name="cordova-plugin-splashscreen" spec="5.0.2" />

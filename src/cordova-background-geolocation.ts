@@ -22,7 +22,8 @@ import BackgroundGeolocation, {
   SQLQuery,
   Authorization, AuthorizationEvent,
   DeviceInfo,
-  TransistorAuthorizationToken
+  TransistorAuthorizationToken,
+  Subscription
 } from "cordova-background-geolocation-lt";  // <-- Use "cordova-background-geolocation" for customers-only version
 
 
@@ -47,5 +48,6 @@ export {
   SQLQuery,
   Authorization, AuthorizationEvent,
   DeviceInfo,
-  TransistorAuthorizationToken
+  TransistorAuthorizationToken,
+  Subscription
 };

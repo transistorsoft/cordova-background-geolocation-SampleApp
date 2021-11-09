@@ -16,12 +16,12 @@ MODULE_PATH=""
 
 if [ -d $PRIVATE_MODULE_PATH ]; then
     MODULE_PATH=$PRIVATE_MODULE_PATH
-	IOS_LIBS_DIR="platforms/ios/BG\ Geo/Plugins/${MODULE_NAME}/TSLocationManager.framework"
+	IOS_LIBS_DIR="platforms/ios/BG\ Geo/Plugins/${MODULE_NAME}/TSLocationManager.xcframework"
 
 else
     if [ -d $PUBLIC_MODULE_PATH ]; then
     	MODULE_PATH=$PUBLIC_MODULE_PATH
-    	IOS_LIBS_DIR="platforms/ios/BG Geo/Plugins/${MODULE_NAME}-lt/TSLocationManager.framework"
+    	IOS_LIBS_DIR="platforms/ios/BG Geo/Plugins/${MODULE_NAME}-lt/TSLocationManager.xcframework"
     fi
 fi
 
