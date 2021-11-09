@@ -171,10 +171,10 @@ export class AdvancedPage {
       this.configureBackgroundFetch();
     });
     this.platform.pause.subscribe(() => {
-      console.log('************************** PAUSE');
+      console.log('[platform.pause]');
     });
     this.platform.resume.subscribe(() => {
-      console.log('************************** RESUME');
+      console.log('[platform.resume]');
     })
   }
 
@@ -509,6 +509,7 @@ export class AdvancedPage {
     this.settingsService.confirm('Confirm Sync', message, () => {
       this.isSyncing = true;
       BackgroundGeolocation.sync().then(rs => {
+        console.log('[sync] SUCCESS');
         this.bgService.playSound('MESSAGE_SENT');
         onComplete(MESSAGE.sync_success, count);
       }).catch(error => {
@@ -777,20 +778,6 @@ export class AdvancedPage {
   onMotionChange(event:MotionChangeEvent) {
     console.log('[motionchange] -', event.isMoving, event.location);
 
-    let d = new Date();
-    BackgroundGeolocation.insertLocation({
-      uuid: '',
-      coords: event.location.coords,
-      timestamp: d.toISOString(),
-      odometer: event.location.odometer,
-      is_moving: event.location.is_moving,
-      battery: event.location.battery,
-      activity: event.location.activity,
-      extras: {
-        insertLocation: true
-      }
-    });
-
     if (event.isMoving) {
       this.hideStationaryCircle();
     } else {
@@ -821,10 +808,23 @@ export class AdvancedPage {
   /**
   * @event providerchange
   */
-  onProviderChange(provider:ProviderChangeEvent) {
-    console.log('[providerchange] -', provider);
+  onProviderChange(event:ProviderChangeEvent) {
+    console.log('[providerchange] -', event);
 
-    switch(provider.status) {
+    if ((event.status == BackgroundGeolocation.AUTHORIZATION_STATUS_ALWAYS) && (event.accuracyAuthorization == BackgroundGeolocation.ACCURACY_AUTHORIZATION_REDUCED)) {
+      // Supply "Purpose" key from Info.plist as 1st argument.
+      BackgroundGeolocation.requestTemporaryFullAccuracy("DemoPurpose").then((accuracyAuthorization) => {
+        if (accuracyAuthorization == BackgroundGeolocation.ACCURACY_AUTHORIZATION_FULL) {
+          console.log(`[requestTemporaryFullAccuracy] GRANTED:  ${accuracyAuthorization}`);
+        } else {
+          console.log(`[requestTemporaryFullAccuracy] DENIED:  ${accuracyAuthorization}`);
+        }
+      }).catch((error) => {
+        console.log(`[requestTemporaryFullAccuracy] FAILED TO SHOW DIALOG: ${error}`);
+      });
+    }
+
+    switch(event.status) {
       case BackgroundGeolocation.AUTHORIZATION_STATUS_DENIED:
         break;
       case BackgroundGeolocation.AUTHORIZATION_STATUS_ALWAYS:
@@ -833,7 +833,7 @@ export class AdvancedPage {
         break;
     }
 
-    this.zone.run(() => { this.state.provider = provider; });
+    this.zone.run(() => { this.state.provider = event; });
   }
   /**
   * @event geofenceschange

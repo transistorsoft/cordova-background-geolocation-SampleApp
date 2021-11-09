@@ -27,7 +27,7 @@ function registerCommand(name, description, handler) {
 }
 
 /// ACTION: link
-registerCommand(COMMAND_LINK, 'Symlink TSLocationManager.framework, tslocationmanager.aar', function() {
+registerCommand(COMMAND_LINK, 'Symlink TSLocationManager.xcframework, tslocationmanager.aar', function() {
   link();
 });
 
@@ -48,7 +48,7 @@ async function link() {
   const SRC_MODULE = path.join(SRC_ROOT, MODULE_NAME);
 
   const ANDROID_LIBS_DIR = path.join("libs", "com", "transistorsoft", "tslocationmanager");
-  const IOS_LIBS_DIR = "TSLocationManager.framework";
+  const IOS_LIBS_DIR = "TSLocationManager.xcframework";
 
   var iosLibsPath = '';
   if (fs.existsSync(PUBLIC_MODULE_PATH)) {

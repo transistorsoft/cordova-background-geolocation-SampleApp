@@ -1,13 +1,14 @@
 import {NavController} from "ionic-angular"
 
 import BackgroundGeolocation, {
+  Subscription,
   HttpEvent,
   TransistorAuthorizationToken
 } from "../cordova-background-geolocation";
 
 import ENV from "../ENV";
 
-let onHttp:any;
+let onHttpSubscription:Subscription;
 
 export async function registerTransistor():Promise<TransistorAuthorizationToken> {
   let localStorage = (<any>window).localStorage;
@@ -22,7 +23,7 @@ export async function registerTransistor():Promise<TransistorAuthorizationToken>
       url: ''
     };
   }
-  let token:TransistorAuthorizationToken = await BackgroundGeolocation.findOrCreateTransistorAuthorizationToken(orgname, username, ENV.TRACKER_HOST);
+  const token:TransistorAuthorizationToken = await BackgroundGeolocation.findOrCreateTransistorAuthorizationToken(orgname, username, ENV.TRACKER_HOST);
 
   await BackgroundGeolocation.setConfig({
     transistorAuthorizationToken: token
@@ -33,10 +34,10 @@ export async function registerTransistor():Promise<TransistorAuthorizationToken>
 export async function registerTransistorAuthorizationListener(navCtrl:NavController) {
   console.log('[registerTransistorAuthorizationListener]');
 
-	if (typeof(onHttp) === 'function') {
-		await BackgroundGeolocation.removeListener('http', onHttp);
+	if (onHttpSubscription) {
+		onHttpSubscription.remove();
   }
-  onHttp = async function onHttp(event:HttpEvent) {
+  onHttpSubscription = BackgroundGeolocation.onHttp(async (event:HttpEvent) => {
     switch(event.status) {
       case 403:
       case 406:
@@ -55,7 +56,5 @@ export async function registerTransistorAuthorizationListener(navCtrl:NavControl
         navCtrl.setRoot('HomePage')
         break;
     }
-  };
-
-	BackgroundGeolocation.onHttp(onHttp);
+  });
 }
