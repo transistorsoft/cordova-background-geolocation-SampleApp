@@ -423,7 +423,7 @@ export class SettingsService {
       }
     }];
 
-    await BackgroundGeolocation.removeGeofences();
+    //await BackgroundGeolocation.removeGeofences();
     await BackgroundGeolocation.addGeofences(geofences);
     await BackgroundGeolocation.resetOdometer();
 
