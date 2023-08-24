@@ -97,7 +97,7 @@ var app = {
             stopOnTerminate: false, // Don't stop tracking when app is terminated.
             foregroundService: true,// Prevent Android from terminating service due to memory pressure from other apps.
             heartbeatInterval: 60,  // <-- heartbeat event every 60s
-            url: 'http://' + app.host + '/locations/' + username,
+            url: 'https://' + app.host + '/locations/' + username,
             params: bgGeo.transistorTrackerParams(window.device),
             debug: true,            // Debug sounds & notifications
             autoSync: true,         // Auto sync each recorded location to #url immediately.
@@ -229,7 +229,7 @@ var app = {
             return;
         }
         // Prompt user at first boot for username.
-        navigator.notification.prompt('Please enter a unique identifier (eg: Github username) so the plugin can post loctions to http://tracker.transistorsfot.com/{identifier}', function(response) {
+        navigator.notification.prompt('Please enter a unique identifier (eg: Github username) so the plugin can post loctions to https://tracker.transistorsfot.com/{identifier}', function(response) {
             if (response.buttonIndex === 1 && response.input1.length > 0) {
                 window.localStorage.setItem('username', response.input1);
                 // We have a username

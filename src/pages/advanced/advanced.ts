@@ -395,12 +395,20 @@ export class AdvancedPage {
       requiresBatteryNotLow: false,
       requiresStorageNotLow: false,
       requiredNetworkType: BackgroundFetch.NETWORK_TYPE_NONE
-    }, (taskId) => {
+    }, async (taskId) => {
       console.log('[BackgroundFetch] - Received event:', taskId);
       switch(taskId) {
         case 'com.transistorsoft.customtask':
           break;
         default:
+          const location = await BackgroundGeolocation.getCurrentPosition({
+            samples: 2,
+            maximumAge: 1000 * 10,
+            timeout: 30,
+            desiredAccuracy: 40,
+            extras: {event: "background-fetch", headless: false}
+          });
+	  console.log('[BackgroundFetch] getCurrentPosition:', location);       
           // Schedule another one-shot
           BackgroundFetch.scheduleTask({
             taskId: 'com.transistorsoft.customtask',
@@ -754,6 +762,7 @@ export class AdvancedPage {
   */
   onLocation(location:Location) {
     console.log('[location] -', JSON.stringify(location, null, 2));
+
     // Print a log message to SDK's logger to prove this executed, even in the background.
     BackgroundGeolocation.logger.debug("👍 [onLocation] received location in Javascript: " + location.uuid);
 
