@@ -1,0 +1,1 @@
+{"ast":null,"code":"/*!\n * (C) Ionic http://ionicframework.com - MIT License\n */\nimport { w as win } from './index-7a14ecec.js';\nconst getCapacitor = () => {\n  if (win !== undefined) {\n    return win.Capacitor;\n  }\n  return undefined;\n};\nexport { getCapacitor as g };","map":null,"metadata":{},"sourceType":"module","externalDependencies":[]}

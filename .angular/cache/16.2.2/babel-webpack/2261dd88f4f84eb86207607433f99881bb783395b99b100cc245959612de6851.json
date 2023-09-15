@@ -1,0 +1,1 @@
+{"ast":null,"code":"/**\n * Prevents Angular change detection from\n * running with certain Web Component callbacks\n */\n// eslint-disable-next-line no-underscore-dangle\nwindow.__Zone_disable_customElements = true;","map":null,"metadata":{},"sourceType":"script","externalDependencies":[]}
