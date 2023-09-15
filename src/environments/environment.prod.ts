@@ -12,7 +12,7 @@
 // TODO declare function require(name:string);
 
 let SECRETS = {
-  GOOGLE_MAP_API_KEY: ''
+  GOOGLE_MAP_API_KEY: 'AIzaSyDXTDr2C3iU9jgwpNVpZjeWzOc-DyCgkt8'
 };
 
 /* TODO 
