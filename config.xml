@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="32041" id="com.transistorsoft.backgroundgeolocation.ionic2" version="4.13.1" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="32045" id="com.transistorsoft.backgroundgeolocation.ionic2" version="4.13.4" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>BG Geo</name>
     <description>Cordova Background Geolocation Demo App.</description>
     <author email="info@transistorsoft.com" href="https://www.transistorsoft.com/">Transistor Software</author>
@@ -30,7 +30,8 @@
             <uses-permission android:minSdkVersion="34" android:name="android.permission.USE_EXACT_ALARM" />
         </config-file>
         <config-file parent="/manifest/application" target="app/src/main/AndroidManifest.xml">
-            <meta-data android:name="com.transistorsoft.locationmanager.license_key" android:value="6da948b0a8e4eebd2af03d2defe363bc3d5ca380b4bb846cb8342c6446c69975" />
+            <meta-data android:name="com.transistorsoft.locationmanager.license" android:value="6da948b0a8e4eebd2af03d2defe363bc3d5ca380b4bb846cb8342c6446c69975" />
+            <meta-data android:name="com.transistorsoft.locationmanager.hms.license" android:value="7ef0fe767954ed5c24485145c87f79fce914c337c67112604b7c6d5894710b5f" />
         </config-file>
         <resource-file src="src/android/repositories.gradle" target="app/repositories.gradle" />
         <resource-file src="src/android/build-extras.gradle" target="app/build-extras.gradle" />

@@ -44,7 +44,7 @@ async function link() {
   const path = require('path');
   const rimraf = require("rimraf");
 
-  const SRC_ROOT = path.join('/Volumes/Glyph2TB/Users/chris/workspace/cordova/background-geolocation');
+  const SRC_ROOT = path.join('/Users/chris/workspace/background-geolocation/cordova');
   const SRC_MODULE = path.join(SRC_ROOT, MODULE_NAME);
 
   const ANDROID_LIBS_DIR = path.join("libs", "com", "transistorsoft", "tslocationmanager");
