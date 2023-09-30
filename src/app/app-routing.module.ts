@@ -44,12 +44,24 @@ export class AppRoutingModule {
   }
 
   async init(router:Router, loadingCtrl:LoadingController) {
+    // Migrate to new page names from old Ionic app.
+    const migratePage = LocalStorage.getItem('page');
+    if (migratePage == 'AdvancedPage') {
+      LocalStorage.setItem('page', 'advanced');
+    } else if (migratePage == 'HelloWorldPage') {
+      LocalStorage.setItem('hello-world');
+    } else if (migratePage == 'SimpleMapPage') {
+      LocalStorage.setItem('home');
+    } 
+
     await this.loadGoogleMaps(loadingCtrl);
     // Navigate to current App (or /home).
     const page = LocalStorage.getItem('page');
     const orgname = LocalStorage.getItem('orgname');
     const username = LocalStorage.getItem('username');
     const isRegistered = ((orgname !== null) && (username !== null));
+
+    
     if (page && isRegistered) {
       router.navigate(['/' + page]);
     } else {

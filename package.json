@@ -52,7 +52,8 @@
     "@typescript-eslint/eslint-plugin": "5.3.0",
     "@typescript-eslint/parser": "5.3.0",
     "cordova-android": "^12.0.1",
-    "cordova-background-geolocation-lt": "^4.14.3",
+    "cordova-background-geolocation-lt": "^4.15.0",
+    "cordova-ios": "^7.0.1",
     "cordova-plugin-background-fetch": "~7.2.1",
     "cordova-plugin-device": "2.0.2",
     "cordova-plugin-ionic-keyboard": "^2.0.5",
@@ -85,11 +86,13 @@
         "GOOGLE_API_VERSION": "20.+",
         "HMS_LOCATION_VERSION": "6.9.0.300",
         "OKHTTP_VERSION": "3.12.+",
-        "EVENTBUS_VERSION": "3.3.1"
+        "EVENTBUS_VERSION": "3.3.1",
+        "BACKGROUND_MODE_LOCATION": "<string>location</string>"
       }
     },
     "platforms": [
-      "android"
+      "android",
+      "ios"
     ]
   }
 }

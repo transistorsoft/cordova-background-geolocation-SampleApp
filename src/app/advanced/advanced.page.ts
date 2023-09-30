@@ -127,7 +127,7 @@ export class AdvancedPage implements OnInit, OnDestroy, AfterContentInit {
   // Event subscriptions
   subscriptions: any;
 
-  constructor(
+  constructor(    
     private navCtrl:NavController,
     private alertCtrl:AlertController,
     private router:Router,
@@ -193,7 +193,6 @@ export class AdvancedPage implements OnInit, OnDestroy, AfterContentInit {
 
   async ngAfterContentInit()  {
     console.log('⚙️ ngAfterContentInit');
-
     // Setup the GoogleMap
     await this.configureMap();
 
