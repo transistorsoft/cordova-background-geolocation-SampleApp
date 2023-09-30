@@ -1,0 +1,3 @@
+module.exports = {
+	GOOGLE_MAP_API_KEY: 'AIzaSyDXTDr2C3iU9jgwpNVpZjeWzOc-DyCgkt8'
+}

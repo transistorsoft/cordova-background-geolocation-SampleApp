@@ -1,7 +1,7 @@
 {
-  "name": "BG Geo",
+  "name": "BGGeo",
   "integrations": {
     "cordova": {}
   },
-  "type": "ionic-angular"
+  "type": "angular-standalone"
 }
